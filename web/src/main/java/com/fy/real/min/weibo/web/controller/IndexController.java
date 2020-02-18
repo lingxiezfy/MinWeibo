@@ -1,6 +1,9 @@
 package com.fy.real.min.weibo.web.controller;
 
-import org.springframework.stereotype.Controller;
+import com.fy.real.min.weibo.service.IndexService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * [Create]
@@ -10,11 +13,16 @@ import org.springframework.stereotype.Controller;
  * @author fengyu.zhang
  * @version 1.0
  */
-@Controller
+@RestController
 public class IndexController {
-//
-//    @RequestMapping("/")
-//    public String index(){
-//        return "index";
-//    }
+
+    @Autowired
+    IndexService indexService;
+
+    @GetMapping("/index")
+    public String index(){
+
+        System.out.println(indexService.testDb().getUsername());
+        return "index";
+    }
 }

@@ -12,5 +12,22 @@
 
     <artifactId>min.weibo.service</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.fy.real</groupId>
+            <artifactId>min.weibo.model</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fy.real</groupId>
+            <artifactId>min.weibo.dao</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <!-- Mybatis 分页插件 -->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

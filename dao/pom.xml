@@ -12,5 +12,25 @@
 
     <artifactId>min.weibo.dao</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.fy.real</groupId>
+            <artifactId>min.weibo.model</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Mybatis 依赖 -->
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+    </dependencies>
 
 </project>

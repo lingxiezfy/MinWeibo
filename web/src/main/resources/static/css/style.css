@@ -1,7 +1,8 @@
 body{
 	background: url(../img/bg.jpg);
-	font-family: tahoma,"microsoft yahei","\5FAE\8F6F\96C5\9ED1"!important;
+	font-family: tahoma, "microsoft yahei", "\5FAE\8F6F\96C5\9ED1", serif !important;
 }
+
 .navbar-right a{
 	color: #444
 }
@@ -15,6 +16,22 @@ body{
 	left:-28px;
 	cursor: pointer;
 }
+.my_nav_left{
+	position: fixed;
+	top:80px;
+	width: 12%;
+}
+.my_nav_left ul{
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+.my_nav_left a{
+	font-weight:bold;
+	font-size: 16px;
+	color: #3399CC;
+}
 .my_edit{
     margin-top:80px; 
 }
@@ -25,8 +42,7 @@ body{
     border: 1px solid #eee;
 }
 .container_bg{
-	background: #dd6572;
-	background-color:rgba(255, 255, 255, 0.5);
+	background: rgba(255, 255, 255, 0.5);
 	padding-bottom: 30px; 
 }
  #content{
@@ -85,6 +101,7 @@ body{
 
 	margin-top:10px;
 }
+
 .sort{
 	color:#777;
 }
@@ -108,12 +125,7 @@ body{
 .my_inform{
 	padding: 10px;
 }
-.item_hot{
-	padding: 10px 20px
-}
-.item_num{
-	color: #999
-}
+
 .mypic{
 	margin-top:5px;
 	width: 100%;
@@ -122,19 +134,11 @@ body{
 .mypic:hover{
 	cursor:url('../img/enlarge.png'),auto;
 }
-.part_hot{
-	background: #fff;
-	margin-top:5px;
-	border: 1px solid #eee;
-}
 
 @media screen and (max-width: 699px) and (min-width: 320px) {
   .my_edit{
     margin-top:160px; 
   }
-  .item_hot{
-	font-size: 12px;
-}
 	.part_right{
 		margin-top: 10px;
 		padding-left: 0px;
@@ -146,10 +150,6 @@ body{
 
 	.navbar-header{
 		padding:0;
-	}
-
-	.item_hot{
-		padding: 15px 25px
 	}
 	.inform{
 		padding-bottom: 15px;

@@ -10,10 +10,17 @@ var loginOutUrl = serviceUrlBase + "user/loginOut";
 var userInfoUrl = serviceUrlBase + "user/info";
 //更新用户信息 post ACCESS_TOKEN
 var updateUserInfoUrl = serviceUrlBase + "user/update";
+//用户更新关系 post ACCESS_TOKEN
+var relationUserUrl = serviceUrlBase + "user/relation";
+
 //发表微博 post form-data
 var postWeiboUrl = serviceUrlBase + "weibo/post";
 // 自己的微博列表 post ACCESS_TOKEN
 var selfWeiboListUrl = serviceUrlBase + "weibo/list";
+// 根据id加载一条微博 get ACCESS_TOKEN
+var weiBoInfoUrl = serviceUrlBase + "weibo/";
+// 根据id删除一条微博 get ACCESS_TOKEN
+var deleteWeiBoUrl = serviceUrlBase + "weibo/delete/";
 
 var userTokenHeaderKey = "ACCESS_TOKEN";
 var userTokenStorageKey = "MINIWeibo_token";
@@ -103,6 +110,14 @@ function loadUserInfo(afterLoad, ifError, timeOut) {
         }
     });
 }
+// 关联用户（relation,1:关注，2:拉黑）
+function relationUser(userId,relation,before,after,error) {
+    var obj = {};
+    obj["userId"] = userId;
+    obj["relation"] = relation;
+    postWithToken(relationUserUrl,JSON.stringify(obj),before,after,error);
+}
+
 
 // 加载用户微博列表
 function loadUserWeiBoList(pageIndex, beforeLoad, afterLoad, ifError, timeOut) {
@@ -113,7 +128,16 @@ function loadUserWeiBoList(pageIndex, beforeLoad, afterLoad, ifError, timeOut) {
 
     postWithToken(selfWeiboListUrl, JSON.stringify(obj), beforeLoad, afterLoad, ifError, timeOut)
 }
+// 根据Id删除一条微博
+function deleteWeiBoById(weiBoId,before,after,error) {
+    getWithToken(deleteWeiBoUrl+weiBoId,before,after,error)
+}
+// 根据Id获取一条微博
+function weiBoInfoById(weiBoId,before,after,error) {
+    getWithToken(weiBoInfoUrl+weiBoId,before,after,error)
+}
 
+// 执行需要Token验证的post请求
 function postWithToken(url, postData, beforeLoad, afterLoad, ifError, timeOut) {
     $.ajax({
         url: url,
@@ -125,6 +149,41 @@ function postWithToken(url, postData, beforeLoad, afterLoad, ifError, timeOut) {
             xhr.setRequestHeader(userTokenHeaderKey, handleLocalStorage("get", userTokenStorageKey))
             //返回true才会继续往下执行，否则中断请求
             return beforeLoad();
+        },
+        success: function (response) {
+            if (loginExpeirFilter(response) && response.success) {
+                delayOrimmediatelyOp(function () {
+                    if (response.result) {
+                        afterLoad(response.result);
+                    } else {
+                        afterLoad();
+                    }
+                }, timeOut);
+            } else {
+                delayOrimmediatelyOp(function () {
+                    ifError(response.message);
+                }, timeOut);
+            }
+        },
+        error: function (e) {
+            delayOrimmediatelyOp(function () {
+                ifError("访问远程服务器失败！");
+            }, timeOut);
+        }
+    });
+}
+
+// 执行需要Token验证的get请求
+function getWithToken(url, beforeLoad, afterLoad, ifError, timeOut) {
+    if(false === beforeLoad()){
+        return;
+    }
+    $.ajax({
+        url: url,
+        type: "get",
+        cache: false,
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader(userTokenHeaderKey, handleLocalStorage("get", userTokenStorageKey))
         },
         success: function (response) {
             if (loginExpeirFilter(response) && response.success) {
@@ -193,7 +252,7 @@ function goLogin(message) {
 }
 
 
-// 去微博主页
+// 去主页
 function goWeiBoIndexPage(message, timeOut) {
     //跳转登录页
     if (message) {
@@ -208,6 +267,7 @@ function goWeiBoIndexPage(message, timeOut) {
     }, timeOut);
 }
 
+// 页面跳转
 function toPage(url, message, timeOut) {
     if (message) {
         swal(message, {

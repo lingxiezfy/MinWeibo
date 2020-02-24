@@ -8,7 +8,9 @@
     <meta content="telephone=no" name="format-detection"/>
     <title>MINI微社区</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet" type="text/css">
+    <link href="css/viewer.min.css" rel="stylesheet">
+    <link href="css/toastr.min.css" rel="stylesheet">
+    <link href="css/index.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <nav class="navbar  navbar-fixed-top" role="navigation" style="background: #e0620d ;padding-top: 3px;height:50px;">
@@ -33,14 +35,16 @@
 
         <div class="collapse navbar-collapse" id="my-navbar-collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#"><i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;Jack.C</a></li>
+                <li><a href="javascript:toPage('profile.html')"><i
+                        class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;<span class="userInfo username">未登录</span></a>
+                </li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         设置 <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">登录</a></li>
-                        <li><a href="#">注册</a></li>
+                        <li><a href="javascript:toPage('profile.html')">个人空间</a></li>
+                        <li><a href="javascript:logout()">退出登录</a></li>
                     </ul>
                 </li>
             </ul>
@@ -73,11 +77,7 @@
                         </div>
                         <div class="col-sm-12" style="margin-top: 12px;">
                             <span class="emoji">表情</span>
-                            <span class="pic">图片	</span>
-                            <span>
-									<input class="select_Img" name="" style="display: none" type="file">
-									<img class="preview" src="">
-								</span>
+                            <span class="post_pic">图片</span>
                             <div class="myEmoji">
                                 <ul class="nav nav-tabs" id="myTab">
                                     <li class="active">
@@ -96,42 +96,229 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- <span> <input type="file" id="selectImg" value=""></input> </span> -->
                             <button class="btn btn-default pull-right disabled" id="send" type="button">发布</button>
+                        </div>
+                        <div class="col-sm-12">
+                            <input class="select_Img" name="images" onchange="imgSelect()" style="display: none"
+                                   accept="image/png,image/gif,image/jpg,image/jpeg" type="file" multiple>
+                            <div id="imagePreview">
+
+                            </div>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="row item_msg">
+            <div class="row item_msg" id="weiboItem">
+                <!-- 单条微博示例 -->
                 <div class="col-sm-12 col-xs-12 message">
-                    <img class="col-sm-2 col-xs-2" src="img/icon.png" style="border-radius: 50%">
-                    <div class="col-sm-10 col-xs-10">
-                        <span style="font-weight: bold;">Jack.C</span>
-                        <br>
-                        <small class="date" style="color:#999">1分钟前</small>
-                        <div class="msg_content">happy day!
-                            <img class="mypic" src="img/bg_1.jpg">
+                    <div class="row">
+                        <img class="col-sm-2 col-xs-2 user-face" src="img/icon.png" style="border-radius: 50%">
+                        <div class="col-sm-10 col-xs-10">
+                            <div class="row">
+                                <div class="col-sm-2 col-xs-2">
+                                    <span style="font-weight: bold;">Jack.C</span>
+                                </div>
+                                <div class="col-sm-10 col-xs-10">
+                                    <div class="pull-right">
+                                        <button type="button" class="btn btn-default btn-xs">
+                                            <span class="glyphicon glyphicon-plus" aria-hidden="true">关注</span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-xs" data-toggle="tooltip"
+                                                data-placement="bottom" title="删除">
+                                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-xs" data-toggle="tooltip"
+                                                data-placement="bottom" title="编辑">
+                                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-xs-12">
+                                    <small class="date" style="color:#999">1分钟前</small>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-xs-12">
+                                    <div class="msg_content">happy day!</div>
+                                    <div class="msg_pic pic_view">
+                                        <table>
+                                            <tbody>
+                                            <tr>
+                                                <td>
+                                                    <img class="mypic" src="img/bg_1.jpg">
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-xs-12">
+                            <div class="weibo_tools_list">
+                                <ul class="list-inline">
+                                    <li class=""><a class="first_item"><span
+                                            class="glyphicon glyphicon-star-empty"></span><em>收藏</em>(0)</a></li>
+                                    <li class=""><a><span
+                                            class="glyphicon glyphicon-share-alt"></span><em>转发</em>(0)</a></li>
+                                    <li class=""><a><span class="glyphicon glyphicon-comment"></span><em>评论</em>(0)</a>
+                                    </li>
+                                    <li class=""><a><span
+                                            class="glyphicon glyphicon-thumbs-up"></span><em>点赞</em>(0)</a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <!-- end - 单条微博示例 -->
+                <div class="row">
+                    <div class="col-sm-12 col-xs-12">
+                        <div class="collapse" id="collapseExample">
+                            <div class="well">
+                                ...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 单条微博示例 -->
+                <div class="col-sm-12 col-xs-12 message" id="weiboItem0">
+                    <div class="row">
+                        <img class="col-sm-2 col-xs-2 user-face" src="img/icon.png" style="border-radius: 50%">
+                        <div class="col-sm-10 col-xs-10">
+                            <div class="row">
+                                <div class="col-sm-2 col-xs-2">
+                                    <span style="font-weight: bold;">Jack.C</span>
+                                </div>
+                                <div class="col-sm-10 col-xs-10">
+                                    <div class="pull-right">
+                                        <button type="button" class="btn btn-default btn-xs">
+                                            <span class="glyphicon glyphicon-plus" aria-hidden="true">关注</span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-xs" data-toggle="tooltip"
+                                                data-placement="bottom" title="删除">
+                                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-xs" data-toggle="tooltip"
+                                                data-placement="bottom" title="编辑">
+                                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-xs-12">
+                                    <small class="date" style="color:#999">1分钟前</small>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-xs-12">
+                                    <div class="msg_content">happy day!</div>
+                                    <div class="msg_pic pic_view">
+                                        <table>
+                                            <tbody>
+                                            <tr>
+                                                <td>
+                                                    <img class="mypic" src="img/bg_1.jpg">
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-xs-12">
+                            <div class="row repost_weiBo">
+                                <div class="col-sm-2 col-xs-2">&nbsp;</div>
+                                <div class="col-sm-10 col-xs-10">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-xs-12">
+                                            <div class="msg_author"><strong>@测试用户</strong></div>
+                                            <div class="msg_content">happy day!</div>
+                                            <div class="msg_pic pic_view">
+                                                <table>
+                                                    <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <img class="mypic" src="img/bg_1.jpg">
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12 col-xs-12">
+                                            <small class="date" style="color:#999">1分钟前</small>
+                                            <div class="pull-right repost_weiBo_tools">
+                                                <small class="date" style="color:#999"><a class="first_item"><span
+                                                        class="glyphicon glyphicon-star-empty"></span><em>收藏</em>(0)</a></small>
+                                                <small class="date" style="color:#999"><a><span
+                                                        class="glyphicon glyphicon-share-alt"></span><em>转发</em>(0)</a></small>
+                                                <small class="date" style="color:#999"><a><span
+                                                        class="glyphicon glyphicon-comment"></span><em>评论</em>(0)</a></small>
+                                                <small class="date" style="color:#999"><a><span
+                                                        class="glyphicon glyphicon-thumbs-up"></span><em>点赞</em>(0)</a></small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-xs-12">
+                            <div class="weibo_tools_list">
+                                <ul class="list-inline">
+                                    <li class=""><a class="first_item"><span
+                                            class="glyphicon glyphicon-star-empty"></span><em>收藏</em>(0)</a></li>
+                                    <li class=""><a><span
+                                            class="glyphicon glyphicon-share-alt"></span><em>转发</em>(0)</a></li>
+                                    <li class=""><a href="javascript:openWeiboComment(0)"><span
+                                            class="glyphicon glyphicon-comment"></span><em>评论</em>(0)</a></li>
+                                    <li class=""><a><span
+                                            class="glyphicon glyphicon-thumbs-up"></span><em>点赞</em>(0)</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end - 单条微博示例 -->
             </div>
+
         </div>
         <div class="col-sm-3 col-xs-12 part_right">
             <div class="row text-center inform">
-                <img src="img/icon.png">
-                <h4 style="font-weight: bold;">Jack.C</h4>
+                <div class="col-sm-12 userSelf">
+                    <img class="userInfo face" src="img/icon.png">
+                    <h4 style="font-weight: bold;"><span class="userInfo nickname">未登录</span>(<span
+                            class="userInfo username">未登录</span>)</h4>
+                </div>
                 <div class="col-sm-12 my_inform">
-                    <div class="col-sm-4 col-xs-4">
-                        <div><strong>111</strong></div>
-                        <div class="sort">关注</div>
+                    <div class="col-sm-4 col-xs-4 user-Count-btn">
+                        <div>
+                            <div><strong><span class="userInfo followCount">0</span></strong></div>
+                            <div class="sort">关注</div>
+                        </div>
                     </div>
-                    <div class="col-sm-4 col-xs-4">
-                        <div><strong>111</strong></div>
-                        <div class="sort">粉丝</div>
+                    <div class="col-sm-4 col-xs-4 user-Count-btn">
+                        <div>
+                            <div><strong><span class="userInfo fansCount">0</span></strong></div>
+                            <div class="sort">粉丝</div>
+                        </div>
                     </div>
-                    <div class="col-sm-4 col-xs-4">
-                        <div><strong>111</strong></div>
-                        <div class="sort">博客</div>
+                    <div class="col-sm-4 col-xs-4 user-Count-btn">
+                        <div>
+                            <div><strong><span class="userInfo weiboCount">0</span></strong></div>
+                            <div class="sort">微博</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -140,52 +327,88 @@
 </div>
 <script src="js/jquery-3.1.0.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<script src="js/viewer-jquery.min.js"></script>
+<script src="js/toastr.min.js"></script>
+<script src="js/sweetalert.min.js"></script>
+<script src="js/common.js"></script>
 <script type="text/javascript">
+    toastr.options.positionClass = 'toast-bottom-right';
+    toastr.options.timeOut = 1200;
+
+    // 单次发布微博的表单数据
+    var weiboFormData = new FormData();
+
+    // 图片选择器
+    function imgSelect() {
+        var Fs = $(".select_Img")[0];
+        console.log(Fs.files.length);
+        for (var i = 0; i < Fs.files.length; i++) {
+            weiboFormData.append("pic", Fs.files[i]);
+            //window.URL.createObjectURL可以用于在浏览器上预览本地图片或者视频
+            var div = "<div style='float:left;margin-left: 10px;'> <img id='img" + i + "' width='80px' height='80px' src='" + window.URL.createObjectURL(Fs.files[i]) + "'/> </div>"
+            $("#imagePreview").append(div);
+        }
+    };
+    // 图片预览插件
+    $(".pic_view").viewer();
+    // 按钮提示插件
+    $('[data-toggle="tooltip"]').tooltip();
     $(function () {
+        sendDisabled();
         $("#content").keyup(function () {
             //判断输入的字符串长度
             var content_len = $("#content").text().replace(/\s/g, "").length;
             $(".tips").text("已经输入" + content_len + "个字");
             if (content_len === 0) {
-                // alert(content);
                 $(".tips").text("");
-                $("#send").addClass("disabled");
+                sendDisabled();
                 return false;
             } else {
-                $("#send").removeClass("disabled");
+                sendOpen();
             }
         });
-        $(".pic").click(function () {
+        $(".post_pic").click(function () {
             $(".select_Img").click();
         });
-        // 	function confirm(){
-        // 		var r= new FileReader();
-        // f=$(".select_Img").files[0];
-        // r.readAsDataURL(f);
-        // r.onload=function(e) {
-        // 	$(".preview").src=this.result;
-        // };
-        // 	}
+
+        //禁用发布按钮
+        function sendDisabled() {
+            $("#send").addClass("disabled");
+            $("#send").attr("disabled", "disabled");
+        }
+
+        //启用发布按钮
+        function sendOpen() {
+            $("#send").removeClass("disabled");
+            $("#send").removeAttr("disabled");
+        }
+
         //点击按钮发送内容
         $("#send").click(function () {
-            // var myDate = new Date();
-            //   var min = myDate.getMinutes();
-            //   var time = min-(min-1);
-            //   //alert(time);
-            var content = $("#content").html();
-            //判断选择的是否是图片格式
-            var imgPath = $(".imgPath").text();
-            var start = imgPath.lastIndexOf(".");
-            var postfix = imgPath.substring(start, imgPath.length).toUpperCase();
-            if (imgPath != "") {
-                if (postfix != ".PNG" && postfix != ".JPG" && postfix != ".GIF" && postfix != ".JPEG") {
-                    alert("图片格式需为png,gif,jpeg,jpg格式");
-                } else {
-                    $(".item_msg").append("<div class='col-sm-12 col-xs-12 message' > <img src='img/icon.png' class='col-sm-2 col-xs-2' style='border-radius: 50%'><div class='col-sm-10 col-xs-10'><span style='font-weight: bold;''>Jack.C</span> <br><small class='date' style='color:#999'>刚刚</small><div class='msg_content'>" + content + "<img class='mypic' onerror='this.src='img/bg_1.jpg' src='file:///" + imgPath + "' ></div></div></div>");
+            weiboFormData.set("content", $("#content").html());
+            $.ajax({
+                url: postWeiboUrl,
+                type: "post",
+                data: weiboFormData,
+                processData: false,
+                contentType: false,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(userTokenHeaderKey, handleLocalStorage("get", userTokenStorageKey))
+                },
+                success: function (data) {
+                    addOneWeiBo(data);
+                },
+                error: function (e) {
+                },
+                complete: function () {
+                    weiboFormData.delete("pic");
+                    weiboFormData.delete("content");
+                    $("#imagePreview").empty();
+                    $("#content").empty();
+                    $(".tips").text("");
+                    sendDisabled();
                 }
-            } else {
-                $(".item_msg").append("<div class='col-sm-12 col-xs-12 message' > <img src='img/icon.png' class='col-sm-2 col-xs-2' style='border-radius: 50%'><div class='col-sm-10 col-xs-10'><span style='font-weight: bold;''>Jack.C</span> <br><small class='date' style='color:#999'>刚刚</small><div class='msg_content'>" + content + "</div></div></div>");
-            }
+            });
         });
         //添加表情包1
         for (var i = 1; i < 60; i++) {
@@ -204,28 +427,105 @@
                 }
             });
         });
+
         //将表情添加到输入框
         $(".myEmoji img").each(function () {
             $(this).click(function () {
                 var url = $(this)[0].src;
                 $('#content').append("<img src='" + url + "' style='width:25px;height:25px' >");
-                $("#send").removeClass("disabled");
+                sendOpen();
+                $(".myEmoji").hide();
             })
-        })
-        //放大或缩小预览图片
-        $(".mypic").click(function () {
-            var oWidth = $(this).width(); //取得图片的实际宽度
-            var oHeight = $(this).height(); //取得图片的实际高度
-            if ($(this).height() != 200) {
-                $(this).height(200);
-            } else {
-                $(this).height(oHeight + 200 / oWidth * oHeight);
+        });
+    });
+
+    //打开评论界面
+    function openWeiboComment(id) {
+        console.log(id);
+    }
+
+    //点赞
+    function weiboLikes(id) {
+        console.log(id);
+    }
+
+    //收藏
+    function weiboCollect(id) {
+        console.log(id);
+    }
+
+    //打开转发界面
+    function openWeiboRePost(id) {
+        console.log(id);
+    }
+
+    //添加一条微博
+    function addOneWeiBo(data) {
+        var div = "<div class=\"col-sm-12 col-xs-12 message\">\n" +
+            "<img class=\"col-sm-2 col-xs-2\" src=\"img/icon.png\" style=\"border-radius: 50%\">\n" +
+            "<div class=\"col-sm-10 col-xs-10\">\n" +
+            "<span style=\"font-weight: bold;\">Jack.C</span>\n<br>\n" +
+            "<small class=\"date\" style=\"color:#999\">刚刚</small>\n";
+        div += "<div class=\"msg_content\">" + data.content + "</div>\n";
+        if (data.pic && data.pic.length > 0) {
+            div += "<div class=\"msg_pic pic_view\"><table>";
+            var rowCount = 0;
+            for (var i = 1; i <= data.pic.length; i++) {
+                if (rowCount == 0) {
+                    div += "<tr>";
+                }
+                div += "<td><img class=\"mypic\" src=\"upload/" + data.pic[i - 1] + "\"></td>\n";
+                rowCount++;
+                if (rowCount == 3) {
+                    div += "</tr>"
+                    rowCount = 0;
+                }
             }
-        })
-    })
+            div += "</table></div>";
+        }
+        div += "</div></div>";
+        $("#weiboItem").prepend(div);
+        $(".msg_pic").viewer();
+    };
+
+    //页面初始化
+    //加载用户信息
+    loadUserInfo(
+        function (userInfo) {
+            $(".userInfo.nickname").html(userInfo.nickname);
+            $(".userInfo.username").html(userInfo.username);
+            $(".userInfo.weiboCount").html(userInfo.weiboCount);
+            $(".userInfo.followCount").html(userInfo.followCount);
+            $(".userInfo.fansCount").html(userInfo.fansCount);
+            if (userInfo.face && userInfo.face.length > 0) {
+                $(".userInfo.face").attr("src", "upload/" + userInfo.face);
+            } else {
+                $(".userInfo.face").attr("src", "img/icon.png");
+            }
+
+            toastr.info('欢迎进入MINI微社区');
+        }
+        , function (errorMessage) {
+            toastr.error(errorMessage);
+        }
+        , 100
+    );
+    //加载用户微博列表
+    loadUserWeiBoList(1
+        , function () {
+            toastr.info("我的微博");
+        }, function (response) {
+            console.log(response)
+        }, function (errorMessage) {
+            toastr.error(errorMessage);
+        }
+    );
+
+
+    // swal("Good job!", "You clicked the button!", "success");
 </script>
 <div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei';">
-    <p>MINI微社区-版权所有。</p>
+    <p>MINI微社区-版权所有。&copy; 2020-2030</p>
 </div>
 </body>
 </html>

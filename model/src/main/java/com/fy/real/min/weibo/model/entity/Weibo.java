@@ -1,5 +1,7 @@
 package com.fy.real.min.weibo.model.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -21,6 +23,7 @@ public class Weibo implements Serializable {
     /**
      * 发送时间
      */
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date postTime;
 
     /**
@@ -29,7 +32,7 @@ public class Weibo implements Serializable {
     private String content;
 
     /**
-     * 附图集合;分隔
+     * 附图集合["1.png","2.png"]
      */
     private String pic;
 
@@ -76,11 +79,13 @@ public class Weibo implements Serializable {
     /**
      * 创建时间
      */
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
      * 更新时间
      */
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     private static final long serialVersionUID = 1L;

@@ -1,6 +1,9 @@
 package com.fy.real.min.weibo.dao.dao;
 
 import com.fy.real.min.weibo.model.entity.Weibo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface WeiboDao {
     int deleteByPrimaryKey(Integer weiboId);
@@ -14,4 +17,10 @@ public interface WeiboDao {
     int updateByPrimaryKeySelective(Weibo record);
 
     int updateByPrimaryKey(Weibo record);
+
+    List<Weibo> selectUsefulByUserId(Integer userId);
+
+    List<Weibo> selectByWeiboIdList(@Param("weiboIdList") List<Integer> weiboIdList);
+
+    List<Weibo> selectUseful();
 }

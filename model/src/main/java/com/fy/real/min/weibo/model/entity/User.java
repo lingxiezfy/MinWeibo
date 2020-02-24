@@ -1,5 +1,7 @@
 package com.fy.real.min.weibo.model.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -41,6 +43,7 @@ public class User implements Serializable {
     /**
      * 出生日期
      */
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date bir;
 
     /**
@@ -66,11 +69,13 @@ public class User implements Serializable {
     /**
      * 创建时间
      */
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
      * 更新时间
      */
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     private static final long serialVersionUID = 1L;

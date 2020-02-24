@@ -26,6 +26,21 @@
     from user
     where user_id = #{userId,jdbcType=INTEGER}
   </select>
+  <select id="selectByUsername" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from user
+    where username = #{username} limit 1
+  </select>
+  <select id="selectByUserIdList" parameterType="java.util.List" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from user
+    where user_id in
+    <foreach collection="userIdList" item="item" open="(" close=")" index="index" separator=",">
+      #{item}
+    </foreach>
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from user
     where user_id = #{userId,jdbcType=INTEGER}
@@ -119,7 +134,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fy.real.min.weibo.model.entity.User">
+    <update id="updateByPrimaryKeySelective" parameterType="com.fy.real.min.weibo.model.entity.User">
     update user
     <set>
       <if test="username != null">
@@ -175,6 +190,44 @@
       useful = #{useful,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where user_id = #{userId,jdbcType=INTEGER}
+  </update>
+  <update id="updateCountColumn" parameterType="com.fy.real.min.weibo.model.entity.User">
+    update user set
+        <if test="weiboCount != null and weiboCount != 0">
+            weibo_count =
+          <choose>
+            <when test="weiboCount > 0">
+              weibo_count + #{weiboCount,jdbcType=INTEGER}
+            </when>
+            <otherwise>
+              weibo_count #{weiboCount,jdbcType=INTEGER}
+            </otherwise>
+          </choose>,
+        </if>
+    <if test="followCount != null and followCount != 0">
+      follow_count =
+      <choose>
+        <when test="followCount > 0">
+          follow_count + #{followCount,jdbcType=INTEGER}
+        </when>
+        <otherwise>
+          follow_count #{followCount,jdbcType=INTEGER}
+        </otherwise>
+      </choose>,
+    </if>
+    <if test="fansCount != null and fansCount != 0">
+      fans_count =
+      <choose>
+        <when test="fansCount > 0">
+          fans_count + #{fansCount,jdbcType=INTEGER}
+        </when>
+        <otherwise>
+          fans_count #{fansCount,jdbcType=INTEGER}
+        </otherwise>
+      </choose>,
+    </if>
+        update_time = now()
     where user_id = #{userId,jdbcType=INTEGER}
   </update>
 </mapper>

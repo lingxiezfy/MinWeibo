@@ -1,0 +1,32 @@
+### 登录
+POST http://localhost:8081/user/login HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+
+{"username":"user","password":"user"}
+
+### 注册
+POST http://localhost:8081/user/register HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+
+{
+    "username":"345678",
+    "password":"345678",
+    "rePassword":"345678",
+    "nickname":"345678",
+    "bir":"2019-02-24",
+    "sex":"1"
+}
+
+### 登出
+GET http://localhost:8081/user/loginOut HTTP/1.1
+ACCESS_TOKEN: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0IiwiZXhwIjoxNTgyNDA0NjQ0LCJpYXQiOjE1ODI0MDEwNDR9.q55dIMmZoOvxgTM0HG9Tp5mlKj6qmRouxzJ73MELUuI
+
+### 列表
+POST http://localhost:8081/weibo/listAll HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+
+{
+    "pageIndex":1,
+    "pageSize":3
+}
+

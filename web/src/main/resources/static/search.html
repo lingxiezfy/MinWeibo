@@ -10,7 +10,7 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/viewer.min.css" rel="stylesheet">
     <link href="css/toastr.min.css" rel="stylesheet">
-    <link href="css/index.css" rel="stylesheet" type="text/css">
+    <link href="css/search.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <nav class="navbar  navbar-fixed-top" role="navigation" style="background: #e0620d ;padding-top: 3px;height:50px;">
@@ -54,7 +54,7 @@
 </nav>
 <div class="container container_bg">
     <div class="row">
-        <div class="col-sm-2" id="top">
+        <div class="col-sm-3" id="top">
             <nav class="my_nav_left hidden-xs">
                 <ul class="nav nav-tabs nav-stacked full-with">
                     <li role="presentation"><a href="javascript:goWeiBoIndex()">发现微博</a></li>
@@ -66,51 +66,52 @@
                 </ul>
             </nav>
         </div>
-        <div class="col-sm-6 col-xs-12 my_edit">
-            <div class="row" id="edit_form">
-                <span class="pull-left" style="margin:15px;">分享新鲜事</span>
-                <span class="tips pull-right" style="margin:15px;"></span>
-                <form role="form" style="margin-top: 50px;">
-                    <div class="form-group">
-                        <div class="col-sm-12">
-                            <div class="form-control " contentEditable="true" id="content"></div>
-                        </div>
-                        <div class="col-sm-12" style="margin-top: 12px;">
-                            <span class="emoji">表情</span>
-                            <span class="post_pic">图片</span>
-                            <div class="myEmoji">
-                                <ul class="nav nav-tabs" id="myTab">
-                                    <li class="active">
-                                        <a data-toggle="tab" href="#set">
-                                            预设
-                                        </a>
-                                    </li>
-                                    <li><a data-toggle="tab" href="#hot">热门</a></li>
-                                </ul>
-                                <div class="tab-content" id="myTabContent">
-                                    <div class="tab-pane fade in active" id="set">
-                                        <div class="emoji_1"></div>
-                                    </div>
-                                    <div class="tab-pane fade" id="hot">
-                                        <div class="emoji_2"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="btn btn-default pull-right disabled" id="send" type="button">发布</button>
-                        </div>
-                        <div class="col-sm-12">
-                            <input class="select_Img" name="images" onchange="imgSelect()" style="display: none"
-                                   accept="image/png,image/gif,image/jpg,image/jpeg" type="file" multiple>
-                            <div id="imagePreview">
-
-                            </div>
+        <div class="col-sm-7 col-xs-12 my_edit">
+            <div class="row text-center inform">
+                <div class="col-sm-12 userSelf">
+                    <img class="userInfo face" src="img/icon.png">
+                    <h4 style="font-weight: bold;"><span class="userInfo nickname">未登录</span>(<span
+                            class="userInfo username">未登录</span>)</h4>
+                    <button type="button" onclick="toRelationUser(0,1)" class="btn btn-default btn-xs">
+                        <span class="glyphicon glyphicon-heart" aria-hidden="true">关注</span>
+                    </button>
+                    <button type="button" onclick="toRelationUser(0,0)" class="btn btn-warning btn-xs">
+                        <span class="glyphicon glyphicon-heart-empty" aria-hidden="true">取消关注</span>
+                    </button>
+                    <button type="button" onclick="toRelationUser(0,2)" class="btn btn-default btn-xs">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true">加入黑名单</span>
+                    </button>
+                    <button type="button" onclick="toRelationUser(0,0)" class="btn btn-warning btn-xs">
+                        <span class="glyphicon glyphicon-minus" aria-hidden="true">移除黑名单</span>
+                    </button>
+                    <button type="button" onclick="toRelationUser(0,2)" class="btn btn-success btn-xs">
+                        <span class="glyphicon glyphicon-comment" aria-hidden="true">私信</span>
+                    </button>
+                </div>
+                <div class="col-sm-12 my_inform">
+                    <div class="col-sm-4 col-xs-4 user-Count-btn">
+                        <div>
+                            <div><strong><span class="userInfo followCount">0</span></strong></div>
+                            <div class="sort">关注</div>
                         </div>
                     </div>
-                </form>
+                    <div class="col-sm-4 col-xs-4 user-Count-btn">
+                        <div>
+                            <div><strong><span class="userInfo fansCount">0</span></strong></div>
+                            <div class="sort">粉丝</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-xs-4 user-Count-btn">
+                        <div>
+                            <div><strong><span class="userInfo weiboCount">0</span></strong></div>
+                            <div class="sort">微博</div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="row nonWeiBo ">
                 <div class="col-sm-12 col-xs-12 message text-center">
-                    快来发布第一条微博吧!
+                    无匹配的结果!
                 </div>
             </div>
 
@@ -118,8 +119,8 @@
                 <!-- 单条微博示例 -->
                 <div class="col-sm-12 col-xs-12 message">
                     <div class="row">
-                        <img class="col-sm-2 col-xs-2 user-face" src="img/icon.png" style="border-radius: 50%">
-                        <div class="col-sm-10 col-xs-10">
+                        <img class="col-sm-2 col-xs-3 user-face" src="img/icon.png" style="border-radius: 50%">
+                        <div class="col-sm-10 col-xs-9">
                             <div class="row">
                                 <div class="col-sm-2 col-xs-2">
                                     <span style="font-weight: bold;">Jack.C</span>
@@ -201,9 +202,6 @@
                                 </div>
                                 <div class="col-sm-10 col-xs-10">
                                     <div class="pull-right">
-                                        <button type="button" onclick="toRelationUser(0,1)" class="btn btn-default btn-xs">
-                                            <span class="glyphicon glyphicon-plus" aria-hidden="true">关注</span>
-                                        </button>
                                         <button type="button" onclick="toDeleteWeiBoById(0)" class="btn btn-default btn-xs" data-toggle="tooltip"
                                                 data-placement="bottom" title="删除">
                                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
@@ -245,7 +243,7 @@
                                 <div class="col-sm-10 col-xs-10">
                                     <div class="row">
                                         <div class="col-sm-12 col-xs-12">
-                                            <div class="msg_author"><strong><a href="javascript:toUserIndex(0)">@测试用户</a></strong></div>
+                                            <div class="msg_author"><strong><a href="javascript:toUserindex(0)">@测试用户</a></strong></div>
                                             <div class="msg_content">happy day!</div>
                                             <div class="msg_pic pic_view">
                                                 <table>
@@ -307,35 +305,6 @@
             <div class="row notAnyMoreWeiBo ">
                 <div class="col-sm-12 col-xs-12 message text-center">
                     到底了...
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-3 col-xs-12 part_right">
-            <div class="row text-center inform">
-                <div class="col-sm-12 userSelf" onclick="toPage('home.html?userId=')">
-                    <img class="userInfo face" src="img/icon.png">
-                    <h4 style="font-weight: bold;"><span class="userInfo nickname">未登录</span>(<span
-                            class="userInfo username">未登录</span>)</h4>
-                </div>
-                <div class="col-sm-12 my_inform">
-                    <div class="col-sm-4 col-xs-4 user-Count-btn">
-                        <div>
-                            <div><strong><span class="userInfo followCount">0</span></strong></div>
-                            <div class="sort">关注</div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4 col-xs-4 user-Count-btn">
-                        <div>
-                            <div><strong><span class="userInfo fansCount">0</span></strong></div>
-                            <div class="sort">粉丝</div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4 col-xs-4 user-Count-btn">
-                        <div>
-                            <div><strong><span class="userInfo weiboCount">0</span></strong></div>
-                            <div class="sort">微博</div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -496,7 +465,7 @@
 
     }
     // 去用户主页
-    function toUserIndex(userId){
+    function toUserindex(userId){
 
     }
     //添加一条微博
@@ -531,7 +500,7 @@
     //页面初始化
     //加载用户信息
     function refreshUserInfo(){
-        loadUserInfo(null,
+        loadUserInfo(getQueryVariable('userId'),
             function (userInfo) {
                 $(".userInfo.nickname").html(userInfo.nickname);
                 $(".userInfo.username").html(userInfo.username);
@@ -566,7 +535,7 @@
         loadOnePageWeiBo();
     }
     function  loadOnePageWeiBo() {
-        loadAllWeiBoList(nowPage
+        searchWeiBoList(getQueryVariable('query'),nowPage
             , function () {
                 if(isLoading || !haveMoreData) return false;
                 $(".loadingWeiBo").show();

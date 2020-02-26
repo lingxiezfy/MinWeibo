@@ -29,4 +29,10 @@ public interface UserDao {
     void updateCountColumn(User user);
 
     List<User> selectByUserIdList(@Param("userIdList") List<Integer> userIdList);
+
+    /**
+     * 根据name进行模糊查找（包含username和nickname）
+     */
+    List<User> queryByName(@Param("name") String name);
+
 }

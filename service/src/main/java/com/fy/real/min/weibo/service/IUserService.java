@@ -1,10 +1,7 @@
 package com.fy.real.min.weibo.service;
 
 import com.fy.real.min.weibo.model.entity.User;
-import com.fy.real.min.weibo.model.user.UserLoginRequest;
-import com.fy.real.min.weibo.model.user.UserLoginView;
-import com.fy.real.min.weibo.model.user.UserRegisterRequest;
-import com.fy.real.min.weibo.model.user.UserView;
+import com.fy.real.min.weibo.model.user.*;
 
 /**
  * [Create]
@@ -61,4 +58,6 @@ public interface IUserService {
     String update(User updateUser);
 
     UserView info(Integer userId);
+
+    UserListResponse search(UserSearchRequest request);
 }

@@ -1,225 +1,241 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fy.real.min.weibo.dao.dao.WeiboDao">
-  <resultMap id="BaseResultMap" type="com.fy.real.min.weibo.model.entity.Weibo">
-    <id column="weibo_id" jdbcType="INTEGER" property="weiboId" />
-    <result column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="post_time" jdbcType="TIMESTAMP" property="postTime" />
-    <result column="content" jdbcType="VARCHAR" property="content" />
-    <result column="pic" jdbcType="VARCHAR" property="pic" />
-    <result column="topic" jdbcType="VARCHAR" property="topic" />
-    <result column="original" jdbcType="INTEGER" property="original" />
-    <result column="repost_id" jdbcType="INTEGER" property="repostId" />
-    <result column="useful" jdbcType="INTEGER" property="useful" />
-    <result column="comment_count" jdbcType="INTEGER" property="commentCount" />
-    <result column="likes_count" jdbcType="INTEGER" property="likesCount" />
-    <result column="collect_count" jdbcType="INTEGER" property="collectCount" />
-    <result column="repost_count" jdbcType="INTEGER" property="repostCount" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    weibo_id, user_id, post_time, content, pic, topic, original, repost_id, useful, comment_count, 
+    <resultMap id="BaseResultMap" type="com.fy.real.min.weibo.model.entity.Weibo">
+        <id column="weibo_id" jdbcType="INTEGER" property="weiboId"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="post_time" jdbcType="TIMESTAMP" property="postTime"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="pic" jdbcType="VARCHAR" property="pic"/>
+        <result column="topic" jdbcType="VARCHAR" property="topic"/>
+        <result column="original" jdbcType="INTEGER" property="original"/>
+        <result column="repost_id" jdbcType="INTEGER" property="repostId"/>
+        <result column="useful" jdbcType="INTEGER" property="useful"/>
+        <result column="comment_count" jdbcType="INTEGER" property="commentCount"/>
+        <result column="likes_count" jdbcType="INTEGER" property="likesCount"/>
+        <result column="collect_count" jdbcType="INTEGER" property="collectCount"/>
+        <result column="repost_count" jdbcType="INTEGER" property="repostCount"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        weibo_id, user_id, post_time, content, pic, topic, original, repost_id, useful, comment_count,
     likes_count, collect_count, repost_count, create_time, update_time
-  </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from weibo
-    where weibo_id = #{weiboId,jdbcType=INTEGER}
-  </select>
-  <select id="selectUsefulByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from weibo
-    where user_id = #{userId,jdbcType=INTEGER} and useful = 1
-  </select>
-  <select id="selectByWeiboIdList" parameterType="java.util.List" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from weibo
-    where weibo_id in 
-    <foreach collection="weiboIdList" item="item" open="(" close=")" index="index" separator=",">
-        #{item}
-    </foreach>
-  </select>
-  <select id="selectUseful" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from weibo
-    where useful = 1
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from weibo
-    where weibo_id = #{weiboId,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" keyColumn="weibo_id" keyProperty="weiboId" parameterType="com.fy.real.min.weibo.model.entity.Weibo" useGeneratedKeys="true">
-    insert into weibo (user_id, post_time, content, 
-      pic, topic, original, 
-      repost_id, useful, comment_count, 
-      likes_count, collect_count, repost_count, 
-      create_time, update_time)
-    values (#{userId,jdbcType=INTEGER}, #{postTime,jdbcType=TIMESTAMP}, #{content,jdbcType=VARCHAR}, 
-      #{pic,jdbcType=VARCHAR}, #{topic,jdbcType=VARCHAR}, #{original,jdbcType=INTEGER}, 
-      #{repostId,jdbcType=INTEGER}, #{useful,jdbcType=INTEGER}, #{commentCount,jdbcType=INTEGER}, 
-      #{likesCount,jdbcType=INTEGER}, #{collectCount,jdbcType=INTEGER}, #{repostCount,jdbcType=INTEGER}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
-  </insert>
-  <insert id="insertSelective" keyColumn="weibo_id" keyProperty="weiboId" parameterType="com.fy.real.min.weibo.model.entity.Weibo" useGeneratedKeys="true">
-    insert into weibo
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        user_id,
-      </if>
-      <if test="postTime != null">
-        post_time,
-      </if>
-      <if test="content != null">
-        content,
-      </if>
-      <if test="pic != null">
-        pic,
-      </if>
-      <if test="topic != null">
-        topic,
-      </if>
-      <if test="original != null">
-        original,
-      </if>
-      <if test="repostId != null">
-        repost_id,
-      </if>
-      <if test="useful != null">
-        useful,
-      </if>
-      <if test="commentCount != null">
-        comment_count,
-      </if>
-      <if test="likesCount != null">
-        likes_count,
-      </if>
-      <if test="collectCount != null">
-        collect_count,
-      </if>
-      <if test="repostCount != null">
-        repost_count,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="postTime != null">
-        #{postTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="content != null">
-        #{content,jdbcType=VARCHAR},
-      </if>
-      <if test="pic != null">
-        #{pic,jdbcType=VARCHAR},
-      </if>
-      <if test="topic != null">
-        #{topic,jdbcType=VARCHAR},
-      </if>
-      <if test="original != null">
-        #{original,jdbcType=INTEGER},
-      </if>
-      <if test="repostId != null">
-        #{repostId,jdbcType=INTEGER},
-      </if>
-      <if test="useful != null">
-        #{useful,jdbcType=INTEGER},
-      </if>
-      <if test="commentCount != null">
-        #{commentCount,jdbcType=INTEGER},
-      </if>
-      <if test="likesCount != null">
-        #{likesCount,jdbcType=INTEGER},
-      </if>
-      <if test="collectCount != null">
-        #{collectCount,jdbcType=INTEGER},
-      </if>
-      <if test="repostCount != null">
-        #{repostCount,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fy.real.min.weibo.model.entity.Weibo">
-    update weibo
-    <set>
-      <if test="userId != null">
-        user_id = #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="postTime != null">
-        post_time = #{postTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="content != null">
-        content = #{content,jdbcType=VARCHAR},
-      </if>
-      <if test="pic != null">
-        pic = #{pic,jdbcType=VARCHAR},
-      </if>
-      <if test="topic != null">
-        topic = #{topic,jdbcType=VARCHAR},
-      </if>
-      <if test="original != null">
-        original = #{original,jdbcType=INTEGER},
-      </if>
-      <if test="repostId != null">
-        repost_id = #{repostId,jdbcType=INTEGER},
-      </if>
-      <if test="useful != null">
-        useful = #{useful,jdbcType=INTEGER},
-      </if>
-      <if test="commentCount != null">
-        comment_count = #{commentCount,jdbcType=INTEGER},
-      </if>
-      <if test="likesCount != null">
-        likes_count = #{likesCount,jdbcType=INTEGER},
-      </if>
-      <if test="collectCount != null">
-        collect_count = #{collectCount,jdbcType=INTEGER},
-      </if>
-      <if test="repostCount != null">
-        repost_count = #{repostCount,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where weibo_id = #{weiboId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.fy.real.min.weibo.model.entity.Weibo">
-    update weibo
-    set user_id = #{userId,jdbcType=INTEGER},
-      post_time = #{postTime,jdbcType=TIMESTAMP},
-      content = #{content,jdbcType=VARCHAR},
-      pic = #{pic,jdbcType=VARCHAR},
-      topic = #{topic,jdbcType=VARCHAR},
-      original = #{original,jdbcType=INTEGER},
-      repost_id = #{repostId,jdbcType=INTEGER},
-      useful = #{useful,jdbcType=INTEGER},
-      comment_count = #{commentCount,jdbcType=INTEGER},
-      likes_count = #{likesCount,jdbcType=INTEGER},
-      collect_count = #{collectCount,jdbcType=INTEGER},
-      repost_count = #{repostCount,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
-    where weibo_id = #{weiboId,jdbcType=INTEGER}
-  </update>
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from weibo
+        where weibo_id = #{weiboId,jdbcType=INTEGER}
+    </select>
+    <select id="selectUsefulByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from weibo
+        where user_id = #{userId,jdbcType=INTEGER} and useful = 1
+    </select>
+    <select id="selectByWeiboIdList" parameterType="java.util.List" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from weibo
+        where weibo_id in
+        <foreach collection="weiboIdList" item="item" open="(" close=")" index="index" separator=",">
+            #{item}
+        </foreach>
+    </select>
+    <select id="selectUseful" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from weibo
+        where useful = 1
+    </select>
+    <select id="queryByContent" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from weibo
+      where content like "%"#{content}"%"
+    </select>
+
+    <select id="queryByTopic" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from weibo
+      where topic like "%"#{topic}"%"
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from weibo
+        where weibo_id = #{weiboId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" keyColumn="weibo_id" keyProperty="weiboId"
+            parameterType="com.fy.real.min.weibo.model.entity.Weibo" useGeneratedKeys="true">
+        insert into weibo (user_id, post_time, content,
+                           pic, topic, original,
+                           repost_id, useful, comment_count,
+                           likes_count, collect_count, repost_count,
+                           create_time, update_time)
+        values (#{userId,jdbcType=INTEGER}, #{postTime,jdbcType=TIMESTAMP}, #{content,jdbcType=VARCHAR},
+                #{pic,jdbcType=VARCHAR}, #{topic,jdbcType=VARCHAR}, #{original,jdbcType=INTEGER},
+                #{repostId,jdbcType=INTEGER}, #{useful,jdbcType=INTEGER}, #{commentCount,jdbcType=INTEGER},
+                #{likesCount,jdbcType=INTEGER}, #{collectCount,jdbcType=INTEGER}, #{repostCount,jdbcType=INTEGER},
+                #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" keyColumn="weibo_id" keyProperty="weiboId"
+            parameterType="com.fy.real.min.weibo.model.entity.Weibo" useGeneratedKeys="true">
+        insert into weibo
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="postTime != null">
+                post_time,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+            <if test="pic != null">
+                pic,
+            </if>
+            <if test="topic != null">
+                topic,
+            </if>
+            <if test="original != null">
+                original,
+            </if>
+            <if test="repostId != null">
+                repost_id,
+            </if>
+            <if test="useful != null">
+                useful,
+            </if>
+            <if test="commentCount != null">
+                comment_count,
+            </if>
+            <if test="likesCount != null">
+                likes_count,
+            </if>
+            <if test="collectCount != null">
+                collect_count,
+            </if>
+            <if test="repostCount != null">
+                repost_count,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="postTime != null">
+                #{postTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="content != null">
+                #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="pic != null">
+                #{pic,jdbcType=VARCHAR},
+            </if>
+            <if test="topic != null">
+                #{topic,jdbcType=VARCHAR},
+            </if>
+            <if test="original != null">
+                #{original,jdbcType=INTEGER},
+            </if>
+            <if test="repostId != null">
+                #{repostId,jdbcType=INTEGER},
+            </if>
+            <if test="useful != null">
+                #{useful,jdbcType=INTEGER},
+            </if>
+            <if test="commentCount != null">
+                #{commentCount,jdbcType=INTEGER},
+            </if>
+            <if test="likesCount != null">
+                #{likesCount,jdbcType=INTEGER},
+            </if>
+            <if test="collectCount != null">
+                #{collectCount,jdbcType=INTEGER},
+            </if>
+            <if test="repostCount != null">
+                #{repostCount,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.fy.real.min.weibo.model.entity.Weibo">
+        update weibo
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="postTime != null">
+                post_time = #{postTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="content != null">
+                content = #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="pic != null">
+                pic = #{pic,jdbcType=VARCHAR},
+            </if>
+            <if test="topic != null">
+                topic = #{topic,jdbcType=VARCHAR},
+            </if>
+            <if test="original != null">
+                original = #{original,jdbcType=INTEGER},
+            </if>
+            <if test="repostId != null">
+                repost_id = #{repostId,jdbcType=INTEGER},
+            </if>
+            <if test="useful != null">
+                useful = #{useful,jdbcType=INTEGER},
+            </if>
+            <if test="commentCount != null">
+                comment_count = #{commentCount,jdbcType=INTEGER},
+            </if>
+            <if test="likesCount != null">
+                likes_count = #{likesCount,jdbcType=INTEGER},
+            </if>
+            <if test="collectCount != null">
+                collect_count = #{collectCount,jdbcType=INTEGER},
+            </if>
+            <if test="repostCount != null">
+                repost_count = #{repostCount,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where weibo_id = #{weiboId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.fy.real.min.weibo.model.entity.Weibo">
+        update weibo
+        set user_id       = #{userId,jdbcType=INTEGER},
+            post_time     = #{postTime,jdbcType=TIMESTAMP},
+            content       = #{content,jdbcType=VARCHAR},
+            pic           = #{pic,jdbcType=VARCHAR},
+            topic         = #{topic,jdbcType=VARCHAR},
+            original      = #{original,jdbcType=INTEGER},
+            repost_id     = #{repostId,jdbcType=INTEGER},
+            useful        = #{useful,jdbcType=INTEGER},
+            comment_count = #{commentCount,jdbcType=INTEGER},
+            likes_count   = #{likesCount,jdbcType=INTEGER},
+            collect_count = #{collectCount,jdbcType=INTEGER},
+            repost_count  = #{repostCount,jdbcType=INTEGER},
+            create_time   = #{createTime,jdbcType=TIMESTAMP},
+            update_time   = #{updateTime,jdbcType=TIMESTAMP}
+        where weibo_id = #{weiboId,jdbcType=INTEGER}
+    </update>
 </mapper>

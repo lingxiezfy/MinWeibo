@@ -261,7 +261,8 @@
             success: function (response) {
                 console.log(response);
                 if (response.success && response.code === '200') {
-                    handleLocalStorage("set", "MINIWeibo_token", response.result.token)
+                    handleLocalStorage("set", userTokenStorageKey, response.result.token);
+                    handleLocalStorage("set", userIdStorageKey, response.result.userId);
                     //跳转主页
                     toastr.info('登录成功');
                     document.getElementById("loginForm").reset();
@@ -297,7 +298,8 @@
             success: function (response) {
                 console.log(response);
                 if (response.success && response.code === '200') {
-                    handleLocalStorage("set", "MINIWeibo_token", response.result.token)
+                    handleLocalStorage("set", userTokenStorageKey, response.result.token);
+                    handleLocalStorage("set", userIdStorageKey, response.result.userId);
                     //跳转主页
                     toastr.info('注册成功');
                     document.getElementById("registerForm").reset();

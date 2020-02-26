@@ -23,4 +23,8 @@ public interface WeiboDao {
     List<Weibo> selectByWeiboIdList(@Param("weiboIdList") List<Integer> weiboIdList);
 
     List<Weibo> selectUseful();
+
+    List<Weibo> queryByContent(@Param("content") String content);
+
+    List<Weibo> queryByTopic(@Param("topic") String topic);
 }

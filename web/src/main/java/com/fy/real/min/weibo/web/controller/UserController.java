@@ -91,4 +91,11 @@ public class UserController extends BaseApiController {
         return new BaseResponse();
     }
 
+    @PostMapping("search")
+    @UserLoginToken
+    public BaseResponse<UserListResponse> search(@RequestBody UserSearchRequest request,@CurrentUser User user){
+        request.setCurrentUser(user);
+        return this.exec(request,(r)->userService.search(r));
+    }
+
 }

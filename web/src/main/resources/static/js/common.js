@@ -12,6 +12,7 @@ var userInfoUrl = serviceUrlBase + "user/info/";
 var updateUserInfoUrl = serviceUrlBase + "user/update";
 //用户更新关系 post ACCESS_TOKEN
 var relationUserUrl = serviceUrlBase + "user/relation";
+var searchUserUrl = serviceUrlBase + "user/search";
 
 //发表微博 post form-data
 var postWeiboUrl = serviceUrlBase + "weibo/post";
@@ -23,9 +24,11 @@ var weiboListUrl = serviceUrlBase + "weibo/listAll";
 var weiBoInfoUrl = serviceUrlBase + "weibo/";
 // 根据id删除一条微博 get ACCESS_TOKEN
 var deleteWeiBoUrl = serviceUrlBase + "weibo/delete/";
+var searchWeiBoUrl = serviceUrlBase + "weibo/search";
 
 var userTokenHeaderKey = "ACCESS_TOKEN";
-var userTokenStorageKey = "MINIWeibo_token";
+var userTokenStorageKey = "MINIWeiBo_token";
+var userIdStorageKey = "MINIWeiBo_userId";
 
 // 表单转json对象（如果需要json字符串，需要使用JSON.stringify()在转一次）
 $.fn.serializeObject = function () {
@@ -46,7 +49,7 @@ $.fn.serializeObject = function () {
 
 //获取Url参数
 function getQueryVariable(variable) {
-    var query = window.location.search.substring(1);
+    var query = decodeURIComponent(window.location.search.substring(1));
     var vars = query.split("&");
     for (var i=0;i<vars.length;i++) {
         var pair = vars[i].split("=");
@@ -133,7 +136,15 @@ function relationUser(userId,relation,before,after,error) {
     obj["relation"] = relation;
     postWithToken(relationUserUrl,JSON.stringify(obj),before,after,error);
 }
+function toSearchUser(){
+    var query = $("#mini-search-btn").val();
+    if(query){
+        toPage("search.html?query="+encodeURIComponent(query)+"&searchType=1")
+    }else {
+        toastr.error("请输入查询的用户名或昵称");
+    }
 
+}
 
 // 加载用户微博列表
 function loadUserWeiBoList(targetUserId,pageIndex, beforeLoad, afterLoad, ifError, timeOut) {
@@ -156,7 +167,40 @@ function loadAllWeiBoList(pageIndex, beforeLoad, afterLoad, ifError, timeOut) {
 
     postWithToken(weiboListUrl, JSON.stringify(obj), beforeLoad, afterLoad, ifError, timeOut)
 }
+function searchWeiBoList(query,pageIndex, beforeLoad, afterLoad, ifError, timeOut) {
+    var obj = {};
+    obj["pageIndex"] = pageIndex;
+    // 一次加载5条
+    obj["pageSize"] = 5;
+    obj["query"] = query;
 
+    postWithToken(searchWeiBoUrl, JSON.stringify(obj), beforeLoad, afterLoad, ifError, timeOut)
+}
+
+function searchUserList(query,pageIndex, beforeLoad, afterLoad, ifError, timeOut) {
+    var obj = {};
+    obj["pageIndex"] = pageIndex;
+    // 一次加载5条
+    obj["pageSize"] = 10;
+    obj["query"] = query;
+
+    postWithToken(searchUserUrl, JSON.stringify(obj), beforeLoad, afterLoad, ifError, timeOut)
+}
+function toSearchWeiBo(){
+    var query = $("#mini-search-btn").val();
+    if(query){
+        toPage("search.html?query="+encodeURIComponent(query)+"&searchType=2")
+    }else {
+        toastr.error("请输入内容查询微博");
+    }
+}
+
+function toSecondhand(){
+    toPage("search.html?query="+encodeURIComponent("#二手交易#")+"&searchType=3")
+}
+function toFunnyChat(){
+    toPage("search.html?query="+encodeURIComponent("#趣味讨论#")+"&searchType=4")
+}
 
 // 根据Id删除一条微博
 function deleteWeiBoById(weiBoId,before,after,error) {

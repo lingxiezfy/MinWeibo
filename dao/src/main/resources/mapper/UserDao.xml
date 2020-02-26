@@ -1,233 +1,246 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fy.real.min.weibo.dao.dao.UserDao">
-  <resultMap id="BaseResultMap" type="com.fy.real.min.weibo.model.entity.User">
-    <id column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="username" jdbcType="VARCHAR" property="username" />
-    <result column="password" jdbcType="VARCHAR" property="password" />
-    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
-    <result column="face" jdbcType="VARCHAR" property="face" />
-    <result column="sex" jdbcType="INTEGER" property="sex" />
-    <result column="bir" jdbcType="TIMESTAMP" property="bir" />
-    <result column="weibo_count" jdbcType="INTEGER" property="weiboCount" />
-    <result column="follow_count" jdbcType="INTEGER" property="followCount" />
-    <result column="fans_count" jdbcType="INTEGER" property="fansCount" />
-    <result column="useful" jdbcType="INTEGER" property="useful" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    user_id, username, `password`, nickname, face, sex, bir, weibo_count, follow_count, 
+    <resultMap id="BaseResultMap" type="com.fy.real.min.weibo.model.entity.User">
+        <id column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
+        <result column="face" jdbcType="VARCHAR" property="face"/>
+        <result column="sex" jdbcType="INTEGER" property="sex"/>
+        <result column="bir" jdbcType="TIMESTAMP" property="bir"/>
+        <result column="weibo_count" jdbcType="INTEGER" property="weiboCount"/>
+        <result column="follow_count" jdbcType="INTEGER" property="followCount"/>
+        <result column="fans_count" jdbcType="INTEGER" property="fansCount"/>
+        <result column="useful" jdbcType="INTEGER" property="useful"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        user_id, username, `password`, nickname, face, sex, bir, weibo_count, follow_count,
     fans_count, useful, create_time, update_time
-  </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from user
-    where user_id = #{userId,jdbcType=INTEGER}
-  </select>
-  <select id="selectByUsername" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from user
-    where username = #{username} limit 1
-  </select>
-  <select id="selectByUserIdList" parameterType="java.util.List" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from user
-    where user_id in
-    <foreach collection="userIdList" item="item" open="(" close=")" index="index" separator=",">
-      #{item}
-    </foreach>
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from user
-    where user_id = #{userId,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" keyColumn="user_id" keyProperty="userId" parameterType="com.fy.real.min.weibo.model.entity.User" useGeneratedKeys="true">
-    insert into user (username, `password`, nickname, 
-      face, sex, bir, weibo_count, 
-      follow_count, fans_count, useful, 
-      create_time, update_time)
-    values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, 
-      #{face,jdbcType=VARCHAR}, #{sex,jdbcType=INTEGER}, #{bir,jdbcType=TIMESTAMP}, #{weiboCount,jdbcType=INTEGER}, 
-      #{followCount,jdbcType=INTEGER}, #{fansCount,jdbcType=INTEGER}, #{useful,jdbcType=INTEGER}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
-  </insert>
-  <insert id="insertSelective" keyColumn="user_id" keyProperty="userId" parameterType="com.fy.real.min.weibo.model.entity.User" useGeneratedKeys="true">
-    insert into user
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="username != null">
-        username,
-      </if>
-      <if test="password != null">
-        `password`,
-      </if>
-      <if test="nickname != null">
-        nickname,
-      </if>
-      <if test="face != null">
-        face,
-      </if>
-      <if test="sex != null">
-        sex,
-      </if>
-      <if test="bir != null">
-        bir,
-      </if>
-      <if test="weiboCount != null">
-        weibo_count,
-      </if>
-      <if test="followCount != null">
-        follow_count,
-      </if>
-      <if test="fansCount != null">
-        fans_count,
-      </if>
-      <if test="useful != null">
-        useful,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="username != null">
-        #{username,jdbcType=VARCHAR},
-      </if>
-      <if test="password != null">
-        #{password,jdbcType=VARCHAR},
-      </if>
-      <if test="nickname != null">
-        #{nickname,jdbcType=VARCHAR},
-      </if>
-      <if test="face != null">
-        #{face,jdbcType=VARCHAR},
-      </if>
-      <if test="sex != null">
-        #{sex,jdbcType=INTEGER},
-      </if>
-      <if test="bir != null">
-        #{bir,jdbcType=TIMESTAMP},
-      </if>
-      <if test="weiboCount != null">
-        #{weiboCount,jdbcType=INTEGER},
-      </if>
-      <if test="followCount != null">
-        #{followCount,jdbcType=INTEGER},
-      </if>
-      <if test="fansCount != null">
-        #{fansCount,jdbcType=INTEGER},
-      </if>
-      <if test="useful != null">
-        #{useful,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        where user_id = #{userId,jdbcType=INTEGER}
+    </select>
+    <select id="selectByUsername" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        where username = #{username} limit 1
+    </select>
+    <select id="selectByUserIdList" parameterType="java.util.List" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        where user_id in
+        <foreach collection="userIdList" item="item" open="(" close=")" index="index" separator=",">
+            #{item}
+        </foreach>
+    </select>
+    <select id="queryByName" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from user
+      where username like "%"#{name}"%" or nickname like "%"#{name}"%"
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from user
+        where user_id = #{userId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" keyColumn="user_id" keyProperty="userId" parameterType="com.fy.real.min.weibo.model.entity.User"
+            useGeneratedKeys="true">
+        insert into user (username, `password`, nickname,
+                          face, sex, bir, weibo_count,
+                          follow_count, fans_count, useful,
+                          create_time, update_time)
+        values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR},
+                #{face,jdbcType=VARCHAR}, #{sex,jdbcType=INTEGER}, #{bir,jdbcType=TIMESTAMP},
+                #{weiboCount,jdbcType=INTEGER},
+                #{followCount,jdbcType=INTEGER}, #{fansCount,jdbcType=INTEGER}, #{useful,jdbcType=INTEGER},
+                #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" keyColumn="user_id" keyProperty="userId"
+            parameterType="com.fy.real.min.weibo.model.entity.User" useGeneratedKeys="true">
+        insert into user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="username != null">
+                username,
+            </if>
+            <if test="password != null">
+                `password`,
+            </if>
+            <if test="nickname != null">
+                nickname,
+            </if>
+            <if test="face != null">
+                face,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+            <if test="bir != null">
+                bir,
+            </if>
+            <if test="weiboCount != null">
+                weibo_count,
+            </if>
+            <if test="followCount != null">
+                follow_count,
+            </if>
+            <if test="fansCount != null">
+                fans_count,
+            </if>
+            <if test="useful != null">
+                useful,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="username != null">
+                #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null">
+                #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="face != null">
+                #{face,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                #{sex,jdbcType=INTEGER},
+            </if>
+            <if test="bir != null">
+                #{bir,jdbcType=TIMESTAMP},
+            </if>
+            <if test="weiboCount != null">
+                #{weiboCount,jdbcType=INTEGER},
+            </if>
+            <if test="followCount != null">
+                #{followCount,jdbcType=INTEGER},
+            </if>
+            <if test="fansCount != null">
+                #{fansCount,jdbcType=INTEGER},
+            </if>
+            <if test="useful != null">
+                #{useful,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.fy.real.min.weibo.model.entity.User">
-    update user
-    <set>
-      <if test="username != null">
-        username = #{username,jdbcType=VARCHAR},
-      </if>
-      <if test="password != null">
-        `password` = #{password,jdbcType=VARCHAR},
-      </if>
-      <if test="nickname != null">
-        nickname = #{nickname,jdbcType=VARCHAR},
-      </if>
-      <if test="face != null">
-        face = #{face,jdbcType=VARCHAR},
-      </if>
-      <if test="sex != null">
-        sex = #{sex,jdbcType=INTEGER},
-      </if>
-      <if test="bir != null">
-        bir = #{bir,jdbcType=TIMESTAMP},
-      </if>
-      <if test="weiboCount != null">
-        weibo_count = #{weiboCount,jdbcType=INTEGER},
-      </if>
-      <if test="followCount != null">
-        follow_count = #{followCount,jdbcType=INTEGER},
-      </if>
-      <if test="fansCount != null">
-        fans_count = #{fansCount,jdbcType=INTEGER},
-      </if>
-      <if test="useful != null">
-        useful = #{useful,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where user_id = #{userId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.fy.real.min.weibo.model.entity.User">
-    update user
-    set username = #{username,jdbcType=VARCHAR},
-      `password` = #{password,jdbcType=VARCHAR},
-      nickname = #{nickname,jdbcType=VARCHAR},
-      face = #{face,jdbcType=VARCHAR},
-      sex = #{sex,jdbcType=INTEGER},
-      bir = #{bir,jdbcType=TIMESTAMP},
-      weibo_count = #{weiboCount,jdbcType=INTEGER},
-      follow_count = #{followCount,jdbcType=INTEGER},
-      fans_count = #{fansCount,jdbcType=INTEGER},
-      useful = #{useful,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
-    where user_id = #{userId,jdbcType=INTEGER}
-  </update>
-  <update id="updateCountColumn" parameterType="com.fy.real.min.weibo.model.entity.User">
-    update user set
+        update user
+        <set>
+            <if test="username != null">
+                username = #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                `password` = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null">
+                nickname = #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="face != null">
+                face = #{face,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                sex = #{sex,jdbcType=INTEGER},
+            </if>
+            <if test="bir != null">
+                bir = #{bir,jdbcType=TIMESTAMP},
+            </if>
+            <if test="weiboCount != null">
+                weibo_count = #{weiboCount,jdbcType=INTEGER},
+            </if>
+            <if test="followCount != null">
+                follow_count = #{followCount,jdbcType=INTEGER},
+            </if>
+            <if test="fansCount != null">
+                fans_count = #{fansCount,jdbcType=INTEGER},
+            </if>
+            <if test="useful != null">
+                useful = #{useful,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where user_id = #{userId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.fy.real.min.weibo.model.entity.User">
+        update user
+        set username     = #{username,jdbcType=VARCHAR},
+            `password`   = #{password,jdbcType=VARCHAR},
+            nickname     = #{nickname,jdbcType=VARCHAR},
+            face         = #{face,jdbcType=VARCHAR},
+            sex          = #{sex,jdbcType=INTEGER},
+            bir          = #{bir,jdbcType=TIMESTAMP},
+            weibo_count  = #{weiboCount,jdbcType=INTEGER},
+            follow_count = #{followCount,jdbcType=INTEGER},
+            fans_count   = #{fansCount,jdbcType=INTEGER},
+            useful       = #{useful,jdbcType=INTEGER},
+            create_time  = #{createTime,jdbcType=TIMESTAMP},
+            update_time  = #{updateTime,jdbcType=TIMESTAMP}
+        where user_id = #{userId,jdbcType=INTEGER}
+    </update>
+    <update id="updateCountColumn" parameterType="com.fy.real.min.weibo.model.entity.User">
+        update user set
         <if test="weiboCount != null and weiboCount != 0">
             weibo_count =
-          <choose>
-            <when test="weiboCount > 0">
-              weibo_count + #{weiboCount,jdbcType=INTEGER}
-            </when>
-            <otherwise>
-              weibo_count #{weiboCount,jdbcType=INTEGER}
-            </otherwise>
-          </choose>,
+            <choose>
+                <when test="weiboCount > 0">
+                    weibo_count + #{weiboCount,jdbcType=INTEGER}
+                </when>
+                <otherwise>
+                    weibo_count #{weiboCount,jdbcType=INTEGER}
+                </otherwise>
+            </choose>
+            ,
         </if>
-    <if test="followCount != null and followCount != 0">
-      follow_count =
-      <choose>
-        <when test="followCount > 0">
-          follow_count + #{followCount,jdbcType=INTEGER}
-        </when>
-        <otherwise>
-          follow_count #{followCount,jdbcType=INTEGER}
-        </otherwise>
-      </choose>,
-    </if>
-    <if test="fansCount != null and fansCount != 0">
-      fans_count =
-      <choose>
-        <when test="fansCount > 0">
-          fans_count + #{fansCount,jdbcType=INTEGER}
-        </when>
-        <otherwise>
-          fans_count #{fansCount,jdbcType=INTEGER}
-        </otherwise>
-      </choose>,
-    </if>
+        <if test="followCount != null and followCount != 0">
+            follow_count =
+            <choose>
+                <when test="followCount > 0">
+                    follow_count + #{followCount,jdbcType=INTEGER}
+                </when>
+                <otherwise>
+                    follow_count #{followCount,jdbcType=INTEGER}
+                </otherwise>
+            </choose>
+            ,
+        </if>
+        <if test="fansCount != null and fansCount != 0">
+            fans_count =
+            <choose>
+                <when test="fansCount > 0">
+                    fans_count + #{fansCount,jdbcType=INTEGER}
+                </when>
+                <otherwise>
+                    fans_count #{fansCount,jdbcType=INTEGER}
+                </otherwise>
+            </choose>
+            ,
+        </if>
         update_time = now()
-    where user_id = #{userId,jdbcType=INTEGER}
-  </update>
+        where user_id = #{userId,jdbcType=INTEGER}
+    </update>
 </mapper>

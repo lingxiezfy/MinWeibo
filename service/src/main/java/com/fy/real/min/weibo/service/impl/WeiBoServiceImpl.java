@@ -7,11 +7,9 @@ import com.fy.real.min.weibo.model.entity.User;
 import com.fy.real.min.weibo.model.entity.Weibo;
 import com.fy.real.min.weibo.model.exception.WeiBoException;
 import com.fy.real.min.weibo.model.user.UserView;
-import com.fy.real.min.weibo.model.weibo.PostWeiboRequest;
-import com.fy.real.min.weibo.model.weibo.WeiBoListRequest;
-import com.fy.real.min.weibo.model.weibo.WeiBoListResponse;
-import com.fy.real.min.weibo.model.weibo.WeiBoViewItem;
+import com.fy.real.min.weibo.model.weibo.*;
 import com.fy.real.min.weibo.service.IWeiBoService;
+import com.fy.real.min.weibo.util.utils.ValidatorUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +94,7 @@ public class WeiBoServiceImpl implements IWeiBoService {
         WeiBoListResponse response = new WeiBoListResponse();
         response.setList(new ArrayList<>());
         Page page = PageHelper.startPage(pageIndex,pageSize);
-        PageHelper.orderBy("likes_count desc,collect_count desc,repost_count desc,comment_count desc");
+        PageHelper.orderBy("likes_count desc,collect_count desc,repost_count desc,comment_count desc,weibo_id desc");
         List<Weibo> weiBoList = weiboDao.selectUseful();
         response.setPageIndex(page.getPageNum());
         response.setTotalCount(page.getTotal());
@@ -142,4 +140,25 @@ public class WeiBoServiceImpl implements IWeiBoService {
     }
 
     //endregion 获取微博列表
+
+    //region 查找微博
+
+    @Override
+    public WeiBoListResponse search(WeiBoSearchRequest request) {
+        ValidatorUtil.validate(request);
+        WeiBoListResponse response = new WeiBoListResponse();
+        Page page = PageHelper.startPage(request.getPageIndex(),request.getPageSize());
+        List<Weibo> weiBoList = weiboDao.queryByContent(request.getQuery());
+        if(weiBoList.size() >0){
+            response.setPageIndex(page.getPageNum());
+            response.setTotalCount(page.getTotal());
+            response.setTotalPage(page.getPages());
+            response.setList(covertWeiList(weiBoList));
+        }else {
+            response.setList(new ArrayList<>());
+        }
+        return response;
+    }
+
+    //endregion
 }

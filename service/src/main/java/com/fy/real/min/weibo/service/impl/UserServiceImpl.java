@@ -3,17 +3,19 @@ package com.fy.real.min.weibo.service.impl;
 import com.fy.real.min.weibo.dao.dao.UserDao;
 import com.fy.real.min.weibo.model.entity.User;
 import com.fy.real.min.weibo.model.exception.WeiBoException;
-import com.fy.real.min.weibo.model.user.UserLoginRequest;
-import com.fy.real.min.weibo.model.user.UserLoginView;
-import com.fy.real.min.weibo.model.user.UserRegisterRequest;
-import com.fy.real.min.weibo.model.user.UserView;
+import com.fy.real.min.weibo.model.user.*;
 import com.fy.real.min.weibo.service.IUserService;
 import com.fy.real.min.weibo.service.auth.IAuthAble;
 import com.fy.real.min.weibo.util.utils.ValidatorUtil;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * [Create]
@@ -94,5 +96,23 @@ public class UserServiceImpl implements IUserService {
             throw  new WeiBoException("用户不存在");
         }
         return UserView.convertFromUser(user);
+    }
+
+    @Override
+    public UserListResponse search(UserSearchRequest request) {
+        ValidatorUtil.validate(request);
+        UserListResponse response = new UserListResponse();
+        Page page = PageHelper.startPage(request.getPageIndex(),request.getPageSize());
+        List<User> userList = userDao.queryByName(request.getQuery());
+
+        if(userList.size() >0){
+            response.setPageIndex(page.getPageNum());
+            response.setTotalCount(page.getTotal());
+            response.setTotalPage(page.getPages());
+            response.setList(userList.stream().map(UserView::convertFromUser).collect(Collectors.toList()));
+        }else {
+            response.setList(new ArrayList<>());
+        }
+        return response;
     }
 }

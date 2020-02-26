@@ -4,6 +4,7 @@ import com.fy.real.min.weibo.model.entity.User;
 import com.fy.real.min.weibo.model.user.UserLoginRequest;
 import com.fy.real.min.weibo.model.user.UserLoginView;
 import com.fy.real.min.weibo.model.user.UserRegisterRequest;
+import com.fy.real.min.weibo.model.user.UserView;
 
 /**
  * [Create]
@@ -58,4 +59,6 @@ public interface IUserService {
      * @param updateUser 更新用户
      */
     String update(User updateUser);
+
+    UserView info(Integer userId);
 }

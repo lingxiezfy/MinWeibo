@@ -20,4 +20,5 @@ public class WeiBoListRequest extends BaseRequest implements Serializable {
     private static final long serialVersionUID = 1L;
     private Integer pageIndex = 1;
     private Integer pageSize = 10;
+    private Integer targetUserId = 0;
 }

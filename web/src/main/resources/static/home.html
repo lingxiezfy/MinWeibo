@@ -57,7 +57,7 @@
         <div class="col-sm-3" id="top">
             <nav class="my_nav_left hidden-xs">
                 <ul class="nav nav-tabs nav-stacked full-with">
-                    <li role="presentation"><a href="#">发现微博</a></li>
+                    <li role="presentation"><a href="javascript:goWeiBoIndex()">发现微博</a></li>
                     <li role="presentation"><a href="#">我的关注</a></li>
                     <li role="presentation"><a href="#">我的收藏</a></li>
                     <li role="presentation"><a href="#">二手交易</a></li>
@@ -503,7 +503,7 @@
     //页面初始化
     //加载用户信息
     function refreshUserInfo(){
-        loadUserInfo(
+        loadUserInfo(getQueryVariable('userId'),
             function (userInfo) {
                 $(".userInfo.nickname").html(userInfo.nickname);
                 $(".userInfo.username").html(userInfo.username);
@@ -538,7 +538,7 @@
         loadOnePageWeiBo();
     }
     function  loadOnePageWeiBo() {
-        loadUserWeiBoList(nowPage
+        loadUserWeiBoList(getQueryVariable('userId'),nowPage
             , function () {
                 if(isLoading || !haveMoreData) return false;
                 $(".loadingWeiBo").show();

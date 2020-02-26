@@ -57,7 +57,7 @@
         <div class="col-sm-2" id="top">
             <nav class="my_nav_left hidden-xs">
                 <ul class="nav nav-tabs nav-stacked full-with">
-                    <li role="presentation"><a href="#">发现微博</a></li>
+                    <li role="presentation"><a href="javascript:goWeiBoIndex()">发现微博</a></li>
                     <li role="presentation"><a href="#">我的关注</a></li>
                     <li role="presentation"><a href="#">我的收藏</a></li>
                     <li role="presentation"><a href="#">二手交易</a></li>
@@ -312,7 +312,7 @@
         </div>
         <div class="col-sm-3 col-xs-12 part_right">
             <div class="row text-center inform">
-                <div class="col-sm-12 userSelf">
+                <div class="col-sm-12 userSelf" onclick="toPage('home.html?userId=')">
                     <img class="userInfo face" src="img/icon.png">
                     <h4 style="font-weight: bold;"><span class="userInfo nickname">未登录</span>(<span
                             class="userInfo username">未登录</span>)</h4>
@@ -531,7 +531,7 @@
     //页面初始化
     //加载用户信息
     function refreshUserInfo(){
-        loadUserInfo(
+        loadUserInfo(null,
             function (userInfo) {
                 $(".userInfo.nickname").html(userInfo.nickname);
                 $(".userInfo.username").html(userInfo.username);
@@ -566,7 +566,7 @@
         loadOnePageWeiBo();
     }
     function  loadOnePageWeiBo() {
-        loadUserWeiBoList(nowPage
+        loadAllWeiBoList(nowPage
             , function () {
                 if(isLoading || !haveMoreData) return false;
                 $(".loadingWeiBo").show();

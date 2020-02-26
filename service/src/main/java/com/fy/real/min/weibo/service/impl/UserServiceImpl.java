@@ -6,6 +6,7 @@ import com.fy.real.min.weibo.model.exception.WeiBoException;
 import com.fy.real.min.weibo.model.user.UserLoginRequest;
 import com.fy.real.min.weibo.model.user.UserLoginView;
 import com.fy.real.min.weibo.model.user.UserRegisterRequest;
+import com.fy.real.min.weibo.model.user.UserView;
 import com.fy.real.min.weibo.service.IUserService;
 import com.fy.real.min.weibo.service.auth.IAuthAble;
 import com.fy.real.min.weibo.util.utils.ValidatorUtil;
@@ -84,5 +85,14 @@ public class UserServiceImpl implements IUserService {
     public String update(User updateUser) {
         updateUser.setUpdateTime(new Date());
         return userDao.updateByPrimaryKeySelective(updateUser) > 0?updateUser.getFace():null;
+    }
+
+    @Override
+    public UserView info(Integer userId) {
+        User user = userDao.selectByPrimaryKey(userId);
+        if(user == null){
+            throw  new WeiBoException("用户不存在");
+        }
+        return UserView.convertFromUser(user);
     }
 }

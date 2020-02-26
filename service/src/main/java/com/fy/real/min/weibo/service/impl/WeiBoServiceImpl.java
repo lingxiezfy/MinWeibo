@@ -5,6 +5,7 @@ import com.fy.real.min.weibo.dao.dao.UserDao;
 import com.fy.real.min.weibo.dao.dao.WeiboDao;
 import com.fy.real.min.weibo.model.entity.User;
 import com.fy.real.min.weibo.model.entity.Weibo;
+import com.fy.real.min.weibo.model.exception.WeiBoException;
 import com.fy.real.min.weibo.model.user.UserView;
 import com.fy.real.min.weibo.model.weibo.PostWeiboRequest;
 import com.fy.real.min.weibo.model.weibo.WeiBoListRequest;
@@ -68,6 +69,12 @@ public class WeiBoServiceImpl implements IWeiBoService {
     public WeiBoListResponse list(WeiBoListRequest request) {
         if(request.getCurrentUser() == null){
             return listAll(request.getPageIndex(),request.getPageSize());
+        } else if (request.getTargetUserId() > 0 && !request.getTargetUserId().equals(request.getCurrentUser().getUserId())) {
+            User targetUser = userDao.selectByPrimaryKey(request.getTargetUserId());
+            if(targetUser == null){
+                throw new WeiBoException("用户不存在");
+            }
+            return listForUser(targetUser,request.getPageIndex(),request.getPageSize());
         }
         return listForUser(request.getCurrentUser(),request.getPageIndex(),request.getPageSize());
     }

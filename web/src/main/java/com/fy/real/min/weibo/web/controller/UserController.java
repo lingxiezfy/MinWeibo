@@ -45,12 +45,15 @@ public class UserController extends BaseApiController {
      * <br/> Date: 2020/2/23 1:45
      * <br/>
      */
-    @GetMapping("info")
+    @GetMapping("info/{userId}")
     @UserLoginToken
-    public BaseResponse<UserView> info(@CurrentUser User user){
-        BaseResponse<UserView> response = new BaseResponse<>();
-        response.setResult(UserView.convertFromUser(user));
-        return response;
+    public BaseResponse<UserView> info(@PathVariable("userId") Integer userId, @CurrentUser User user){
+        if (userId == null || userId == 0 || user.getUserId().equals(userId)) {
+            BaseResponse<UserView> response = new BaseResponse<>();
+            response.setResult(UserView.convertFromUser(user));
+            return response;
+        }
+        return this.exec(userId,i->userService.info(i));
     }
 
     @PostMapping("update")

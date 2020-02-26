@@ -60,7 +60,7 @@
                         个人空间
                     </h1>
                     <div class="pull-right">
-                        <a href="javascript:goWeiBoIndexPage('返回微博',3000)" class="btn btn-sm btn-block btn-warning">
+                        <a href="javascript:goWeiBoIndex('返回微博',3000)" class="btn btn-sm btn-block btn-warning">
                             <span class="bigger-110">返回微博</span>
                         </a>
                     </div>
@@ -1335,7 +1335,7 @@
 
     //页面初始化
     //加载用户信息
-    loadUserInfo(
+    loadUserInfo(null,
         function (userInfo) {
             $(".userInfo.nickname").html(userInfo.nickname);
             $(".userInfo.username").html(userInfo.username);

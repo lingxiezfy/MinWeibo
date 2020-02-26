@@ -13,10 +13,7 @@ import com.fy.real.min.weibo.web.annotation.UserLoginToken;
 import com.fy.real.min.weibo.web.controller.common.BaseApiController;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -77,7 +74,7 @@ public class WeiboController extends BaseApiController {
      */
     @UserLoginToken
     @PostMapping("list")
-    public BaseResponse<WeiBoListResponse> list(@RequestBody WeiBoListRequest request,@CurrentUser User user){
+    public BaseResponse<WeiBoListResponse> list(@RequestBody WeiBoListRequest request, @CurrentUser User user){
         request.setCurrentUser(user);
         return this.exec(request,(r)->weiBoService.list(r));
     }

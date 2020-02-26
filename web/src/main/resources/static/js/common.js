@@ -7,7 +7,7 @@ var registerUrl = serviceUrlBase + "user/register";
 //登出 get ACCESS_TOKEN
 var loginOutUrl = serviceUrlBase + "user/loginOut";
 //用户信息 get ACCESS_TOKEN
-var userInfoUrl = serviceUrlBase + "user/info";
+var userInfoUrl = serviceUrlBase + "user/info/";
 //更新用户信息 post ACCESS_TOKEN
 var updateUserInfoUrl = serviceUrlBase + "user/update";
 //用户更新关系 post ACCESS_TOKEN
@@ -15,8 +15,10 @@ var relationUserUrl = serviceUrlBase + "user/relation";
 
 //发表微博 post form-data
 var postWeiboUrl = serviceUrlBase + "weibo/post";
-// 自己的微博列表 post ACCESS_TOKEN
+// 用户的微博列表 post ACCESS_TOKEN
 var selfWeiboListUrl = serviceUrlBase + "weibo/list";
+// 所有微博列表 post
+var weiboListUrl = serviceUrlBase + "weibo/listAll";
 // 根据id加载一条微博 get ACCESS_TOKEN
 var weiBoInfoUrl = serviceUrlBase + "weibo/";
 // 根据id删除一条微博 get ACCESS_TOKEN
@@ -41,6 +43,17 @@ $.fn.serializeObject = function () {
     });
     return obj;
 };
+
+//获取Url参数
+function getQueryVariable(variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i=0;i<vars.length;i++) {
+        var pair = vars[i].split("=");
+        if(pair[0] === variable){return pair[1];}
+    }
+    return(false);
+}
 
 // 操作 localStorage
 function handleLocalStorage(method, key, value) {
@@ -84,9 +97,12 @@ function loginExpeirFilter(response) {
 }
 
 // 刷新用户信息
-function loadUserInfo(afterLoad, ifError, timeOut) {
+function loadUserInfo(targetUserId,afterLoad, ifError, timeOut) {
+    if(!targetUserId){
+        targetUserId = 0;
+    }
     $.ajax({
-        url: userInfoUrl,
+        url: userInfoUrl+''+targetUserId,
         type: "get",
         cache: false,
         beforeSend: function (xhr) {
@@ -120,14 +136,28 @@ function relationUser(userId,relation,before,after,error) {
 
 
 // 加载用户微博列表
-function loadUserWeiBoList(pageIndex, beforeLoad, afterLoad, ifError, timeOut) {
+function loadUserWeiBoList(targetUserId,pageIndex, beforeLoad, afterLoad, ifError, timeOut) {
+    var obj = {};
+    obj["pageIndex"] = pageIndex;
+    // 一次加载5条
+    obj["pageSize"] = 5;
+    if(targetUserId){
+        obj['targetUserId'] = targetUserId;
+    }
+
+    postWithToken(selfWeiboListUrl, JSON.stringify(obj), beforeLoad, afterLoad, ifError, timeOut)
+}
+// 加载用户微博列表
+function loadAllWeiBoList(pageIndex, beforeLoad, afterLoad, ifError, timeOut) {
     var obj = {};
     obj["pageIndex"] = pageIndex;
     // 一次加载5条
     obj["pageSize"] = 5;
 
-    postWithToken(selfWeiboListUrl, JSON.stringify(obj), beforeLoad, afterLoad, ifError, timeOut)
+    postWithToken(weiboListUrl, JSON.stringify(obj), beforeLoad, afterLoad, ifError, timeOut)
 }
+
+
 // 根据Id删除一条微博
 function deleteWeiBoById(weiBoId,before,after,error) {
     getWithToken(deleteWeiBoUrl+weiBoId,before,after,error)
@@ -253,7 +283,7 @@ function goLogin(message) {
 
 
 // 去主页
-function goWeiBoIndexPage(message, timeOut) {
+function goWeiBoIndex(message, timeOut) {
     //跳转登录页
     if (message) {
         swal(message, {

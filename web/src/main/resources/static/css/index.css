@@ -100,7 +100,7 @@ body{
 
 .message .repost_weiBo{
 	margin-top: 5px;
-	background:#e2e0e0ad;
+	background: rgba(247,211,217,0.48);
 	margin-left: -11px;
 	margin-right: -11px;
 }

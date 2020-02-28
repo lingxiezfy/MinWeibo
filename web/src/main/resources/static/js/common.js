@@ -12,6 +12,7 @@ var userInfoUrl = serviceUrlBase + "user/info/";
 var updateUserInfoUrl = serviceUrlBase + "user/update";
 //用户更新关系 post ACCESS_TOKEN
 var relationUserUrl = serviceUrlBase + "user/relation";
+//查找用户 post ACCESS_TOKEN
 var searchUserUrl = serviceUrlBase + "user/search";
 
 //发表微博 post form-data
@@ -136,6 +137,7 @@ function relationUser(userId,relation,before,after,error) {
     obj["relation"] = relation;
     postWithToken(relationUserUrl,JSON.stringify(obj),before,after,error);
 }
+// 查找用户
 function toSearchUser(){
     var query = $("#mini-search-btn").val();
     if(query){
@@ -207,7 +209,8 @@ function toFunnyChat(){
 }
 // 去用户主页
 function toUserIndex(userId){
-    toPage('home.html?userId='+userId)
+    console.log(userId);
+    toPage('home.html?userId='+userId);
 }
 
 // 根据Id删除一条微博
@@ -366,10 +369,10 @@ function toPage(url, message, timeOut) {
 function addOneWeiBo(data) {
     var div = '<div class="col-sm-12 col-xs-12 message" id="weiBoItem'+data.weiboId+'">' +
         '<div class="row">';
-    div += '<div class="col-md-1 col-sm-2 col-xs-12">\n' +
-        '<a href="javascript:toUserIndex('+data.author.userId+')"><img class="user-face" src="';
+    div += '<div class="col-md-1 col-sm-2 col-xs-12" onclick="toUserIndex('+data.author.userId+')">\n' +
+        '<img class="user-face" src="';
     div += data.author.face ? "upload/"+data.author.face : "img/icon.png";
-    div +='" style="border-radius: 50%"></a>\n' +
+    div +='" style="border-radius: 50%">\n' +
         '</div>\n' +
         '<div class="col-md-11 col-sm-10 col-xs-12">' +
         '<div class="row">\n' +

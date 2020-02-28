@@ -19,4 +19,7 @@ public interface RelationDao {
     int updateByPrimaryKey(Relation record);
 
     List<Relation> queryUserRelation(@Param("userId") Integer userId,@Param("followUserId") Integer followUserId);
+
+    Relation queryUserRelationSingle(@Param("userId") Integer userId,@Param("followUserId") Integer followUserId);
+
 }

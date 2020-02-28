@@ -8,7 +8,7 @@ package com.fy.real.min.weibo.model.enums;
  * @author fengyu.zhang
  * @version 1.0
  */
-public enum  RelationEnum {
+public enum RelationStateEnum {
     Default(0,"陌生或本人")
     ,Concern(1,"关注")
     ,Black(2,"拉黑")
@@ -17,7 +17,7 @@ public enum  RelationEnum {
     private Integer code;
     private String message;
 
-    RelationEnum(Integer code, String message) {
+    RelationStateEnum(Integer code, String message) {
         this.code = code;
         this.message = message;
     }

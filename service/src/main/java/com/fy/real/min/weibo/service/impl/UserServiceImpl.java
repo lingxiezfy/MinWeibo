@@ -4,6 +4,7 @@ import com.fy.real.min.weibo.dao.dao.RelationDao;
 import com.fy.real.min.weibo.dao.dao.UserDao;
 import com.fy.real.min.weibo.model.entity.Relation;
 import com.fy.real.min.weibo.model.entity.User;
+import com.fy.real.min.weibo.model.enums.RelationStateEnum;
 import com.fy.real.min.weibo.model.exception.WeiBoException;
 import com.fy.real.min.weibo.model.user.*;
 import com.fy.real.min.weibo.service.IUserService;
@@ -137,5 +138,60 @@ public class UserServiceImpl implements IUserService {
             response.setList(new ArrayList<>());
         }
         return response;
+    }
+
+    @Override
+    public Boolean relation(RelationUserRequest request) {
+        ValidatorUtil.validate(request);
+        if(request.getUserId().equals(request.getCurrentUser().getUserId())){
+            throw new WeiBoException("你就是你，不一样的烟火");
+        }
+        Relation relation = relationDao.queryUserRelationSingle(request.getCurrentUser().getUserId(),request.getUserId());
+        Relation relationNew = new Relation();
+        if(relation == null){
+            relationNew.setUserId(request.getCurrentUser().getUserId());
+            relationNew.setFollowUserId(request.getUserId());
+            relationNew.setState(request.getRelation());
+            relationDao.insertSelective(relationNew);
+        }else {
+            if(relation.getState().equals(request.getRelation())){
+                throw new WeiBoException("你们两早就是这层关系了，难道还没捅破吗？");
+            }
+            relationNew.setRelationId(relation.getRelationId());
+            relationNew.setState(request.getRelation());
+            relationNew.setUpdateTime(new Date());
+            relationDao.updateByPrimaryKeySelective(relationNew);
+            if (RelationStateEnum.Black.getCode().equals(request.getRelation())
+                    || RelationStateEnum.Default.getCode().equals(request.getRelation())) {
+                if (RelationStateEnum.Concern.getCode().equals(relation.getState())) {
+                    //原来关注他，现在拉黑他，自己关注数量-1，对方粉丝数-1
+                    //原来关注他，现在不关注他，自己关注数量-1，对方粉丝数-1
+                    User user = new User();
+                    // 自己关注数-1
+                    user.setUserId(request.getCurrentUser().getUserId());
+                    user.setFollowCount(-1);
+                    userDao.updateCountColumn(user);
+                    //被关注用户粉丝数-1
+                    user = new User();
+                    user.setUserId(request.getUserId());
+                    user.setFansCount(-1);
+                    userDao.updateCountColumn(user);
+                }
+            }
+
+        }
+        if(RelationStateEnum.Concern.getCode().equals(request.getRelation())){
+            User user = new User();
+            // 自己关注数+1
+            user.setUserId(request.getCurrentUser().getUserId());
+            user.setFollowCount(1);
+            userDao.updateCountColumn(user);
+            //被关注用户粉丝数+1
+            user = new User();
+            user.setUserId(request.getUserId());
+            user.setFansCount(1);
+            userDao.updateCountColumn(user);
+        }
+        return true;
     }
 }

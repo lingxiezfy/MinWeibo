@@ -57,7 +57,18 @@ public interface IUserService {
      */
     String update(User updateUser);
 
+    /**
+     * [Create]
+     * Description: 用户信息
+     * <br/> Date: 2020/2/29 1:00
+     * <br/>
+     */
     UserView info(UserInfoRequest request);
 
+    /**
+     * 查找用户
+     */
     UserListResponse search(UserSearchRequest request);
+
+    Boolean relation(RelationUserRequest request);
 }

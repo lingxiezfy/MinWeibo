@@ -69,10 +69,13 @@
         </div>
         <div class="col-sm-7 col-xs-12 my_edit">
             <div class="row text-center inform">
-                <div class="col-sm-12 userSelf" id="userInfo">
+                <div class="col-sm-12 userSelf" >
                     <img class="userInfo face" src="img/icon.png">
                     <h4 style="font-weight: bold;"><span class="userInfo nickname">未登录</span>(<span
                             class="userInfo username">未登录</span>)</h4>
+                    <div id="userInfo">
+
+                    </div>
                 </div>
                 <div class="col-sm-12 my_inform">
                     <div class="col-sm-4 col-xs-4 user-Count-btn">
@@ -150,9 +153,39 @@
         console.log(id);
     }
 
-    // 关联用户（1,关注；2，拉黑；）
-    function toRelationUser(userId,relation){
-
+    // 关联用户（1,关注；2，取消关注；3：拉黑；4：取消拉黑）
+    function toRelationUser(userId,relationType){
+        console.log("关系"+relationType);
+        var relationCode = 0;
+        var desc;
+        switch (relationType) {
+            case 1:
+                relationCode = 1;
+                desc = "关注";
+                break;
+            case 3:
+                relationCode = 2;
+                desc = "拉黑";
+                break;
+            case 2:
+            case 4:
+                relationCode = 0;
+                desc = "取消";
+                break;
+            default:
+                toastr.error("错误的操作");
+                return;
+        }
+        relationUser(userId,relationCode,
+            function () {},
+            function () {
+                toastr.info(desc + "成功");
+                refreshUserInfo(false);
+            },
+            function (errorMessage) {
+                toastr.error(errorMessage);
+            }
+        );
     }
     // 发私信
     function toMessageUser(userId){
@@ -167,11 +200,13 @@
 
     }
     //加载用户信息
-    function refreshUserInfo(){
+    function refreshUserInfo(refreshList){
         loadUserInfo(getQueryVariable('userId'),
             function (userInfo) {
-                refreshWeiBoList();
-                $("#userInfo").attr("onclick","toUserIndex("+userInfo.userId+")");
+                if(refreshList){
+                    refreshWeiBoList();
+                }
+                $(".userInfo.face").attr("onclick","toUserIndex("+userInfo.userId+")");
                 $(".userInfo.nickname").html(userInfo.nickname);
                 $(".userInfo.username").html(userInfo.username);
                 $(".userInfo.weiboCount").html(userInfo.weiboCount);
@@ -187,11 +222,12 @@
                 }else {
                     $(".nonWeiBo .message").html("博主正深度潜水中...");
                     var concernBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",1)\" class=\"btn btn-default btn-xs\"><span class=\"glyphicon glyphicon-heart\" aria-hidden=\"true\">关注</span></button>";
-                    var cancelConcernBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",0)\" class=\"btn btn-warning btn-xs\"><span class=\"glyphicon glyphicon-heart-empty\" aria-hidden=\"true\">取消关注</span></button>\n";
-                    var blackListBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",2)\" class=\"btn btn-default btn-xs\"><span class=\"glyphicon glyphicon-plus\" aria-hidden=\"true\">加入黑名单</span></button>\n";
-                    var cancelBlackBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",0)\" class=\"btn btn-warning btn-xs\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\">移除黑名单</span></button>\n";
+                    var cancelConcernBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",2)\" class=\"btn btn-warning btn-xs\"><span class=\"glyphicon glyphicon-heart-empty\" aria-hidden=\"true\">取消关注</span></button>\n";
+                    var blackListBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",3)\" class=\"btn btn-default btn-xs\"><span class=\"glyphicon glyphicon-plus\" aria-hidden=\"true\">加入黑名单</span></button>\n";
+                    var cancelBlackBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",4)\" class=\"btn btn-warning btn-xs\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\">移除黑名单</span></button>\n";
                     var messageBtn = "<button type=\"button\" onclick=\"toMessageUser("+userInfo.userId+")\" class=\"btn btn-success btn-xs\"><span class=\"glyphicon glyphicon-comment\" aria-hidden=\"true\">私信</span></button>\n";
                     var div = "";
+                    $("#userInfo").empty();
                     if(userInfo.currentToThisRelation === 0){
                         $("#userInfo").append(concernBtn+blackListBtn);
                     }else if(userInfo.currentToThisRelation === 1){
@@ -268,7 +304,8 @@
 
     $(function () {
         //初始化页面
-        refreshUserInfo();
+        refreshUserInfo(true);
+
         $("#weiBoItem").empty();
         $(".loadingWeiBo").hide();
         $(".notAnyMoreWeiBo").hide();

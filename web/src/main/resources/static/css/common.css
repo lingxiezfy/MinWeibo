@@ -1,0 +1,10 @@
+.container_bg{
+    background: rgba(255, 255, 255, 0.5);
+    padding-bottom: 30px;
+    min-height: 100vh;
+}
+
+.message .user-face{
+    width: 45px;
+    height: 45px;
+}

@@ -53,7 +53,10 @@ public class UserController extends BaseApiController {
             response.setResult(UserView.convertFromUser(user));
             return response;
         }
-        return this.exec(userId,i->userService.info(i));
+        UserInfoRequest request = new UserInfoRequest();
+        request.setCurrentUser(user);
+        request.setTargetUserId(userId);
+        return this.exec(request,r->userService.info(r));
     }
 
     @PostMapping("update")

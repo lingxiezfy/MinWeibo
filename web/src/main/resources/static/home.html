@@ -10,7 +10,8 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/viewer.min.css" rel="stylesheet">
     <link href="css/toastr.min.css" rel="stylesheet">
-    <link href="css/index.css" rel="stylesheet" type="text/css">
+    <link href="css/common.css" rel="stylesheet">
+    <link href="css/home.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <nav class="navbar  navbar-fixed-top" role="navigation" style="background: #e0620d ;padding-top: 3px;height:50px;">
@@ -68,25 +69,10 @@
         </div>
         <div class="col-sm-7 col-xs-12 my_edit">
             <div class="row text-center inform">
-                <div class="col-sm-12 userSelf">
+                <div class="col-sm-12 userSelf" id="userInfo">
                     <img class="userInfo face" src="img/icon.png">
                     <h4 style="font-weight: bold;"><span class="userInfo nickname">未登录</span>(<span
                             class="userInfo username">未登录</span>)</h4>
-                    <button type="button" onclick="toRelationUser(0,1)" class="btn btn-default btn-xs">
-                        <span class="glyphicon glyphicon-heart" aria-hidden="true">关注</span>
-                    </button>
-                    <button type="button" onclick="toRelationUser(0,0)" class="btn btn-warning btn-xs">
-                        <span class="glyphicon glyphicon-heart-empty" aria-hidden="true">取消关注</span>
-                    </button>
-                    <button type="button" onclick="toRelationUser(0,2)" class="btn btn-default btn-xs">
-                        <span class="glyphicon glyphicon-plus" aria-hidden="true">加入黑名单</span>
-                    </button>
-                    <button type="button" onclick="toRelationUser(0,0)" class="btn btn-warning btn-xs">
-                        <span class="glyphicon glyphicon-minus" aria-hidden="true">移除黑名单</span>
-                    </button>
-                    <button type="button" onclick="toRelationUser(0,2)" class="btn btn-success btn-xs">
-                        <span class="glyphicon glyphicon-comment" aria-hidden="true">私信</span>
-                    </button>
                 </div>
                 <div class="col-sm-12 my_inform">
                     <div class="col-sm-4 col-xs-4 user-Count-btn">
@@ -109,6 +95,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="row nonWeiBo ">
                 <div class="col-sm-12 col-xs-12 message text-center">
                     快来发布第一条微博吧!
@@ -117,183 +104,6 @@
 
             <div class="row item_msg" id="weiBoItem">
                 <!-- 单条微博示例 -->
-                <div class="col-sm-12 col-xs-12 message">
-                    <div class="row">
-                        <img class="col-sm-2 col-xs-2 user-face" src="img/icon.png" style="border-radius: 50%">
-                        <div class="col-sm-10 col-xs-10">
-                            <div class="row">
-                                <div class="col-sm-2 col-xs-2">
-                                    <span style="font-weight: bold;">Jack.C</span>
-                                </div>
-                                <div class="col-sm-10 col-xs-10">
-                                    <div class="pull-right">
-                                        <button type="button" class="btn btn-default btn-xs">
-                                            <span class="glyphicon glyphicon-plus" aria-hidden="true">关注</span>
-                                        </button>
-                                        <button type="button" class="btn btn-default btn-xs" data-toggle="tooltip"
-                                                data-placement="bottom" title="删除">
-                                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                                        </button>
-                                        <button type="button" class="btn btn-default btn-xs" data-toggle="tooltip"
-                                                data-placement="bottom" title="编辑">
-                                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12 col-xs-12">
-                                    <small class="date" style="color:#999">1分钟前</small>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12 col-xs-12">
-                                    <div class="msg_content">happy day!</div>
-                                    <div class="msg_pic pic_view">
-                                        <table>
-                                            <tbody>
-                                            <tr>
-                                                <td>
-                                                    <img class="mypic" src="img/bg_1.jpg">
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12 col-xs-12">
-                            <div class="weibo_tools_list">
-                                <ul class="list-inline">
-                                    <li class=""><a class="first_item"><span
-                                            class="glyphicon glyphicon-star-empty"></span><em>收藏</em>(0)</a></li>
-                                    <li class=""><a><span
-                                            class="glyphicon glyphicon-share-alt"></span><em>转发</em>(0)</a></li>
-                                    <li class=""><a><span class="glyphicon glyphicon-comment"></span><em>评论</em>(0)</a>
-                                    </li>
-                                    <li class=""><a><span
-                                            class="glyphicon glyphicon-thumbs-up"></span><em>点赞</em>(0)</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- end - 单条微博示例 -->
-                <div class="row">
-                    <div class="col-sm-12 col-xs-12">
-                        <div class="collapse" id="collapseExample">
-                            <div class="well">
-                                ...
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- 单条微博示例 -->
-                <div class="col-sm-12 col-xs-12 message" id="weiBoItem0">
-                    <div class="row">
-                        <img class="col-sm-2 col-xs-2 user-face" src="img/icon.png" style="border-radius: 50%">
-                        <div class="col-sm-10 col-xs-10">
-                            <div class="row">
-                                <div class="col-sm-2 col-xs-2">
-                                    <span style="font-weight: bold;">Jack.C</span>
-                                </div>
-                                <div class="col-sm-10 col-xs-10">
-                                    <div class="pull-right">
-                                        <button type="button" onclick="toDeleteWeiBoById(0)" class="btn btn-default btn-xs" data-toggle="tooltip"
-                                                data-placement="bottom" title="删除">
-                                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                                        </button>
-                                        <button type="button" onclick="toEditWeiBoById(0)" class="btn btn-default btn-xs" data-toggle="tooltip"
-                                                data-placement="bottom" title="编辑">
-                                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12 col-xs-12">
-                                    <small class="date" style="color:#999">1分钟前</small>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12 col-xs-12">
-                                    <div class="msg_content">happy day!</div>
-                                    <div class="msg_pic pic_view">
-                                        <table>
-                                            <tbody>
-                                            <tr>
-                                                <td>
-                                                    <img class="mypic" src="img/bg_1.jpg">
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12 col-xs-12">
-                            <div class="row repost_weiBo">
-                                <div class="col-sm-2 col-xs-2">&nbsp;</div>
-                                <div class="col-sm-10 col-xs-10">
-                                    <div class="row">
-                                        <div class="col-sm-12 col-xs-12">
-                                            <div class="msg_author"><strong><a href="javascript:toUserindex(0)">@测试用户</a></strong></div>
-                                            <div class="msg_content">happy day!</div>
-                                            <div class="msg_pic pic_view">
-                                                <table>
-                                                    <tbody>
-                                                    <tr>
-                                                        <td>
-                                                            <img class="mypic" src="img/bg_1.jpg">
-                                                        </td>
-                                                    </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-12 col-xs-12">
-                                            <small class="date" style="color:#999">1分钟前</small>
-                                            <div class="pull-right repost_weiBo_tools">
-                                                <small class="date" style="color:#999"><a href="javascript:weiboCollect(0)" class="first_item"><span
-                                                        class="glyphicon glyphicon-star-empty"></span><em>收藏</em>(0)</a></small>
-                                                <small class="date" style="color:#999"><a href="javascript:openWeiboRePost(0)"><span
-                                                        class="glyphicon glyphicon-share-alt"></span><em>转发</em>(0)</a></small>
-                                                <small class="date" style="color:#999"><a href="javascript:openWeiboComment(0)"><span
-                                                        class="glyphicon glyphicon-comment"></span><em>评论</em>(0)</a></small>
-                                                <small class="date" style="color:#999"><a href="javascript:weiboLikes(0)"><span
-                                                        class="glyphicon glyphicon-thumbs-up"></span><em>点赞</em>(0)</a></small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12 col-xs-12">
-                            <div class="weibo_tools_list">
-                                <ul class="list-inline">
-                                    <li class=""><a href="javascript:weiboCollect(0)" class="first_item"><span
-                                            class="glyphicon glyphicon-star-empty"></span><em>收藏</em>(0)</a></li>
-                                    <li class=""><a href="javascript:openWeiboRePost(0)"><span
-                                            class="glyphicon glyphicon-share-alt"></span><em>转发</em>(0)</a></li>
-                                    <li class=""><a href="javascript:openWeiboComment(0)"><span
-                                            class="glyphicon glyphicon-comment"></span><em>评论</em>(0)</a></li>
-                                    <li class=""><a href="javascript:weiboLikes(0)"><span
-                                            class="glyphicon glyphicon-thumbs-up"></span><em>点赞</em>(0)</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <!-- end - 单条微博示例 -->
             </div>
 
@@ -336,8 +146,6 @@
     };
     // 图片预览插件
     $(".pic_view").viewer();
-    // 按钮提示插件
-    $('[data-toggle="tooltip"]').tooltip();
     $(function () {
         sendDisabled();
         $("#content").keyup(function () {
@@ -456,6 +264,10 @@
     function toRelationUser(userId,relation){
 
     }
+    // 发私信
+    function toMessageUser(userId){
+
+    }
     // 删除微博
     function toDeleteWeiBoById(weiBoId){
 
@@ -465,43 +277,17 @@
 
     }
     // 去用户主页
-    function toUserindex(userId){
-
+    function toUserIndex(userId){
+        toPage('home.html?userId='+userId)
     }
-    //添加一条微博
-    function addOneWeiBo(data) {
-        var div = "<div class=\"col-sm-12 col-xs-12 message\">\n" +
-            "<img class=\"col-sm-2 col-xs-2\" src=\"img/icon.png\" style=\"border-radius: 50%\">\n" +
-            "<div class=\"col-sm-10 col-xs-10\">\n" +
-            "<span style=\"font-weight: bold;\">Jack.C</span>\n<br>\n" +
-            "<small class=\"date\" style=\"color:#999\">刚刚</small>\n";
-        div += "<div class=\"msg_content\">" + data.content + "</div>\n";
-        if (data.pic && data.pic.length > 0) {
-            div += "<div class=\"msg_pic pic_view\"><table>";
-            var rowCount = 0;
-            for (var i = 1; i <= data.pic.length; i++) {
-                if (rowCount === 0) {
-                    div += "<tr>";
-                }
-                div += "<td><img class=\"mypic\" src=\"upload/" + data.pic[i - 1] + "\"></td>\n";
-                rowCount++;
-                if (rowCount === 3) {
-                    div += "</tr>"
-                    rowCount = 0;
-                }
-            }
-            div += "</table></div>";
-        }
-        div += "</div></div>";
-        $("#weiBoItem").append(div);
-        $(".msg_pic").viewer();
-    };
 
     //页面初始化
     //加载用户信息
     function refreshUserInfo(){
         loadUserInfo(getQueryVariable('userId'),
             function (userInfo) {
+                refreshWeiBoList();
+                $("#userInfo").attr("onclick","toUserIndex("+userInfo.userId+")");
                 $(".userInfo.nickname").html(userInfo.nickname);
                 $(".userInfo.username").html(userInfo.username);
                 $(".userInfo.weiboCount").html(userInfo.weiboCount);
@@ -512,11 +298,32 @@
                 } else {
                     $(".userInfo.face").attr("src", "img/icon.png");
                 }
+                if(userInfo.userId === parseInt(handleLocalStorage("get",userIdStorageKey))){
+                    toastr.info("欢迎回家");
+                }else {
+                    $(".nonWeiBo .message").html("博主正深度潜水中...");
+                    var concernBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",1)\" class=\"btn btn-default btn-xs\"><span class=\"glyphicon glyphicon-heart\" aria-hidden=\"true\">关注</span></button>";
+                    var cancelConcernBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",0)\" class=\"btn btn-warning btn-xs\"><span class=\"glyphicon glyphicon-heart-empty\" aria-hidden=\"true\">取消关注</span></button>\n";
+                    var blackListBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",2)\" class=\"btn btn-default btn-xs\"><span class=\"glyphicon glyphicon-plus\" aria-hidden=\"true\">加入黑名单</span></button>\n";
+                    var cancelBlackBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",0)\" class=\"btn btn-warning btn-xs\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\">移除黑名单</span></button>\n";
+                    var messageBtn = "<button type=\"button\" onclick=\"toMessageUser("+userInfo.userId+")\" class=\"btn btn-success btn-xs\"><span class=\"glyphicon glyphicon-comment\" aria-hidden=\"true\">私信</span></button>\n";
+                    var div = "";
+                    if(userInfo.currentToThisRelation === 0){
+                        $("#userInfo").append(concernBtn+blackListBtn);
+                    }else if(userInfo.currentToThisRelation === 1){
+                        $("#userInfo").append(cancelConcernBtn+blackListBtn);
+                    }else if(userInfo.currentToThisRelation === 2){
+                        $("#userInfo").append(cancelBlackBtn);
+                    }
+                    // 被拉黑
+                    if(!(userInfo.thisToCurrentRelation === 2)){
+                        $("#userInfo").append(messageBtn);
+                    }
+                }
             }
             , function (errorMessage) {
                 toastr.error(errorMessage);
             }
-            , 100
         );
     }
 
@@ -526,7 +333,7 @@
     let haveMoreData = true;
     function refreshWeiBoList(){
         $(".nonWeiBo").hide();
-        // $("#weiBoItem").empty();
+        $("#weiBoItem").empty();
         $(".loadingWeiBo").hide();
         $(".notAnyMoreWeiBo").hide();
         nowPage = 1;
@@ -571,7 +378,6 @@
         );
     }
     refreshUserInfo();
-    refreshWeiBoList();
     //滚动加载
 
     $(document).scroll(function() {
@@ -579,17 +385,13 @@
         var viewH = $(window).height();  //可见高度
         var contentH = $(document).height();  //内容高度
 
-        if (contentH - (scroH + viewH) <= 100){  //距离底部高度小于100px
+        if (contentH - (scroH + viewH) <= 80){  //距离底部高度小于80px
             loadOnePageWeiBo();
         }
 
     });
-
-
-
-    // swal("Good job!", "You clicked the button!", "success");
 </script>
-<div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei';">
+<div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei'; height: 120px;">
     <p>MINI微社区-版权所有。&copy; 2020-2030</p>
 </div>
 </body>

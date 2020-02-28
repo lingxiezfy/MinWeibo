@@ -1,98 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fy.real.min.weibo.dao.dao.RelationDao">
-  <resultMap id="BaseResultMap" type="com.fy.real.min.weibo.model.entity.Relation">
-    <id column="relation_id" jdbcType="INTEGER" property="relationId" />
-    <result column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="follow_user_id" jdbcType="INTEGER" property="followUserId" />
-    <result column="state" jdbcType="INTEGER" property="state" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    relation_id, user_id, follow_user_id, `state`, create_time, update_time
-  </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from relation
-    where relation_id = #{relationId,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from relation
-    where relation_id = #{relationId,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" keyColumn="relation_id" keyProperty="relationId" parameterType="com.fy.real.min.weibo.model.entity.Relation" useGeneratedKeys="true">
-    insert into relation (user_id, follow_user_id, `state`, 
-      create_time, update_time)
-    values (#{userId,jdbcType=INTEGER}, #{followUserId,jdbcType=INTEGER}, #{state,jdbcType=INTEGER}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
-  </insert>
-  <insert id="insertSelective" keyColumn="relation_id" keyProperty="relationId" parameterType="com.fy.real.min.weibo.model.entity.Relation" useGeneratedKeys="true">
-    insert into relation
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        user_id,
-      </if>
-      <if test="followUserId != null">
-        follow_user_id,
-      </if>
-      <if test="state != null">
-        `state`,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="followUserId != null">
-        #{followUserId,jdbcType=INTEGER},
-      </if>
-      <if test="state != null">
-        #{state,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fy.real.min.weibo.model.entity.Relation">
-    update relation
-    <set>
-      <if test="userId != null">
-        user_id = #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="followUserId != null">
-        follow_user_id = #{followUserId,jdbcType=INTEGER},
-      </if>
-      <if test="state != null">
-        `state` = #{state,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where relation_id = #{relationId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.fy.real.min.weibo.model.entity.Relation">
-    update relation
-    set user_id = #{userId,jdbcType=INTEGER},
-      follow_user_id = #{followUserId,jdbcType=INTEGER},
-      `state` = #{state,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
-    where relation_id = #{relationId,jdbcType=INTEGER}
-  </update>
+    <resultMap id="BaseResultMap" type="com.fy.real.min.weibo.model.entity.Relation">
+        <id column="relation_id" jdbcType="INTEGER" property="relationId"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="follow_user_id" jdbcType="INTEGER" property="followUserId"/>
+        <result column="state" jdbcType="INTEGER" property="state"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        relation_id, user_id, follow_user_id, `state`, create_time, update_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from relation
+        where relation_id = #{relationId,jdbcType=INTEGER}
+    </select>
+    <select id="queryUserRelation" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from relation
+        where (user_id = #{userId} and follow_user_id = #{followUserId})
+            or  (user_id = #{followUserId} and follow_user_id = #{userId})
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from relation
+        where relation_id = #{relationId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" keyColumn="relation_id" keyProperty="relationId"
+            parameterType="com.fy.real.min.weibo.model.entity.Relation" useGeneratedKeys="true">
+        insert into relation (user_id, follow_user_id, `state`,
+                              create_time, update_time)
+        values (#{userId,jdbcType=INTEGER}, #{followUserId,jdbcType=INTEGER}, #{state,jdbcType=INTEGER},
+                #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" keyColumn="relation_id" keyProperty="relationId"
+            parameterType="com.fy.real.min.weibo.model.entity.Relation" useGeneratedKeys="true">
+        insert into relation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="followUserId != null">
+                follow_user_id,
+            </if>
+            <if test="state != null">
+                `state`,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="followUserId != null">
+                #{followUserId,jdbcType=INTEGER},
+            </if>
+            <if test="state != null">
+                #{state,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.fy.real.min.weibo.model.entity.Relation">
+        update relation
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="followUserId != null">
+                follow_user_id = #{followUserId,jdbcType=INTEGER},
+            </if>
+            <if test="state != null">
+                `state` = #{state,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where relation_id = #{relationId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.fy.real.min.weibo.model.entity.Relation">
+        update relation
+        set user_id        = #{userId,jdbcType=INTEGER},
+            follow_user_id = #{followUserId,jdbcType=INTEGER},
+            `state`        = #{state,jdbcType=INTEGER},
+            create_time    = #{createTime,jdbcType=TIMESTAMP},
+            update_time    = #{updateTime,jdbcType=TIMESTAMP}
+        where relation_id = #{relationId,jdbcType=INTEGER}
+    </update>
 </mapper>

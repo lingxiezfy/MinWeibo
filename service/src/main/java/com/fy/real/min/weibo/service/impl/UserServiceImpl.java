@@ -1,6 +1,8 @@
 package com.fy.real.min.weibo.service.impl;
 
+import com.fy.real.min.weibo.dao.dao.RelationDao;
 import com.fy.real.min.weibo.dao.dao.UserDao;
+import com.fy.real.min.weibo.model.entity.Relation;
 import com.fy.real.min.weibo.model.entity.User;
 import com.fy.real.min.weibo.model.exception.WeiBoException;
 import com.fy.real.min.weibo.model.user.*;
@@ -29,6 +31,8 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements IUserService {
     @Autowired
     UserDao userDao;
+    @Autowired
+    RelationDao relationDao;
 
     @Autowired
     IAuthAble authAble;
@@ -90,12 +94,31 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public UserView info(Integer userId) {
-        User user = userDao.selectByPrimaryKey(userId);
+    public UserView info(UserInfoRequest request) {
+        User user = userDao.selectByPrimaryKey(request.getTargetUserId());
         if(user == null){
             throw  new WeiBoException("用户不存在");
         }
-        return UserView.convertFromUser(user);
+        UserView userView = UserView.convertFromUser(user);
+        List<Relation> relations = relationDao.queryUserRelation(request.getCurrentUser().getUserId(),request.getTargetUserId());
+        if(relations.size() == 1){
+            Relation relation = relations.get(0);
+            if (request.getCurrentUser().getUserId().equals(relation.getUserId())) {
+                userView.setCurrentToThisRelation(relation.getState());
+            }else {
+                userView.setThisToCurrentRelation(relation.getState());
+            }
+        }else if(relations.size() == 2){
+            Relation relation = relations.get(0);
+            if (request.getCurrentUser().getUserId().equals(relation.getUserId())) {
+                userView.setCurrentToThisRelation(relation.getState());
+                userView.setThisToCurrentRelation(relations.get(1).getState());
+            }else {
+                userView.setCurrentToThisRelation(relations.get(1).getState());
+                userView.setThisToCurrentRelation(relation.getState());
+            }
+        }
+        return userView;
     }
 
     @Override

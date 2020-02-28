@@ -9,9 +9,9 @@ import com.fy.real.min.weibo.model.exception.WeiBoException;
 import com.fy.real.min.weibo.model.user.UserView;
 import com.fy.real.min.weibo.model.weibo.*;
 import com.fy.real.min.weibo.service.IWeiBoService;
-import com.fy.real.min.weibo.util.utils.ValidatorUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -125,7 +125,7 @@ public class WeiBoServiceImpl implements IWeiBoService {
             if(author == null) return;
             viewItem.setAuthor(UserView.convertFromUser(author));
             if(viewItem.getRepostId() > 0){
-                Optional<Weibo> optional = rePostWeiBoList.stream().filter(w->w.getRepostId().equals(viewItem.getRepostId())).findFirst();
+                Optional<Weibo> optional = rePostWeiBoList.stream().filter(w->w.getWeiboId().equals(viewItem.getRepostId()) && w.getUseful() == 1).findFirst();
                 Weibo originWeiBo = optional.orElse(null);
                 if(originWeiBo != null){
                     viewItem.setRepostWeiBo(WeiBoViewItem.covertFromWeiBo(originWeiBo));
@@ -145,10 +145,17 @@ public class WeiBoServiceImpl implements IWeiBoService {
 
     @Override
     public WeiBoListResponse search(WeiBoSearchRequest request) {
-        ValidatorUtil.validate(request);
         WeiBoListResponse response = new WeiBoListResponse();
         Page page = PageHelper.startPage(request.getPageIndex(),request.getPageSize());
-        List<Weibo> weiBoList = weiboDao.queryByContent(request.getQuery());
+        Weibo searchWeiBo = new Weibo();
+        if(StringUtils.isNotBlank(request.getQuery())){
+            searchWeiBo.setContent(request.getQuery());
+        }
+        if(StringUtils.isNotBlank(request.getTopic())){
+            searchWeiBo.setTopic(request.getTopic());
+        }
+        searchWeiBo.setUseful(1);
+        List<Weibo> weiBoList = weiboDao.query(searchWeiBo);
         if(weiBoList.size() >0){
             response.setPageIndex(page.getPageNum());
             response.setTotalCount(page.getTotal());

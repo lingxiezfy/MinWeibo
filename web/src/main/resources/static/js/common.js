@@ -167,12 +167,16 @@ function loadAllWeiBoList(pageIndex, beforeLoad, afterLoad, ifError, timeOut) {
 
     postWithToken(weiboListUrl, JSON.stringify(obj), beforeLoad, afterLoad, ifError, timeOut)
 }
-function searchWeiBoList(query,pageIndex, beforeLoad, afterLoad, ifError, timeOut) {
+function searchWeiBoList(query,searchType,pageIndex, beforeLoad, afterLoad, ifError, timeOut) {
     var obj = {};
     obj["pageIndex"] = pageIndex;
     // 一次加载5条
     obj["pageSize"] = 5;
-    obj["query"] = query;
+    if(query && searchType && searchType === '2'){
+        obj["query"] = query;
+    }else if(searchType){
+        obj["topic"] = query;
+    }
 
     postWithToken(searchWeiBoUrl, JSON.stringify(obj), beforeLoad, afterLoad, ifError, timeOut)
 }
@@ -196,10 +200,10 @@ function toSearchWeiBo(){
 }
 
 function toSecondhand(){
-    toPage("search.html?query="+encodeURIComponent("#二手交易#")+"&searchType=3")
+    toPage("search.html?query="+encodeURIComponent("二手交易")+"&searchType=3")
 }
 function toFunnyChat(){
-    toPage("search.html?query="+encodeURIComponent("#趣味讨论#")+"&searchType=4")
+    toPage("search.html?query="+encodeURIComponent("趣味讨论")+"&searchType=4")
 }
 
 // 根据Id删除一条微博
@@ -353,3 +357,121 @@ function toPage(url, message, timeOut) {
         window.location.href = url
     }, timeOut);
 }
+
+//添加一条微博
+function addOneWeiBo(data) {
+    var div = '<div class="col-sm-12 col-xs-12 message" id="weiBoItem'+data.weiboId+'">' +
+        '<div class="row">';
+    div += '<div class="col-md-1 col-sm-2 col-xs-12">\n' +
+        '<a href="javascript:toUserIndex('+data.author.userId+')"><img class="user-face" src="';
+    div += data.author.face ? "upload/"+data.author.face : "img/icon.png";
+    div +='" style="border-radius: 50%"></a>\n' +
+        '</div>\n' +
+        '<div class="col-md-11 col-sm-10 col-xs-12">' +
+        '<div class="row">\n' +
+        '<div class="col-sm-6 col-xs-6"><span style="font-weight: bold;">'+data.author.nickname+'</span></div>';
+    if(data.author.userId === parseInt(handleLocalStorage("get",userIdStorageKey))){
+        div +=  '<div class="col-sm-6 col-xs-6">\n' +
+            '<div class="pull-right">\n' +
+            '<button type="button" onclick="toDeleteWeiBoById('+data.weiboId+')" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="删除">\n' +
+            '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>\n' +
+            '<button type="button" onclick="toEditWeiBoById('+data.weiboId+')" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="编辑">\n' +
+            '<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>\n' +
+            '</div>'+
+            '</div>';
+    }
+    div += '</div>\n' +
+        '<div class="row">\n' +
+        '<div class="col-sm-12 col-xs-12"><small class="date" style="color:#999">'+data.postTime+'</small></div>\n' +
+        '</div>\n' +
+        '<div class="row">\n' +
+        '<div class="col-sm-12 col-xs-12">\n' +
+        '<div class="msg_content">'+data.content+'</div>';
+    if (data.pic && data.pic.length > 0) {
+        div += "<div class=\"msg_pic pic_view\"><table><tbody>";
+        var rowCount = 0;
+        for (var i = 1; i <= data.pic.length; i++) {
+            if (rowCount === 0) {
+                div += "<tr>";
+            }
+            div += "<td><img class=\"mypic\" src=\"upload/" + data.pic[i - 1] + "\"></td>\n";
+            rowCount++;
+            if (rowCount === 3) {
+                div += "</tr>"
+                rowCount = 0;
+            }
+        }
+        div += "</tbody></table></div>";
+    }
+    div += '</div>\n' +
+        '</div>\n' +
+        '</div>' +
+        '</div>';
+    //转发体
+    if(!data.original){
+        div+='<div class="row repost_weiBo">\n' +
+            '<div class="col-md-1 col-sm-2 col-xs-12"></div>\n' +
+            '<div class="col-md-11 col-sm-10 col-xs-12">\n' +
+                '<div class="row">\n' +
+                    '<div class="col-sm-12 col-xs-12">';
+                    if(data.repostWeiBo){
+                        div += '<div class="msg_author"><strong><a href="javascript:toUserIndex('+data.repostWeiBo.author.userId+')">@'+data.repostWeiBo.author.nickname+'</a></strong></div>\n' +
+                        '<div class="msg_content">'+data.repostWeiBo.content+'</div>';
+                        if (data.repostWeiBo.pic && data.repostWeiBo.pic.length > 0) {
+                        div += "<div class=\"msg_pic pic_view\"><table><tbody>";
+                        var rowCount = 0;
+                        for (var i = 1; i <= data.repostWeiBo.pic.length; i++) {
+                            if (rowCount === 0) {
+                                div += "<tr>";
+                            }
+                            div += "<td><img class=\"mypic\" src=\"upload/" + data.repostWeiBo.pic[i - 1] + "\"></td>\n";
+                            rowCount++;
+                            if (rowCount === 3) {
+                                div += "</tr>"
+                                rowCount = 0;
+                            }
+                        }
+                        div += "</tbody></table></div>";
+                    }
+                    div += '</div>\n' +
+                '</div>\n' +
+                '<div class="row">\n' +
+                    '<div class="col-sm-12 col-xs-12">\n' +
+                        '<small class="date" style="color:#999">'+data.repostWeiBo.postTime+'</small>\n' +
+                        '<div class="pull-right repost_weiBo_tools">\n' +
+                            '<small class="date" style="color:#999"><a href="javascript:weiboCollect('+data.repostWeiBo.weiboId+')" class="first_item"><span class="glyphicon glyphicon-star-empty"></span><em>收藏</em>('+data.repostWeiBo.collectCount+')</a></small>' +
+                            '<small class="date" style="color:#999"><a href="javascript:openWeiboRePost('+data.repostWeiBo.weiboId+')"><span class="glyphicon glyphicon-share-alt"></span><em>转发</em>('+data.repostWeiBo.repostCount+')</a></small>\n' +
+                            '<small class="date" style="color:#999"><a href="javascript:openWeiboComment('+data.repostWeiBo.weiboId+')"><span class="glyphicon glyphicon-comment"></span><em>评论</em>('+data.repostWeiBo.commentCount+')</a></small>\n' +
+                            '<small class="date" style="color:#999"><a href="javascript:weiboLikes('+data.repostWeiBo.weiboId+')"><span class="glyphicon glyphicon-thumbs-up"></span><em>点赞</em>('+data.repostWeiBo.likesCount+')</a></small>\n' +
+                        '</div>';
+                    }else {
+                        div += '<p class="text-center"><h1></h1>抱歉，此微博已被作者删除。</p>';
+                    }
+                    div += '</div>'+
+                '</div>\n' +
+            '</div>\n' +
+        '</div>';
+    }
+    //工具条
+    div += '<div class="row">\n' +
+        '                        <div class="col-sm-12 col-xs-12">\n' +
+        '                            <div class="weibo_tools_list">\n' +
+        '                                <ul class="list-inline">\n' +
+        '                                    <li class=""><a href="javascript:weiboCollect('+data.weiboId+')" class="first_item"><span\n' +
+        '                                            class="glyphicon glyphicon-star-empty"></span><em>收藏</em>('+data.collectCount+')</a></li>\n' +
+        '                                    <li class=""><a href="javascript:openWeiboRePost('+data.weiboId+')"><span\n' +
+        '                                            class="glyphicon glyphicon-share-alt"></span><em>转发</em>('+data.collectCount+')</a></li>\n' +
+        '                                    <li class=""><a href="javascript:openWeiboComment('+data.weiboId+')"><span\n' +
+        '                                            class="glyphicon glyphicon-comment"></span><em>评论</em>('+data.collectCount+')</a></li>\n' +
+        '                                    <li class=""><a href="javascript:weiboLikes('+data.weiboId+')"><span\n' +
+        '                                            class="glyphicon glyphicon-thumbs-up"></span><em>点赞</em>('+data.collectCount+')</a></li>\n' +
+        '                                </ul>\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '                    </div>';
+    div += '</div>';
+    $("#weiBoItem").append(div);
+    $(".msg_pic").viewer();
+    // 按钮提示插件
+    $('[data-toggle="tooltip"]').tooltip();
+};

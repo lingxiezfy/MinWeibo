@@ -62,6 +62,13 @@ public class UserView implements Serializable {
      */
     private Integer fansCount;
 
+    /**
+     * 和当前登录用户的关系（0：本人或陌生，1：关注，2：拉黑）
+     */
+    private int currentToThisRelation = 0;
+
+    private int thisToCurrentRelation = 0;
+
     public static UserView convertFromUser(User user){
         if(user == null) return new UserView();
         return JSON.parseObject(JSON.toJSONString(user),UserView.class);

@@ -57,7 +57,7 @@ public interface IUserService {
      */
     String update(User updateUser);
 
-    UserView info(Integer userId);
+    UserView info(UserInfoRequest request);
 
     UserListResponse search(UserSearchRequest request);
 }

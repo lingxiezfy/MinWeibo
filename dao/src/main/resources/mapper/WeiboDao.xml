@@ -49,18 +49,31 @@
         from weibo
         where useful = 1
     </select>
-    <select id="queryByContent" resultMap="BaseResultMap">
-      select
-      <include refid="Base_Column_List"/>
-      from weibo
-      where content like "%"#{content}"%"
-    </select>
 
-    <select id="queryByTopic" resultMap="BaseResultMap">
-      select
-      <include refid="Base_Column_List"/>
-      from weibo
-      where topic like "%"#{topic}"%"
+    <select id="query" parameterType="com.fy.real.min.weibo.model.entity.Weibo" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from weibo
+        <where>
+            <if test="userId != null">
+                user_id = #{userId} and
+            </if>
+            <if test="content != null">
+                content like "%"#{content}"%" and
+            </if>
+            <if test="topic != null">
+                topic like "%"#{topic}"%" and
+            </if>
+            <if test="original != null">
+                original = #{original} and
+            </if>
+            <if test="repostId != null">
+                repost_id = #{repostId} and
+            </if>
+            <if test="useful != null">
+                useful = #{useful}
+            </if>
+        </where>
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete

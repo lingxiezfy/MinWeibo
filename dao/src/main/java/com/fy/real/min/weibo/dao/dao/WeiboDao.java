@@ -24,7 +24,5 @@ public interface WeiboDao {
 
     List<Weibo> selectUseful();
 
-    List<Weibo> queryByContent(@Param("content") String content);
-
-    List<Weibo> queryByTopic(@Param("topic") String topic);
+    List<Weibo> query(Weibo searchWeiBo);
 }

@@ -205,6 +205,10 @@ function toSecondhand(){
 function toFunnyChat(){
     toPage("search.html?query="+encodeURIComponent("趣味讨论")+"&searchType=4")
 }
+// 去用户主页
+function toUserIndex(userId){
+    toPage('home.html?userId='+userId)
+}
 
 // 根据Id删除一条微博
 function deleteWeiBoById(weiBoId,before,after,error) {

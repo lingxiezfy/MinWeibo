@@ -185,12 +185,140 @@
             var div = "<div style='float:left;margin-left: 10px;'> <img id='img" + i + "' width='80px' height='80px' src='" + window.URL.createObjectURL(Fs.files[i]) + "'/> </div>"
             $("#imagePreview").append(div);
         }
-    };
-    // 图片预览插件
-    $(".pic_view").viewer();
-    // 按钮提示插件
-    $('[data-toggle="tooltip"]').tooltip();
+    }
+
+    //禁用发布按钮
+    function sendDisabled() {
+        $("#send").addClass("disabled");
+        $("#send").attr("disabled", "disabled");
+    }
+
+    //启用发布按钮
+    function sendOpen() {
+        $("#send").removeClass("disabled");
+        $("#send").removeAttr("disabled");
+    }
+
+    //打开评论界面
+    function openWeiboComment(id) {
+        console.log(id);
+    }
+
+    //点赞
+    function weiboLikes(id) {
+        console.log(id);
+    }
+
+    //收藏
+    function weiboCollect(id) {
+        console.log(id);
+    }
+
+    //打开转发界面
+    function openWeiboRePost(id) {
+        console.log(id);
+    }
+
+    // 关联用户（1,关注；2，拉黑；）
+    function toRelationUser(userId,relation){
+
+    }
+    // 删除微博
+    function toDeleteWeiBoById(weiBoId){
+
+    }
+    // 编辑微博
+    function toEditWeiBoById(weiBoId){
+
+    }
+    // 去用户主页
+    function toUserIndex(userId){
+
+    }
+    //加载用户信息
+    function refreshUserInfo(){
+        loadUserInfo(null,
+            function (userInfo) {
+                //加载用户之后，加载微博列表
+                refreshWeiBoList();
+                $(".userInfo.nickname").html(userInfo.nickname);
+                $(".userInfo.username").html(userInfo.username);
+                $(".userInfo.weiboCount").html(userInfo.weiboCount);
+                $(".userInfo.followCount").html(userInfo.followCount);
+                $(".userInfo.fansCount").html(userInfo.fansCount);
+                if (userInfo.face && userInfo.face.length > 0) {
+                    $(".userInfo.face").attr("src", "upload/" + userInfo.face);
+                } else {
+                    $(".userInfo.face").attr("src", "img/icon.png");
+                }
+            }
+            , function (errorMessage) {
+                toastr.error(errorMessage);
+            }
+        );
+    }
+    //加载用户微博列表
+    let nowPage = 1;
+    let isLoading = false;
+    let haveMoreData = true;
+    function refreshWeiBoList(){
+        $(".nonWeiBo").hide();
+        $("#weiBoItem").empty();
+        $(".loadingWeiBo").hide();
+        $(".notAnyMoreWeiBo").hide();
+        nowPage = 1;
+        isLoading = false;
+        haveMoreData = true;
+        loadOnePageWeiBo();
+    }
+
+    //分页加载微博
+    function  loadOnePageWeiBo() {
+        loadAllWeiBoList(nowPage
+            , function () {
+                if(isLoading || !haveMoreData) return false;
+                $(".nonWeiBo").hide();
+                $(".loadingWeiBo").show();
+                isLoading = true;
+            }, function (response) {
+                console.log(response);
+
+                $(".loadingWeiBo").hide();
+                if(response.totalCount === 0){
+                    $(".nonWeiBo").show();
+                    haveMoreData = false;
+                    return;
+                }
+                if(response.list && response.list.length > 0){
+                    for (var weiBo of response.list) {
+                        addOneWeiBo(weiBo);
+                    }
+                    if(response.pageIndex < response.totalPage){
+                        nowPage = nowPage+1;
+                    }
+                }
+                //没有更多数据了
+                if(response.pageIndex >= response.totalPage){
+                    $(".notAnyMoreWeiBo").show();
+                    haveMoreData = false;
+                }
+                isLoading = false;
+            }, function (errorMessage) {
+                toastr.error(errorMessage);
+                $(".loadingWeiBo").hide();
+                if(!$("#weiBoItem").html()){
+                    $(".nonWeiBo").show();
+                }
+                isLoading = false;
+            }
+        );
+    }
+
     $(function () {
+        // 图片预览插件
+        $(".pic_view").viewer();
+        // 按钮提示插件
+        $('[data-toggle="tooltip"]').tooltip();
         sendDisabled();
         $("#content").keyup(function () {
             //判断输入的字符串长度
@@ -207,18 +335,6 @@
         $(".post_pic").click(function () {
             $(".select_Img").click();
         });
-
-        //禁用发布按钮
-        function sendDisabled() {
-            $("#send").addClass("disabled");
-            $("#send").attr("disabled", "disabled");
-        }
-
-        //启用发布按钮
-        function sendOpen() {
-            $("#send").removeClass("disabled");
-            $("#send").removeAttr("disabled");
-        }
 
         //点击按钮发送内容
         $("#send").click(function () {
@@ -282,131 +398,26 @@
                 $(".myEmoji").hide();
             })
         });
-    });
 
-    //打开评论界面
-    function openWeiboComment(id) {
-        console.log(id);
-    }
-
-    //点赞
-    function weiboLikes(id) {
-        console.log(id);
-    }
-
-    //收藏
-    function weiboCollect(id) {
-        console.log(id);
-    }
-
-    //打开转发界面
-    function openWeiboRePost(id) {
-        console.log(id);
-    }
-
-    // 关联用户（1,关注；2，拉黑；）
-    function toRelationUser(userId,relation){
-
-    }
-    // 删除微博
-    function toDeleteWeiBoById(weiBoId){
-
-    }
-    // 编辑微博
-    function toEditWeiBoById(weiBoId){
-
-    }
-    // 去用户主页
-    function toUserIndex(userId){
-
-    }
-
-    //页面初始化
-    //加载用户信息
-    function refreshUserInfo(){
-        loadUserInfo(null,
-            function (userInfo) {
-                refreshWeiBoList();
-                $(".userInfo.nickname").html(userInfo.nickname);
-                $(".userInfo.username").html(userInfo.username);
-                $(".userInfo.weiboCount").html(userInfo.weiboCount);
-                $(".userInfo.followCount").html(userInfo.followCount);
-                $(".userInfo.fansCount").html(userInfo.fansCount);
-                if (userInfo.face && userInfo.face.length > 0) {
-                    $(".userInfo.face").attr("src", "upload/" + userInfo.face);
-                } else {
-                    $(".userInfo.face").attr("src", "img/icon.png");
-                }
-            }
-            , function (errorMessage) {
-                toastr.error(errorMessage);
-            }
-        );
-    }
-
-    //加载用户微博列表
-    let nowPage = 1;
-    let isLoading = false;
-    let haveMoreData = true;
-    function refreshWeiBoList(){
-        $(".nonWeiBo").hide();
+        // 初始化页面信息
+        refreshUserInfo();
         $("#weiBoItem").empty();
         $(".loadingWeiBo").hide();
         $(".notAnyMoreWeiBo").hide();
-        nowPage = 1;
-        isLoading = false;
-        haveMoreData = true;
-        loadOnePageWeiBo();
-    }
-    function  loadOnePageWeiBo() {
-        loadAllWeiBoList(nowPage
-            , function () {
-                if(isLoading || !haveMoreData) return false;
-                $(".loadingWeiBo").show();
-                isLoading = true;
-            }, function (response) {
-                console.log(response);
+        //滚动加载
+        $(document).scroll(function() {
+            var scroH = $(document).scrollTop();  //滚动高度
+            var viewH = $(window).height();  //可见高度
+            var contentH = $(document).height();  //内容高度
 
-                $(".loadingWeiBo").hide();
-                if(response.totalCount === 0){
-                    $(".nonWeiBo").show();
-                    haveMoreData = false;
-                    return;
-                }
-                if(response.list && response.list.length > 0){
-                    for (var weiBo of response.list) {
-                        addOneWeiBo(weiBo);
-                    }
-                    if(response.pageIndex < response.totalPage){
-                        nowPage = nowPage+1;
-                    }
-                }
-                //没有更多数据了
-                if(response.pageIndex >= response.totalPage){
-                    $(".notAnyMoreWeiBo").show();
-                    haveMoreData = false;
-                }
-                isLoading = false;
-            }, function (errorMessage) {
-                toastr.error(errorMessage);
-                $(".loadingWeiBo").hide();
-                isLoading = false;
+            if (contentH - (scroH + viewH) <= 80){  //距离底部高度小于80px
+                loadOnePageWeiBo();
             }
-        );
-    }
-    refreshUserInfo();
-    //滚动加载
 
-    $(document).scroll(function() {
-        var scroH = $(document).scrollTop();  //滚动高度
-        var viewH = $(window).height();  //可见高度
-        var contentH = $(document).height();  //内容高度
-
-        if (contentH - (scroH + viewH) <= 80){  //距离底部高度小于80px
-            loadOnePageWeiBo();
-        }
-
+        });
     });
+
+
 </script>
 <div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei'; height: 120px;">
     <p>MINI微社区-版权所有。&copy; 2020-2030</p>

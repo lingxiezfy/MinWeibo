@@ -13,6 +13,7 @@ import com.fy.real.min.weibo.model.exception.WeiBoException;
 import com.fy.real.min.weibo.model.user.UserView;
 import com.fy.real.min.weibo.model.weibo.*;
 import com.fy.real.min.weibo.service.IWeiBoService;
+import com.fy.real.min.weibo.util.utils.ValidatorUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -67,6 +68,45 @@ public class WeiBoServiceImpl implements IWeiBoService {
         return Boolean.TRUE;
     }
     //endregion 发布微博
+
+
+    @Override
+    public Boolean rePost(RePostWeiboRequest request) {
+        ValidatorUtil.validate(request);
+        Weibo originWeiBo = weiboDao.selectByPrimaryKey(request.getWeiBoId());
+        if(originWeiBo == null){
+            throw new WeiBoException("微博不存在");
+        }
+        Weibo weibo = new Weibo();
+        weibo.setUserId(request.getCurrentUser().getUserId());
+        if(StringUtils.isBlank(request.getContent())){
+            request.setContent("转发了");
+        }else {
+            Matcher hotMatcher = WeiBoServiceImpl.HOT_PATTERN.matcher(request.getContent());
+            StringBuilder topicBuild = new StringBuilder();
+            while (hotMatcher.find()){
+                topicBuild.append(hotMatcher.group(1)).append(";");
+            }
+            if(topicBuild.length() > 0){
+                weibo.setTopic(topicBuild.toString());
+            }
+        }
+        weibo.setContent(request.getContent());
+        weibo.setOriginal(0);
+        weibo.setRepostId(request.getWeiBoId());
+        weiboDao.insertSelective(weibo);
+
+        Weibo weiBoCount = new Weibo();
+        weiBoCount.setWeiboId(originWeiBo.getWeiboId());
+        weiBoCount.setRepostCount(1);
+        weiboDao.updateCountColumn(weiBoCount);
+
+        User userCount = new User();
+        userCount.setUserId(request.getCurrentUser().getUserId());
+        userCount.setWeiboCount(1);
+        userDao.updateCountColumn(userCount);
+        return  true;
+    }
 
     //region 获取微博列表
     @Override

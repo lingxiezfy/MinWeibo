@@ -21,6 +21,8 @@ public interface IWeiBoService {
      */
     Boolean post(PostWeiboRequest request);
 
+    Boolean rePost(RePostWeiboRequest request);
+
     /**
      * [Create]
      * Description: 获取微博列表
@@ -46,4 +48,5 @@ public interface IWeiBoService {
     Integer likes(WeiBoActionRequest request);
 
     Integer cancelLikes(WeiBoActionRequest request);
+
 }

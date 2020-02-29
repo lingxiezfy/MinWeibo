@@ -62,6 +62,14 @@ public class WeiboController extends BaseApiController {
         return this.exec(postWeiboRequest,(r)->weiBoService.post(r));
     }
 
+    @UserLoginToken
+    @PostMapping("rePost")
+    public BaseResponse rePost(@RequestBody RePostWeiboRequest request, @CurrentUser User user){
+        request.setCurrentUser(user);
+        return this.exec(request,(r)->weiBoService.rePost(r));
+    }
+
+
     /**
      * [Create]
      * Description: 获取用户微博列表

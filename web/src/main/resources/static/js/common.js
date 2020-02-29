@@ -18,6 +18,8 @@ var relationListUrl = serviceUrlBase +"user/relation/list";
 
 //发表微博 post form-data
 var postWeiboUrl = serviceUrlBase + "weibo/post";
+// 转发微博 post ACCESS_TOKEN
+var rePostWeiboUrl = serviceUrlBase + "weibo/rePost";
 // 用户的微博列表 post ACCESS_TOKEN
 var selfWeiboListUrl = serviceUrlBase + "weibo/list";
 // 所有微博列表 post
@@ -312,6 +314,41 @@ function toDeleteWeiBoById(weiBoId){
 // 删除一条微博
 function deleteWeiBoById(weiBoId,before,after,error) {
     getWithToken(deleteWeiBoUrl+weiBoId,before,after,error)
+}
+
+//打开转发界面
+function openWeiboRePost(ele,weiBoId) {
+    swal({
+        text: '转发理由',
+        content: "input",
+        button: {
+            text: "转发",
+            closeModal: true,
+        },
+    }).then(value => {
+        weiBoRePost(weiBoId,
+            value,
+            function () {},
+            function (result) {
+                if(result){
+                    toastr.info("转发成功");
+                    refreshUserInfo(true);
+                }else {
+                    toastr.error(errorMessage);
+                }
+            },
+            function (errorMessage) {
+                toastr.error(errorMessage);
+            });
+    })
+}
+function weiBoRePost(weiBoId,content,before,after,error) {
+    var obj = {};
+    obj["weiBoId"] = weiBoId;
+    if(content){
+        obj['content'] = content;
+    }
+    postWithToken(rePostWeiboUrl,JSON.stringify(obj),before,after,error)
 }
 
 //收藏

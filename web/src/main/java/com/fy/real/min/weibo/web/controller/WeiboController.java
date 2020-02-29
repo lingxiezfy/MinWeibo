@@ -96,10 +96,54 @@ public class WeiboController extends BaseApiController {
     @GetMapping("delete/{weiBoId}")
     @UserLoginToken
     public BaseResponse<Boolean> delete(@PathVariable("weiBoId") Integer weiBoId, @CurrentUser User user){
-        DeleteWeiBoRequest request = new DeleteWeiBoRequest();
+        WeiBoActionRequest request = new WeiBoActionRequest();
         request.setWeiBoId(weiBoId);
         request.setCurrentUser(user);
         return this.exec(request,(r)->weiBoService.delete(r));
+    }
+
+    @GetMapping("collect/{weiBoId}")
+    @UserLoginToken
+    public BaseResponse<Integer> collect(@PathVariable("weiBoId") Integer weiBoId, @CurrentUser User user){
+        WeiBoActionRequest request = new WeiBoActionRequest();
+        request.setWeiBoId(weiBoId);
+        request.setCurrentUser(user);
+        return this.exec(request,(r)->weiBoService.collect(r));
+    }
+
+
+    @PostMapping("collect/list")
+    @UserLoginToken
+    public BaseResponse<WeiBoListResponse> userCollect(@RequestBody WeiBoSearchRequest request, @CurrentUser User user){
+        request.setCurrentUser(user);
+        return this.exec(request,(r)->weiBoService.userCollect(r));
+    }
+
+    @GetMapping("collect/cancel/{weiBoId}")
+    @UserLoginToken
+    public BaseResponse<Integer> cancelCollect(@PathVariable("weiBoId") Integer weiBoId, @CurrentUser User user){
+        WeiBoActionRequest request = new WeiBoActionRequest();
+        request.setWeiBoId(weiBoId);
+        request.setCurrentUser(user);
+        return this.exec(request,(r)->weiBoService.cancelCollect(r));
+    }
+
+    @GetMapping("likes/{weiBoId}")
+    @UserLoginToken
+    public BaseResponse<Integer> likes(@PathVariable("weiBoId") Integer weiBoId, @CurrentUser User user){
+        WeiBoActionRequest request = new WeiBoActionRequest();
+        request.setWeiBoId(weiBoId);
+        request.setCurrentUser(user);
+        return this.exec(request,(r)->weiBoService.likes(r));
+    }
+
+    @GetMapping("likes/cancel/{weiBoId}")
+    @UserLoginToken
+    public BaseResponse<Integer> cancelLikes(@PathVariable("weiBoId") Integer weiBoId, @CurrentUser User user){
+        WeiBoActionRequest request = new WeiBoActionRequest();
+        request.setWeiBoId(weiBoId);
+        request.setCurrentUser(user);
+        return this.exec(request,(r)->weiBoService.cancelLikes(r));
     }
 
 }

@@ -32,5 +32,18 @@ public interface IWeiBoService {
 
     WeiBoListResponse search(WeiBoSearchRequest request);
 
-    Boolean delete(DeleteWeiBoRequest request);
+    /**
+     * 用户收藏列表
+     */
+    WeiBoListResponse userCollect(WeiBoSearchRequest request);
+
+    Boolean delete(WeiBoActionRequest request);
+
+    Integer collect(WeiBoActionRequest request);
+
+    Integer cancelCollect(WeiBoActionRequest request);
+
+    Integer likes(WeiBoActionRequest request);
+
+    Integer cancelLikes(WeiBoActionRequest request);
 }

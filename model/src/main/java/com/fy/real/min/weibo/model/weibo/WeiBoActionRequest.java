@@ -14,6 +14,6 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class DeleteWeiBoRequest extends BaseRequest {
+public class WeiBoActionRequest extends BaseRequest {
     private Integer weiBoId;
 }

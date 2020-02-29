@@ -18,6 +18,8 @@ public interface WeiboDao {
 
     int updateByPrimaryKey(Weibo record);
 
+    int updateCountColumn(Weibo record);
+
     List<Weibo> selectUsefulByUserId(Integer userId);
 
     List<Weibo> selectByWeiboIdList(@Param("weiboIdList") List<Integer> weiboIdList);

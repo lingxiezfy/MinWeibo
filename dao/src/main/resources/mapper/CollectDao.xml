@@ -17,6 +17,18 @@
     from collect
     where collect_id = #{collectId,jdbcType=INTEGER}
   </select>
+    <select id="selectByUserAndWeiBo" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List" />
+      from collect
+      where user_id = #{userId} and weibo_id = #{weiBoId}
+    </select>
+  <select id="queryByUserId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from collect
+    where user_id = #{userId}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from collect
     where collect_id = #{collectId,jdbcType=INTEGER}

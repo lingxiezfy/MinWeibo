@@ -251,4 +251,57 @@
             update_time   = #{updateTime,jdbcType=TIMESTAMP}
         where weibo_id = #{weiboId,jdbcType=INTEGER}
     </update>
+    <update id="updateCountColumn" parameterType="com.fy.real.min.weibo.model.entity.Weibo">
+        update weibo set
+        <if test="commentCount != null and commentCount != 0">
+            comment_count =
+            <choose>
+                <when test="commentCount > 0">
+                    comment_count + #{commentCount,jdbcType=INTEGER}
+                </when>
+                <otherwise>
+                    comment_count #{commentCount,jdbcType=INTEGER}
+                </otherwise>
+            </choose>
+            ,
+        </if>
+        <if test="likesCount != null and likesCount != 0">
+            likes_count =
+            <choose>
+                <when test="likesCount > 0">
+                    likes_count + #{likesCount,jdbcType=INTEGER}
+                </when>
+                <otherwise>
+                    likes_count #{likesCount,jdbcType=INTEGER}
+                </otherwise>
+            </choose>
+            ,
+        </if>
+        <if test="collectCount != null and collectCount != 0">
+            collect_count =
+            <choose>
+                <when test="collectCount > 0">
+                    collect_count + #{collectCount,jdbcType=INTEGER}
+                </when>
+                <otherwise>
+                    collect_count #{collectCount,jdbcType=INTEGER}
+                </otherwise>
+            </choose>
+            ,
+        </if>
+        <if test="repostCount != null and repostCount != 0">
+            repost_count =
+            <choose>
+                <when test="repostCount > 0">
+                    repost_count + #{repostCount,jdbcType=INTEGER}
+                </when>
+                <otherwise>
+                    repost_count #{repostCount,jdbcType=INTEGER}
+                </otherwise>
+            </choose>
+            ,
+        </if>
+        update_time = now()
+        where weibo_id = #{weiboId,jdbcType=INTEGER}
+    </update>
 </mapper>

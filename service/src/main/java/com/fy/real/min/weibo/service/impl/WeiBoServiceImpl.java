@@ -1,8 +1,12 @@
 package com.fy.real.min.weibo.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.fy.real.min.weibo.dao.dao.CollectDao;
+import com.fy.real.min.weibo.dao.dao.LikesDao;
 import com.fy.real.min.weibo.dao.dao.UserDao;
 import com.fy.real.min.weibo.dao.dao.WeiboDao;
+import com.fy.real.min.weibo.model.entity.Collect;
+import com.fy.real.min.weibo.model.entity.Likes;
 import com.fy.real.min.weibo.model.entity.User;
 import com.fy.real.min.weibo.model.entity.Weibo;
 import com.fy.real.min.weibo.model.exception.WeiBoException;
@@ -36,6 +40,8 @@ public class WeiBoServiceImpl implements IWeiBoService {
     WeiboDao weiboDao;
     @Autowired
     UserDao userDao;
+    @Autowired
+    CollectDao collectDao;
 
     //region 发布微博
     private static final Pattern HOT_PATTERN = Pattern.compile("#(\\S+)# ");
@@ -169,9 +175,8 @@ public class WeiBoServiceImpl implements IWeiBoService {
 
     //endregion
 
-
     @Override
-    public Boolean delete(DeleteWeiBoRequest request) {
+    public Boolean delete(WeiBoActionRequest request) {
         Weibo weibo = weiboDao.selectByPrimaryKey(request.getWeiBoId());
         if (weibo == null
                 || !(weibo.getUserId().equals(request.getCurrentUser().getUserId())
@@ -188,4 +193,117 @@ public class WeiBoServiceImpl implements IWeiBoService {
         userDao.updateCountColumn(updateUser);
         return true;
     }
+
+    //region 收藏相关操作
+    @Override
+    public Integer collect(WeiBoActionRequest request) {
+        Weibo weibo = weiboDao.selectByPrimaryKey(request.getWeiBoId());
+        if (weibo == null) {
+            throw new WeiBoException("收藏失败,没有找到该微博");
+        }
+        Integer currUserId = request.getCurrentUser().getUserId();
+        if(weibo.getUserId().equals(currUserId)){
+            throw new WeiBoException("你自己的微博你忘了吗？");
+        }
+        Collect collect = collectDao.selectByUserAndWeiBo(currUserId,weibo.getWeiboId());
+        if(collect != null){
+            throw new WeiBoException("已经在您的收藏夹了");
+        }
+        Collect collectNew = new Collect();
+        collectNew.setUserId(currUserId);
+        collectNew.setWeiboId(weibo.getWeiboId());
+        collectDao.insertSelective(collectNew);
+        Weibo weiBoNew = new Weibo();
+        weiBoNew.setWeiboId(weibo.getWeiboId());
+        weiBoNew.setCollectCount(1);
+        weiboDao.updateCountColumn(weiBoNew);
+        return weibo.getCollectCount()+1;
+    }
+
+    @Override
+    public WeiBoListResponse userCollect(WeiBoSearchRequest request) {
+        WeiBoListResponse response = new WeiBoListResponse();
+        Integer currUserId = request.getCurrentUser().getUserId();
+        Page page = PageHelper.startPage(request.getPageIndex(),request.getPageSize());
+        List<Collect> collectIds = collectDao.queryByUserId(currUserId);
+        if(collectIds.size() > 0){
+            List<Weibo> weiBoList = weiboDao.selectByWeiboIdList(collectIds.stream().map(Collect::getWeiboId).collect(Collectors.toList()));
+            response.setPageIndex(page.getPageNum());
+            response.setTotalCount(page.getTotal());
+            response.setTotalPage(page.getPages());
+            response.setList(covertWeiList(weiBoList));
+        }else{
+            response.setList(new ArrayList<>());
+        }
+        return response;
+    }
+
+    @Override
+    public Integer cancelCollect(WeiBoActionRequest request) {
+        Weibo weibo = weiboDao.selectByPrimaryKey(request.getWeiBoId());
+        if (weibo == null) {
+            throw new WeiBoException("操作失败,没有找到该微博");
+        }
+        Integer currUserId = request.getCurrentUser().getUserId();
+        Collect collect = collectDao.selectByUserAndWeiBo(currUserId,weibo.getWeiboId());
+        if(collect == null){
+            throw new WeiBoException("您没有收藏该微博");
+        }
+        collectDao.deleteByPrimaryKey(collect.getCollectId());
+        Weibo weiBoNew = new Weibo();
+        weiBoNew.setWeiboId(weibo.getWeiboId());
+        weiBoNew.setCollectCount(-1);
+        weiboDao.updateCountColumn(weiBoNew);
+        return weibo.getCollectCount() <= 0 ? 0 : (weibo.getCollectCount() - 1);
+    }
+
+    //endregion 收藏相关操作
+
+    //region 点赞相关操作
+
+    @Autowired
+    LikesDao likesDao;
+
+    @Override
+    public Integer likes(WeiBoActionRequest request) {
+        Weibo weibo = weiboDao.selectByPrimaryKey(request.getWeiBoId());
+        if (weibo == null) {
+            throw new WeiBoException("点赞失败,没有找到该微博");
+        }
+        Integer currUserId = request.getCurrentUser().getUserId();
+        Likes likes = likesDao.selectByUserAndWeiBo(currUserId,weibo.getWeiboId());
+        if(likes != null){
+            throw new WeiBoException("您已经点过赞了");
+        }
+        Likes likesNew = new Likes();
+        likesNew.setUserId(currUserId);
+        likesNew.setWeiboId(weibo.getWeiboId());
+        likesDao.insertSelective(likesNew);
+        Weibo weiBoNew = new Weibo();
+        weiBoNew.setWeiboId(weibo.getWeiboId());
+        weiBoNew.setLikesCount(1);
+        weiboDao.updateCountColumn(weiBoNew);
+        return weibo.getLikesCount()+1;
+    }
+
+    @Override
+    public Integer cancelLikes(WeiBoActionRequest request) {
+        Weibo weibo = weiboDao.selectByPrimaryKey(request.getWeiBoId());
+        if (weibo == null) {
+            throw new WeiBoException("操作失败,没有找到该微博");
+        }
+        Integer currUserId = request.getCurrentUser().getUserId();
+        Likes likes = likesDao.selectByUserAndWeiBo(currUserId,weibo.getWeiboId());
+        if(likes == null){
+            throw new WeiBoException("您没有给该微博点过赞");
+        }
+        likesDao.deleteByPrimaryKey(likes.getLikesId());
+        Weibo weiBoNew = new Weibo();
+        weiBoNew.setWeiboId(weibo.getWeiboId());
+        weiBoNew.setCollectCount(-1);
+        weiboDao.updateCountColumn(weiBoNew);
+        return weibo.getCollectCount() <= 0 ? 0 : (weibo.getCollectCount() - 1);
+    }
+
+    //endregion 点赞相关操作
 }

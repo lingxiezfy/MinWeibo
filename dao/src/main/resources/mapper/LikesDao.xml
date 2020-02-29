@@ -17,7 +17,13 @@
     from likes
     where likes_id = #{likesId,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <select id="selectByUserAndWeiBo" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List" />
+      from likes
+      where user_id = #{userId} and weibo_id = #{weiBoId}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from likes
     where likes_id = #{likesId,jdbcType=INTEGER}
   </delete>

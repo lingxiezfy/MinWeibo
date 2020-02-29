@@ -60,7 +60,7 @@
                 <ul class="nav nav-tabs nav-stacked full-with">
                     <li role="presentation"><a href="javascript:goWeiBoIndex()">发现微博</a></li>
                     <li role="presentation"><a href="#">我的关注</a></li>
-                    <li role="presentation"><a href="#">我的收藏</a></li>
+                    <li role="presentation"><a onclick="toMyCollect()">我的收藏</a></li>
                     <li role="presentation"><a href="javascript:toSecondhand()">二手交易</a></li>
                     <li role="presentation"><a href="javascript:toFunnyChat()">趣味讨论</a></li>
                     <li role="presentation"><a href="#top">返回顶部</a></li>
@@ -151,7 +151,7 @@
                             <div class="sort">粉丝</div>
                         </div>
                     </div>
-                    <div class="col-sm-4 col-xs-4 user-Count-btn">
+                    <div class="col-sm-4 col-xs-4 user-Count-btn" onclick="toPage('home.html?userId=')">
                         <div>
                             <div><strong><span class="userInfo weiboCount">0</span></strong></div>
                             <div class="sort">微博</div>

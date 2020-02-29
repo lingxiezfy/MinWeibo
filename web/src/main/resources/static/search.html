@@ -60,7 +60,7 @@
                 <ul class="nav nav-tabs nav-stacked full-with">
                     <li role="presentation"><a href="javascript:goWeiBoIndex()">发现微博</a></li>
                     <li role="presentation"><a href="#">我的关注</a></li>
-                    <li role="presentation"><a href="#">我的收藏</a></li>
+                    <li role="presentation"><a onclick="toMyCollect()">我的收藏</a></li>
                     <li role="presentation"><a href="javascript:toSecondhand()">二手交易</a></li>
                     <li role="presentation"><a href="javascript:toFunnyChat()">趣味讨论</a></li>
                     <li role="presentation"><a href="#top">返回顶部</a></li>
@@ -124,6 +124,52 @@
         );
     }
 
+    function  loadOnePageWeiBo() {
+        var query = getQueryVariable('query');
+        var searchType = getQueryVariable('searchType');
+        if(searchType === '1'){ // 找人
+            pageAbleQuery(
+                'searchUserList'
+                ,query
+                ,searchType
+                ,function () {}
+                ,function (response) {
+                    for (var user of response.list) {
+                        addOneUser(user);
+                    }
+                }
+                ,function () {}
+            );
+        }else if(searchType === '5'){// 本人收藏
+            pageAbleQuery(
+                'searchCollectList'
+                ,query
+                ,searchType
+                ,function () {}
+                ,function (response) {
+                    for (var weiBo of response.list) {
+                        addOneWeiBo(weiBo,'collect');
+                    }
+                }
+                ,function () {}
+            );
+        }else { // 找微博，二手交易，热门话题
+            pageAbleQuery(
+                'searchWeiBoList'
+                ,query
+                ,searchType
+                ,function () {}
+                ,function (response) {
+                    for (var weiBo of response.list) {
+                        addOneWeiBo(weiBo);
+                    }
+                }
+                ,function () {}
+            );
+
+        }
+    }
+
     //加载用户微博列表
     let nowPage = 1;
     let isLoading = false;
@@ -138,89 +184,41 @@
         haveMoreData = true;
         loadOnePageWeiBo();
     }
-    function  loadOnePageWeiBo() {
-        var query = getQueryVariable('query');
-        var searchType = getQueryVariable('searchType');
-        if(searchType === '1'){
-            searchUserList(query,nowPage
-                ,function () {
-                    if(isLoading || !haveMoreData) return false;
-                    $(".nonWeiBo").hide();
-                    $(".loadingWeiBo").show();
-                    isLoading = true;
+    function pageAbleQuery(func,query,searchType,before,after,error){
+        window[func](query,searchType,nowPage,function () {
+            if(isLoading || !haveMoreData) return false;
+            $(".nonWeiBo").hide();
+            $(".loadingWeiBo").show();
+            isLoading = true;
+            return before();
+        },function (response) {
+            $(".loadingWeiBo").hide();
+            if(response.totalCount === 0){
+                $(".nonWeiBo").show();
+                haveMoreData = false;
+                return;
+            }
+            if(response.list && response.list.length > 0){
+                after(response);
+                if(response.pageIndex < response.totalPage){
+                    nowPage = nowPage+1;
                 }
-                ,function (response) {
-                    $(".loadingWeiBo").hide();
-                    if(response.totalCount === 0){
-                        $(".nonWeiBo").show();
-                        haveMoreData = false;
-                        return;
-                    }
-                    if(response.list && response.list.length > 0){
-                        for (var user of response.list) {
-                            addOneUser(user);
-                        }
-                        if(response.pageIndex < response.totalPage){
-                            nowPage = nowPage+1;
-                        }
-                    }
-                    //没有更多数据了
-                    if(response.pageIndex >= response.totalPage){
-                        $(".notAnyMoreWeiBo").show();
-                        haveMoreData = false;
-                    }
-                    isLoading = false;
-                }
-                ,function () {
-                    toastr.error(errorMessage);
-                    $(".loadingWeiBo").hide();
-                    if(!$("#weiBoItem").html()){
-                        $(".nonWeiBo").show();
-                    }
-                    isLoading = false;
-                }
-            );
-        }
-        else {
-            searchWeiBoList(query,searchType,nowPage
-                , function () {
-                    if(isLoading || !haveMoreData) return false;
-                    $(".nonWeiBo").hide();
-                    $(".loadingWeiBo").show();
-                    isLoading = true;
-                }
-                , function (response) {
-                    $(".loadingWeiBo").hide();
-                    if(response.totalCount === 0){
-                        $(".nonWeiBo").show();
-                        haveMoreData = false;
-                        return;
-                    }
-                    if(response.list && response.list.length > 0){
-                        for (var weiBo of response.list) {
-                            addOneWeiBo(weiBo);
-                        }
-                        if(response.pageIndex < response.totalPage){
-                            nowPage = nowPage+1;
-                        }
-                    }
-                    //没有更多数据了
-                    if(response.pageIndex >= response.totalPage){
-                        $(".notAnyMoreWeiBo").show();
-                        haveMoreData = false;
-                    }
-                    isLoading = false;
-                }
-                , function (errorMessage) {
-                    toastr.error(errorMessage);
-                    $(".loadingWeiBo").hide();
-                    if(!$("#weiBoItem").html()){
-                        $(".nonWeiBo").show();
-                    }
-                    isLoading = false;
-                }
-            );
-        }
+            }
+            //没有更多数据了
+            if(response.pageIndex >= response.totalPage){
+                $(".notAnyMoreWeiBo").show();
+                haveMoreData = false;
+            }
+            isLoading = false;
+        },function (errorMessage) {
+            toastr.error(errorMessage);
+            $(".loadingWeiBo").hide();
+            if(!$("#weiBoItem").html()){
+                $(".nonWeiBo").show();
+            }
+            isLoading = false;
+            error(errorMessage);
+        })
     }
 
     $(function () {
@@ -237,6 +235,7 @@
                 case 2:$(".nonWeiBo .message-text").html("还没有相关博文，快去发一条吧...");break;
                 case 3:$(".nonWeiBo .message-text").html("暂无二手交易信息，快来发布你的闲置吧...");break;
                 case 4:$(".nonWeiBo .message-text").html("暂无讨论话题，快去发起一个热门话题吧...");break;
+                case 5:$(".nonWeiBo .message-text").html("还没有收藏任何微博，快去主页看看吧...");break;
             }
         }
 

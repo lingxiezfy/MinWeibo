@@ -35,6 +35,14 @@ body{
 .my_edit{
     margin-top:80px; 
 }
+
+.userOther .nickname, .userOther .user-tools{
+	overflow: hidden; text-overflow:ellipsis; white-space: nowrap;
+}
+.userOther .face img{
+	min-height: 40px;
+	max-height: 50px;
+}
 #edit_form{
 	background: #fff;
 	padding-bottom: 8px;

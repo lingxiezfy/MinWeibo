@@ -108,4 +108,12 @@ public class UserController extends BaseApiController {
         return this.exec(request,(r)->userService.relation(request));
     }
 
+    @PostMapping("relation/list")
+    @UserLoginToken
+    public BaseResponse<UserListResponse> relationList(@RequestBody UserRelationListRequest request,@CurrentUser User user){
+        request.setCurrentUser(user);
+        return this.exec(request,(r)->userService.relationList(r));
+    }
+
+
 }

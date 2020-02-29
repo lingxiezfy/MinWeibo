@@ -59,7 +59,7 @@
             <nav class="my_nav_left hidden-xs">
                 <ul class="nav nav-tabs nav-stacked full-with">
                     <li role="presentation"><a href="javascript:goWeiBoIndex()">发现微博</a></li>
-                    <li role="presentation"><a href="#">我的关注</a></li>
+                    <li role="presentation"><a onclick="toMyRelationLike()">我的关注</a></li>
                     <li role="presentation"><a onclick="toMyCollect()">我的收藏</a></li>
                     <li role="presentation"><a href="javascript:toSecondhand()">二手交易</a></li>
                     <li role="presentation"><a href="javascript:toFunnyChat()">趣味讨论</a></li>
@@ -105,10 +105,7 @@
     toastr.options.positionClass = 'toast-bottom-right';
     toastr.options.timeOut = 1200;
 
-    //添加一个用户
-    function addOneUser(user){
-        console.log(user);
-    }
+
     //加载用户信息
     function refreshUserInfo(refreshList){
         loadUserInfo(getQueryVariable('userId'),
@@ -153,7 +150,21 @@
                 }
                 ,function () {}
             );
-        }else { // 找微博，二手交易，热门话题
+        }else if(searchType === '6'){ //关注
+            pageAbleQuery(
+                'searchRelationList'
+                ,query
+                ,searchType
+                ,function () {}
+                ,function (response) {
+                    for (var user of response.list) {
+                        addOneUser(user);
+                    }
+                }
+                ,function () {}
+            );
+        }
+        else { // 找微博，二手交易，热门话题
             pageAbleQuery(
                 'searchWeiBoList'
                 ,query
@@ -227,15 +238,22 @@
         $("#weiBoItem").empty();
         $(".loadingWeiBo").hide();
         $(".notAnyMoreWeiBo").hide();
-        $("#mini-search-btn").val(getQueryVariable('query'));
         var searchType = getQueryVariable('searchType');
+
         if(searchType){
             switch (parseInt(searchType)) {
-                case 1:$(".nonWeiBo .message-text").html("暂未锁定目标...");break;
-                case 2:$(".nonWeiBo .message-text").html("还没有相关博文，快去发一条吧...");break;
+                case 1:
+                    $(".nonWeiBo .message-text").html("暂未锁定目标...");
+                    $("#mini-search-btn").val(getQueryVariable('query'));
+                    break;
+                case 2:
+                    $(".nonWeiBo .message-text").html("还没有相关博文，快去发一条吧...");
+                    $("#mini-search-btn").val(getQueryVariable('query'));
+                    break;
                 case 3:$(".nonWeiBo .message-text").html("暂无二手交易信息，快来发布你的闲置吧...");break;
                 case 4:$(".nonWeiBo .message-text").html("暂无讨论话题，快去发起一个热门话题吧...");break;
                 case 5:$(".nonWeiBo .message-text").html("还没有收藏任何微博，快去主页看看吧...");break;
+                case 6:$(".nonWeiBo .message-text").html("还没有关注其他人，来看看有什么新鲜事吧...");break;
             }
         }
 

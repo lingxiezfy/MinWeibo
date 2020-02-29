@@ -259,7 +259,6 @@
             data: JSON.stringify($("#loginForm").serializeObject()),
             contentType: "application/json;charset=utf-8",
             success: function (response) {
-                console.log(response);
                 if (response.success && response.code === '200') {
                     handleLocalStorage("set", userTokenStorageKey, response.result.token);
                     handleLocalStorage("set", userIdStorageKey, response.result.userId);
@@ -283,7 +282,6 @@
                 }
             },
             error: function (e) {
-                console.log(e);
             }
         });
     });
@@ -301,7 +299,6 @@
                 }
             },
             success: function (response) {
-                console.log(response);
                 if (response.success && response.code === '200') {
                     handleLocalStorage("set", userTokenStorageKey, response.result.token);
                     handleLocalStorage("set", userIdStorageKey, response.result.userId);
@@ -325,7 +322,6 @@
                 }
             },
             error: function (e) {
-                console.log(e);
             }
         });
     });

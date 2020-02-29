@@ -71,4 +71,6 @@ public interface IUserService {
     UserListResponse search(UserSearchRequest request);
 
     Boolean relation(RelationUserRequest request);
+
+    UserListResponse relationList(UserRelationListRequest request);
 }

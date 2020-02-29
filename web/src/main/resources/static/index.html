@@ -59,7 +59,7 @@
             <nav class="my_nav_left hidden-xs">
                 <ul class="nav nav-tabs nav-stacked full-with">
                     <li role="presentation"><a href="javascript:goWeiBoIndex()">发现微博</a></li>
-                    <li role="presentation"><a href="#">我的关注</a></li>
+                    <li role="presentation"><a onclick="toMyRelationLike()">我的关注</a></li>
                     <li role="presentation"><a onclick="toMyCollect()">我的收藏</a></li>
                     <li role="presentation"><a href="javascript:toSecondhand()">二手交易</a></li>
                     <li role="presentation"><a href="javascript:toFunnyChat()">趣味讨论</a></li>
@@ -178,7 +178,6 @@
     // 图片选择器
     function imgSelect() {
         var Fs = $(".select_Img")[0];
-        console.log(Fs.files.length);
         for (var i = 0; i < Fs.files.length; i++) {
             weiboFormData.append("pic", Fs.files[i]);
             //window.URL.createObjectURL可以用于在浏览器上预览本地图片或者视频
@@ -247,7 +246,6 @@
                 $(".loadingWeiBo").show();
                 isLoading = true;
             }, function (response) {
-                console.log(response);
 
                 $(".loadingWeiBo").hide();
                 if(response.totalCount === 0){
@@ -315,7 +313,6 @@
                     xhr.setRequestHeader(userTokenHeaderKey, handleLocalStorage("get", userTokenStorageKey))
                 },
                 success: function (data) {
-                    console.log(data);
                     if(data.success){
                         toastr.info("发布成功");
                         weiboFormData.delete("pic");

@@ -300,9 +300,9 @@ public class WeiBoServiceImpl implements IWeiBoService {
         likesDao.deleteByPrimaryKey(likes.getLikesId());
         Weibo weiBoNew = new Weibo();
         weiBoNew.setWeiboId(weibo.getWeiboId());
-        weiBoNew.setCollectCount(-1);
+        weiBoNew.setLikesCount(-1);
         weiboDao.updateCountColumn(weiBoNew);
-        return weibo.getCollectCount() <= 0 ? 0 : (weibo.getCollectCount() - 1);
+        return weibo.getLikesCount() <= 0 ? 0 : (weibo.getLikesCount() - 1);
     }
 
     //endregion 点赞相关操作

@@ -100,18 +100,25 @@ public class UserServiceImpl implements IUserService {
         if(user == null){
             throw  new WeiBoException("用户不存在");
         }
+        return convertUserWithRelation(user,request.getCurrentUser());
+    }
+
+    private UserView convertUserWithRelation(User user,User currentUser){
         UserView userView = UserView.convertFromUser(user);
-        List<Relation> relations = relationDao.queryUserRelation(request.getCurrentUser().getUserId(),request.getTargetUserId());
+        if(user.getUserId().equals(currentUser.getUserId())){
+            return userView;
+        }
+        List<Relation> relations = relationDao.queryUserRelation(currentUser.getUserId(),user.getUserId());
         if(relations.size() == 1){
             Relation relation = relations.get(0);
-            if (request.getCurrentUser().getUserId().equals(relation.getUserId())) {
+            if (currentUser.getUserId().equals(relation.getUserId())) {
                 userView.setCurrentToThisRelation(relation.getState());
             }else {
                 userView.setThisToCurrentRelation(relation.getState());
             }
         }else if(relations.size() == 2){
             Relation relation = relations.get(0);
-            if (request.getCurrentUser().getUserId().equals(relation.getUserId())) {
+            if (currentUser.getUserId().equals(relation.getUserId())) {
                 userView.setCurrentToThisRelation(relation.getState());
                 userView.setThisToCurrentRelation(relations.get(1).getState());
             }else {
@@ -133,7 +140,7 @@ public class UserServiceImpl implements IUserService {
             response.setPageIndex(page.getPageNum());
             response.setTotalCount(page.getTotal());
             response.setTotalPage(page.getPages());
-            response.setList(userList.stream().map(UserView::convertFromUser).collect(Collectors.toList()));
+            response.setList(userList.stream().map(u->convertUserWithRelation(u,request.getCurrentUser())).collect(Collectors.toList()));
         }else {
             response.setList(new ArrayList<>());
         }
@@ -193,5 +200,29 @@ public class UserServiceImpl implements IUserService {
             userDao.updateCountColumn(user);
         }
         return true;
+    }
+
+    @Override
+    public UserListResponse relationList(UserRelationListRequest request) {
+        ValidatorUtil.validate(request);
+        User currentUser = request.getCurrentUser();
+        UserListResponse response = new UserListResponse();
+        Page page = PageHelper.startPage(request.getPageIndex(),request.getPageSize());
+        List<Relation> relationList = relationDao.queryUserRelationList(currentUser.getUserId(),request.getRelationState());
+        if(relationList.size() >0){
+            response.setPageIndex(page.getPageNum());
+            response.setTotalCount(page.getTotal());
+            response.setTotalPage(page.getPages());
+            List<User> userList = userDao.selectByUserIdList(relationList.stream().map(Relation::getFollowUserId).collect(Collectors.toList()));
+            response.setList(new ArrayList<>());
+            userList.forEach(user -> {
+                UserView userView = UserView.convertFromUser(user);
+                userView.setCurrentToThisRelation(request.getRelationState());
+                response.getList().add(userView);
+            });
+        }else {
+            response.setList(new ArrayList<>());
+        }
+        return response;
     }
 }

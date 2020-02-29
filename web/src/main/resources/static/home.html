@@ -59,7 +59,7 @@
             <nav class="my_nav_left hidden-xs">
                 <ul class="nav nav-tabs nav-stacked full-with">
                     <li role="presentation"><a href="javascript:goWeiBoIndex()">发现微博</a></li>
-                    <li role="presentation"><a href="#">我的关注</a></li>
+                    <li role="presentation"><a onclick="toMyRelationLike()">我的关注</a></li>
                     <li role="presentation"><a onclick="toMyCollect()">我的收藏</a></li>
                     <li role="presentation"><a href="javascript:toSecondhand()">二手交易</a></li>
                     <li role="presentation"><a href="javascript:toFunnyChat()">趣味讨论</a></li>
@@ -143,40 +143,7 @@
         console.log(id);
     }
 
-    // 关联用户（1,关注；2，取消关注；3：拉黑；4：取消拉黑）
-    function toRelationUser(userId,relationType){
-        console.log("关系"+relationType);
-        var relationCode = 0;
-        var desc;
-        switch (relationType) {
-            case 1:
-                relationCode = 1;
-                desc = "关注";
-                break;
-            case 3:
-                relationCode = 2;
-                desc = "拉黑";
-                break;
-            case 2:
-            case 4:
-                relationCode = 0;
-                desc = "取消";
-                break;
-            default:
-                toastr.error("错误的操作");
-                return;
-        }
-        relationUser(userId,relationCode,
-            function () {},
-            function () {
-                toastr.info(desc + "成功");
-                refreshUserInfo(false);
-            },
-            function (errorMessage) {
-                toastr.error(errorMessage);
-            }
-        );
-    }
+
     // 发私信
     function toMessageUser(userId){
 
@@ -211,10 +178,10 @@
                     }
                 }else {
                     $(".nonWeiBo .message").html("博主正深度潜水中...");
-                    var concernBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",1)\" class=\"btn btn-default btn-xs\"><span class=\"glyphicon glyphicon-heart\" aria-hidden=\"true\">关注</span></button>";
-                    var cancelConcernBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",2)\" class=\"btn btn-warning btn-xs\"><span class=\"glyphicon glyphicon-heart-empty\" aria-hidden=\"true\">取消关注</span></button>\n";
-                    var blackListBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",3)\" class=\"btn btn-default btn-xs\"><span class=\"glyphicon glyphicon-plus\" aria-hidden=\"true\">加入黑名单</span></button>\n";
-                    var cancelBlackBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",4)\" class=\"btn btn-warning btn-xs\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\">移除黑名单</span></button>\n";
+                    var concernBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",1,function() {refreshUserInfo(false)})\" class=\"btn btn-default btn-xs\"><span class=\"glyphicon glyphicon-heart\" aria-hidden=\"true\">关注</span></button>";
+                    var cancelConcernBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",2,function() {refreshUserInfo(false)})\" class=\"btn btn-warning btn-xs\"><span class=\"glyphicon glyphicon-heart-empty\" aria-hidden=\"true\">取消关注</span></button>\n";
+                    var blackListBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",3,function() {refreshUserInfo(false)})\" class=\"btn btn-default btn-xs\"><span class=\"glyphicon glyphicon-plus\" aria-hidden=\"true\">加入黑名单</span></button>\n";
+                    var cancelBlackBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",4,function() {refreshUserInfo(false)})\" class=\"btn btn-warning btn-xs\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\">移除黑名单</span></button>\n";
                     var messageBtn = "<button type=\"button\" onclick=\"toMessageUser("+userInfo.userId+")\" class=\"btn btn-success btn-xs\"><span class=\"glyphicon glyphicon-comment\" aria-hidden=\"true\">私信</span></button>\n";
                     var div = "";
                     $("#userInfo").empty();

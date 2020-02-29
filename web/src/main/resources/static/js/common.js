@@ -14,6 +14,7 @@ var updateUserInfoUrl = serviceUrlBase + "user/update";
 var relationUserUrl = serviceUrlBase + "user/relation";
 //查找用户 post ACCESS_TOKEN
 var searchUserUrl = serviceUrlBase + "user/search";
+var relationListUrl = serviceUrlBase +"user/relation/list";
 
 //发表微博 post form-data
 var postWeiboUrl = serviceUrlBase + "weibo/post";
@@ -34,7 +35,7 @@ var userCollectWeiBoUrl = serviceUrlBase + "weibo/collect/list";
 
 // 根据id给一条微博点赞 get ACCESS_TOKEN
 var likesWeiBoUrl = serviceUrlBase + "weibo/likes/";
-var cancelLikesUrl = serviceUrlBase + "weibo/collect/cancel/";
+var cancelLikesUrl = serviceUrlBase + "weibo/likes/cancel/";
 
 var userTokenHeaderKey = "ACCESS_TOKEN";
 var userTokenStorageKey = "MINIWeiBo_token";
@@ -140,6 +141,41 @@ function loadUserInfo(targetUserId,afterLoad, ifError, timeOut) {
         }
     });
 }
+
+// 关联用户（1,关注；2，取消关注；3：拉黑；4：取消拉黑）
+function toRelationUser(userId,relationType,after){
+    var relationCode = 0;
+    var desc;
+    switch (relationType) {
+        case 1:
+            relationCode = 1;
+            desc = "关注";
+            break;
+        case 3:
+            relationCode = 2;
+            desc = "拉黑";
+            break;
+        case 2:
+        case 4:
+            relationCode = 0;
+            desc = "取消";
+            break;
+        default:
+            toastr.error("错误的操作");
+            return;
+    }
+    relationUser(userId,relationCode,
+        function () {},
+        function () {
+            toastr.info(desc + "成功");
+            after();
+        },
+        function (errorMessage) {
+            toastr.error(errorMessage);
+        }
+    );
+}
+
 // 关联用户（relation,1:关注，2:拉黑）
 function relationUser(userId,relation,before,after,error) {
     var obj = {};
@@ -147,6 +183,7 @@ function relationUser(userId,relation,before,after,error) {
     obj["relation"] = relation;
     postWithToken(relationUserUrl,JSON.stringify(obj),before,after,error);
 }
+
 // 查找用户
 function toSearchUser(){
     var query = $("#mini-search-btn").val();
@@ -210,6 +247,18 @@ function searchUserList(query,searchType,pageIndex, beforeLoad, afterLoad, ifErr
 
     postWithToken(searchUserUrl, JSON.stringify(obj), beforeLoad, afterLoad, ifError)
 }
+
+//relationState 1 关注，2拉黑
+function searchRelationList(relationState,searchType,pageIndex, before, after, error) {
+    var obj = {};
+    obj["pageIndex"] = pageIndex;
+    // 一次加载5条
+    obj["pageSize"] = 10;
+    obj["relationState"] = relationState;
+    postWithToken(relationListUrl,JSON.stringify(obj),before,after,error);
+}
+
+
 function toSearchWeiBo(){
     var query = $("#mini-search-btn").val();
     if(query){
@@ -217,6 +266,10 @@ function toSearchWeiBo(){
     }else {
         toastr.error("请输入内容查询微博");
     }
+}
+
+function toMyRelationLike(){
+    toPage("search.html?query=1&searchType=6")
 }
 
 function toMyCollect(){
@@ -231,7 +284,6 @@ function toFunnyChat(){
 }
 // 去用户主页
 function toUserIndex(userId){
-    console.log(userId);
     toPage('home.html?userId='+userId);
 }
 // 删除微博
@@ -282,7 +334,6 @@ function cancelCollect(ele,weiBoId,refreshList) {
     getWithToken(cancelCollectUrl+weiBoId,
         function () {},
         function (result) {
-            console.log(result);
             if(refreshList){
                 refreshWeiBoList();
             }
@@ -317,7 +368,7 @@ function weiboLikes(ele,weiBoId) {
 //取消收藏
 function cancelLikes(ele,weiBoId,refreshList) {
     var jqEle = $(ele);
-    getWithToken(cancelCollectUrl+weiBoId,
+    getWithToken(cancelLikesUrl+weiBoId,
         function () {},
         function (result) {
             if(refreshList){
@@ -612,3 +663,46 @@ function addOneWeiBo(data,type) {
     // 按钮提示插件
     $('[data-toggle="tooltip"]').tooltip();
 };
+
+//添加一个用户
+function addOneUser(user){
+    var div = '<div class="col-sm-4 col-xs-6 userOther">\n' +
+        '                    <div class="thumbnail">\n' +
+        '                        <div class="row">\n' +
+        '                            <div class="col-xs-4 face" onclick="toUserIndex('+user.userId+')">\n';
+    var faceUrl = "img/icon.png";
+    if (user.face && user.face.length > 0) {
+        faceUrl = "upload/" + user.face;
+    }
+    div+='                                <img class="img-thumbnail img-circle" src="'+faceUrl+'">'+
+                                    '</div>\n' +
+        '                            <div class="col-xs-8 userInfo">\n' +
+        '                                <div class="nickname"> <span>'+user.username+'('+user.nickname+')</span></div>\n' +
+        '                                <div class="user-tools">\n';
+    var concernBtn = '<button type="button" onclick="toRelationUser('+user.userId+',1,function() {refreshUserInfo(true)})" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="关注" ><span class="glyphicon glyphicon-heart" aria-hidden="true"></span></button>';
+    var cancelConcernBtn = '<button type="button" onclick="toRelationUser('+user.userId+',2,function() {refreshUserInfo(true)})" class="btn btn-warning btn-xs" data-toggle="tooltip" data-placement="bottom" title="取消关注"><span class="glyphicon glyphicon-heart-empty" aria-hidden="true"></span></button>\n';
+    var blackListBtn = '<button type="button" onclick="toRelationUser('+user.userId+',3,function() {refreshUserInfo(true)})" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="拉黑"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>\n';
+    var cancelBlackBtn = '<button type="button" onclick="toRelationUser('+user.userId+',4,function() {refreshUserInfo(true)})" class="btn btn-warning btn-xs" data-toggle="tooltip" data-placement="bottom" title="取消拉黑"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>\n';
+    if(user.userId === parseInt(handleLocalStorage("get",userIdStorageKey))){
+        div += "用户本人"
+    }else {
+        if(user.currentToThisRelation === 0){
+            div += (concernBtn + blackListBtn);
+        }else if(user.currentToThisRelation === 1){
+            div += (cancelConcernBtn+blackListBtn);
+        }else if(user.currentToThisRelation === 2){
+            div += cancelBlackBtn;
+        }
+    }
+
+    div+=
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '                    </div>\n' +
+        '                </div>';
+    $("#weiBoItem").append(div);
+
+    // 按钮提示插件
+    $('[data-toggle="tooltip"]').tooltip();
+}

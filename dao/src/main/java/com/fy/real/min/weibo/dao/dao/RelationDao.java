@@ -22,4 +22,5 @@ public interface RelationDao {
 
     Relation queryUserRelationSingle(@Param("userId") Integer userId,@Param("followUserId") Integer followUserId);
 
+    List<Relation> queryUserRelationList(@Param("userId") Integer userId, @Param("relationState") Integer relationState);
 }

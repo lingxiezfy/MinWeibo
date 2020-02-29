@@ -13,12 +13,13 @@
         <result column="follow_count" jdbcType="INTEGER" property="followCount"/>
         <result column="fans_count" jdbcType="INTEGER" property="fansCount"/>
         <result column="useful" jdbcType="INTEGER" property="useful"/>
+        <result column="admin_able" jdbcType="INTEGER" property="adminAble"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
     <sql id="Base_Column_List">
         user_id, username, `password`, nickname, face, sex, bir, weibo_count, follow_count,
-    fans_count, useful, create_time, update_time
+    fans_count, useful,admin_able, create_time, update_time
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -56,12 +57,13 @@
             useGeneratedKeys="true">
         insert into user (username, `password`, nickname,
                           face, sex, bir, weibo_count,
-                          follow_count, fans_count, useful,
+                          follow_count, fans_count, useful,admin_able,
                           create_time, update_time)
         values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR},
                 #{face,jdbcType=VARCHAR}, #{sex,jdbcType=INTEGER}, #{bir,jdbcType=TIMESTAMP},
                 #{weiboCount,jdbcType=INTEGER},
                 #{followCount,jdbcType=INTEGER}, #{fansCount,jdbcType=INTEGER}, #{useful,jdbcType=INTEGER},
+                #{adminAble,jdbcType=INTEGER},
                 #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
     </insert>
     <insert id="insertSelective" keyColumn="user_id" keyProperty="userId"
@@ -97,6 +99,9 @@
             </if>
             <if test="useful != null">
                 useful,
+            </if>
+            <if test="adminAble != null">
+                admin_able,
             </if>
             <if test="createTime != null">
                 create_time,
@@ -135,6 +140,9 @@
             </if>
             <if test="useful != null">
                 #{useful,jdbcType=INTEGER},
+            </if>
+            <if test="adminAble != null">
+                #{adminAble,jdbcType=INTEGER},
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
@@ -177,6 +185,9 @@
             <if test="useful != null">
                 useful = #{useful,jdbcType=INTEGER},
             </if>
+            <if test="useful != null">
+                admin_able = #{adminAble,jdbcType=INTEGER},
+            </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
             </if>
@@ -198,6 +209,7 @@
             follow_count = #{followCount,jdbcType=INTEGER},
             fans_count   = #{fansCount,jdbcType=INTEGER},
             useful       = #{useful,jdbcType=INTEGER},
+            admin_able       = #{adminAble,jdbcType=INTEGER},
             create_time  = #{createTime,jdbcType=TIMESTAMP},
             update_time  = #{updateTime,jdbcType=TIMESTAMP}
         where user_id = #{userId,jdbcType=INTEGER}

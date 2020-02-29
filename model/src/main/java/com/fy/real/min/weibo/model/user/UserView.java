@@ -62,6 +62,8 @@ public class UserView implements Serializable {
      */
     private Integer fansCount;
 
+    private boolean admin;
+
     /**
      * 和当前登录用户的关系（0：本人或陌生，1：关注，2：拉黑）
      */
@@ -71,6 +73,8 @@ public class UserView implements Serializable {
 
     public static UserView convertFromUser(User user){
         if(user == null) return new UserView();
-        return JSON.parseObject(JSON.toJSONString(user),UserView.class);
+        UserView view = JSON.parseObject(JSON.toJSONString(user),UserView.class);
+        view.setAdmin(user.getAdminAble() == 1);
+        return view;
     }
 }

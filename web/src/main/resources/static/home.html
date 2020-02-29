@@ -191,10 +191,6 @@
     function toMessageUser(userId){
 
     }
-    // 删除微博
-    function toDeleteWeiBoById(weiBoId){
-
-    }
     // 编辑微博
     function toEditWeiBoById(weiBoId){
 
@@ -218,7 +214,11 @@
                     $(".userInfo.face").attr("src", "img/icon.png");
                 }
                 if(userInfo.userId === parseInt(handleLocalStorage("get",userIdStorageKey))){
-                    toastr.info("欢迎回家");
+                    if(userInfo.admin){
+                        toastr.info("欢迎您！管理员");
+                    }else {
+                        toastr.info("欢迎回家！");
+                    }
                 }else {
                     $(".nonWeiBo .message").html("博主正深度潜水中...");
                     var concernBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",1)\" class=\"btn btn-default btn-xs\"><span class=\"glyphicon glyphicon-heart\" aria-hidden=\"true\">关注</span></button>";

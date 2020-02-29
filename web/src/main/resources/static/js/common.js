@@ -30,6 +30,7 @@ var searchWeiBoUrl = serviceUrlBase + "weibo/search";
 var userTokenHeaderKey = "ACCESS_TOKEN";
 var userTokenStorageKey = "MINIWeiBo_token";
 var userIdStorageKey = "MINIWeiBo_userId";
+var adminStorageKey = "MINIWeiBo_admin";
 
 // 表单转json对象（如果需要json字符串，需要使用JSON.stringify()在转一次）
 $.fn.serializeObject = function () {
@@ -160,7 +161,7 @@ function loadUserWeiBoList(targetUserId,pageIndex, beforeLoad, afterLoad, ifErro
 
     postWithToken(selfWeiboListUrl, JSON.stringify(obj), beforeLoad, afterLoad, ifError, timeOut)
 }
-// 加载用户微博列表
+// 加载微博列表
 function loadAllWeiBoList(pageIndex, beforeLoad, afterLoad, ifError, timeOut) {
     var obj = {};
     obj["pageIndex"] = pageIndex;
@@ -181,6 +182,29 @@ function searchWeiBoList(query,searchType,pageIndex, beforeLoad, afterLoad, ifEr
     }
 
     postWithToken(searchWeiBoUrl, JSON.stringify(obj), beforeLoad, afterLoad, ifError, timeOut)
+}
+
+// 删除微博
+function toDeleteWeiBoById(weiBoId){
+    swal({
+        title:"警告",
+        text:"删除后将无法恢复，请谨慎操作！",
+        dangerMode: true,
+        buttons: true,
+    }).then(function(isConfirm) {
+        if(isConfirm){
+            deleteWeiBoById(weiBoId
+                ,function () {
+                    
+                },function () {
+                    toastr.info("删除成功");
+                    refreshUserInfo(true);
+                },function (errorMessage) {
+                    toastr.error(errorMessage);
+                });
+        }
+    });
+
 }
 
 function searchUserList(query,pageIndex, beforeLoad, afterLoad, ifError, timeOut) {
@@ -379,13 +403,20 @@ function addOneWeiBo(data) {
         '<div class="col-sm-6 col-xs-6"><span style="font-weight: bold;">'+data.author.nickname+'</span></div>';
     if(data.author.userId === parseInt(handleLocalStorage("get",userIdStorageKey))){
         div +=  '<div class="col-sm-6 col-xs-6">\n' +
+                    '<div class="pull-right">\n' +
+                        '<button type="button" onclick="toDeleteWeiBoById('+data.weiboId+')" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="删除">\n' +
+                        '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>'+
+                        '<button type="button" onclick="toEditWeiBoById('+data.weiboId+')" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="编辑">\n' +
+                        '<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>\n' +
+                    '</div>'+
+                '</div>';
+    }else if(handleLocalStorage("get",adminStorageKey)){
+        div +=  '<div class="col-sm-6 col-xs-6">\n' +
             '<div class="pull-right">\n' +
             '<button type="button" onclick="toDeleteWeiBoById('+data.weiboId+')" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="删除">\n' +
-            '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>\n' +
-            '<button type="button" onclick="toEditWeiBoById('+data.weiboId+')" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="编辑">\n' +
-            '<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>\n' +
+            '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>'+
             '</div>'+
-            '</div>';
+        '</div>';
     }
     div += '</div>\n' +
         '<div class="row">\n' +

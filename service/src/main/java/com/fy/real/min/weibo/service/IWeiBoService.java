@@ -1,9 +1,6 @@
 package com.fy.real.min.weibo.service;
 
-import com.fy.real.min.weibo.model.weibo.PostWeiboRequest;
-import com.fy.real.min.weibo.model.weibo.WeiBoListRequest;
-import com.fy.real.min.weibo.model.weibo.WeiBoListResponse;
-import com.fy.real.min.weibo.model.weibo.WeiBoSearchRequest;
+import com.fy.real.min.weibo.model.weibo.*;
 
 /**
  * [Create]
@@ -34,4 +31,6 @@ public interface IWeiBoService {
     WeiBoListResponse list(WeiBoListRequest request);
 
     WeiBoListResponse search(WeiBoSearchRequest request);
+
+    Boolean delete(DeleteWeiBoRequest request);
 }

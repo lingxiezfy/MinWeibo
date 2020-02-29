@@ -200,11 +200,13 @@
     }
 
     //加载用户信息
-    function refreshUserInfo(){
+    function refreshUserInfo(refreshList){
         loadUserInfo(null,
             function (userInfo) {
                 //加载用户之后，加载微博列表
-                refreshWeiBoList();
+                if(refreshList){
+                    refreshWeiBoList();
+                }
                 $(".userInfo.nickname").html(userInfo.nickname);
                 $(".userInfo.username").html(userInfo.username);
                 $(".userInfo.weiboCount").html(userInfo.weiboCount);
@@ -364,7 +366,7 @@
         });
 
         // 初始化页面信息
-        refreshUserInfo();
+        refreshUserInfo(true);
         $("#weiBoItem").empty();
         $(".loadingWeiBo").hide();
         $(".notAnyMoreWeiBo").hide();

@@ -33,6 +33,7 @@ CREATE TABLE `user`
     follow_count int(11) default 0 not null comment '关注数',
     fans_count int(11) default 0 not null comment '粉丝数',
     useful int(11) default 1 not null comment '是否有效（0：无效，1有效）',
+    admin_able int(11) default 0 not null comment '是否管理（0：否，1是）',
     create_time datetime default CURRENT_TIMESTAMP not null comment '创建时间',
     update_time datetime default CURRENT_TIMESTAMP not null comment '更新时间',
     PRIMARY KEY (user_id)

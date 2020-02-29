@@ -110,10 +110,12 @@
         console.log(user);
     }
     //加载用户信息
-    function refreshUserInfo(){
+    function refreshUserInfo(refreshList){
         loadUserInfo(getQueryVariable('userId'),
             function (userInfo) {
-                refreshWeiBoList();
+                if(refreshList){
+                    refreshWeiBoList();
+                }
                 $(".userInfo.username").html(userInfo.username);
             }
             , function (errorMessage) {
@@ -223,7 +225,7 @@
 
     $(function () {
         //页面初始化
-        refreshUserInfo();
+        refreshUserInfo(true);
         $("#weiBoItem").empty();
         $(".loadingWeiBo").hide();
         $(".notAnyMoreWeiBo").hide();

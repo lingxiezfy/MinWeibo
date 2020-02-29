@@ -25,6 +25,7 @@ public class UserLoginView extends UserView implements Serializable {
         if(user == null) return new UserLoginView();
         UserLoginView loginView = JSON.parseObject(JSON.toJSONString(user),UserLoginView.class);
         loginView.setToken(token);
+        loginView.setAdmin(user.getAdminAble() == 1);
         return loginView;
     }
 }

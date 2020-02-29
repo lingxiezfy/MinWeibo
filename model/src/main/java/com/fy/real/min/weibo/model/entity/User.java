@@ -67,6 +67,11 @@ public class User implements Serializable {
     private Integer useful;
 
     /**
+     * 是否管理员 0 否，1 是
+     */
+    private Integer adminAble;
+
+    /**
      * 创建时间
      */
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
@@ -166,6 +171,14 @@ public class User implements Serializable {
 
     public void setUseful(Integer useful) {
         this.useful = useful;
+    }
+
+    public Integer getAdminAble() {
+        return adminAble;
+    }
+
+    public void setAdminAble(Integer adminAble) {
+        this.adminAble = adminAble;
     }
 
     public Date getCreateTime() {

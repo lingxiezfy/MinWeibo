@@ -168,4 +168,24 @@ public class WeiBoServiceImpl implements IWeiBoService {
     }
 
     //endregion
+
+
+    @Override
+    public Boolean delete(DeleteWeiBoRequest request) {
+        Weibo weibo = weiboDao.selectByPrimaryKey(request.getWeiBoId());
+        if (weibo == null
+                || !(weibo.getUserId().equals(request.getCurrentUser().getUserId())
+                || request.getCurrentUser().getAdminAble() == 1)) {
+            throw new WeiBoException("删除失败，无删除权限");
+        }
+        Weibo deleteWeiBo = new Weibo();
+        deleteWeiBo.setWeiboId(weibo.getWeiboId());
+        deleteWeiBo.setUseful(0);
+        weiboDao.updateByPrimaryKeySelective(deleteWeiBo);
+        User updateUser = new User();
+        updateUser.setUserId(weibo.getUserId());
+        updateUser.setWeiboCount(-1);
+        userDao.updateCountColumn(updateUser);
+        return true;
+    }
 }

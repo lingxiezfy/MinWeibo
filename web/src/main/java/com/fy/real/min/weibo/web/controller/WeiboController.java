@@ -3,10 +3,7 @@ package com.fy.real.min.weibo.web.controller;
 import com.fy.real.min.weibo.model.base.BaseResponse;
 import com.fy.real.min.weibo.model.entity.User;
 import com.fy.real.min.weibo.model.enums.ResponseCodeEnum;
-import com.fy.real.min.weibo.model.weibo.PostWeiboRequest;
-import com.fy.real.min.weibo.model.weibo.WeiBoListRequest;
-import com.fy.real.min.weibo.model.weibo.WeiBoListResponse;
-import com.fy.real.min.weibo.model.weibo.WeiBoSearchRequest;
+import com.fy.real.min.weibo.model.weibo.*;
 import com.fy.real.min.weibo.service.IWeiBoService;
 import com.fy.real.min.weibo.util.utils.UploadImageUtils;
 import com.fy.real.min.weibo.web.annotation.CurrentUser;
@@ -14,10 +11,7 @@ import com.fy.real.min.weibo.web.annotation.UserLoginToken;
 import com.fy.real.min.weibo.web.controller.common.BaseApiController;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -97,6 +91,15 @@ public class WeiboController extends BaseApiController {
     public BaseResponse<WeiBoListResponse> search(@RequestBody WeiBoSearchRequest request, @CurrentUser User user){
         request.setCurrentUser(user);
         return this.exec(request,(r)->weiBoService.search(r));
+    }
+
+    @GetMapping("delete/{weiBoId}")
+    @UserLoginToken
+    public BaseResponse<Boolean> delete(@PathVariable("weiBoId") Integer weiBoId, @CurrentUser User user){
+        DeleteWeiBoRequest request = new DeleteWeiBoRequest();
+        request.setWeiBoId(weiBoId);
+        request.setCurrentUser(user);
+        return this.exec(request,(r)->weiBoService.delete(r));
     }
 
 }

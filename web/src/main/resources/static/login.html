@@ -263,6 +263,11 @@
                 if (response.success && response.code === '200') {
                     handleLocalStorage("set", userTokenStorageKey, response.result.token);
                     handleLocalStorage("set", userIdStorageKey, response.result.userId);
+                    if(response.result.admin){
+                        handleLocalStorage("set", adminStorageKey, response.result.admin);
+                    }else {
+                        handleLocalStorage("remove", adminStorageKey);
+                    }
                     //跳转主页
                     toastr.info('登录成功');
                     document.getElementById("loginForm").reset();
@@ -300,6 +305,11 @@
                 if (response.success && response.code === '200') {
                     handleLocalStorage("set", userTokenStorageKey, response.result.token);
                     handleLocalStorage("set", userIdStorageKey, response.result.userId);
+                    if(response.result.admin){
+                        handleLocalStorage("set", adminStorageKey, response.result.admin);
+                    }else {
+                        handleLocalStorage("remove", adminStorageKey);
+                    }
                     //跳转主页
                     toastr.info('注册成功');
                     document.getElementById("registerForm").reset();

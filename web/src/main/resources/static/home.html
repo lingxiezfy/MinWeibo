@@ -127,19 +127,11 @@
 <script src="js/bootstrap.min.js"></script>
 <script src="js/viewer-jquery.min.js"></script>
 <script src="js/toastr.min.js"></script>
-<script src="js/sweetalert.min.js"></script>
+<script src="js/sweetalert2.all.min.js"></script>
 <script src="js/common.js"></script>
 <script type="text/javascript">
     toastr.options.positionClass = 'toast-bottom-right';
     toastr.options.timeOut = 1200;
-
-    //打开评论界面
-    function openWeiboComment(id) {
-        console.log(id);
-    }
-
-
-
 
     // 发私信
     function toMessageUser(userId){
@@ -223,8 +215,6 @@
                 $(".loadingWeiBo").show();
                 isLoading = true;
             }, function (response) {
-                console.log(response);
-
                 $(".loadingWeiBo").hide();
                 if(response.totalCount === 0){
                     $(".nonWeiBo").show();

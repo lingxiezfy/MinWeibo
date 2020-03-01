@@ -11,3 +11,37 @@
 .nonWeiBo {
     cursor: pointer;
 }
+
+.comment-top{
+    margin-top: 10px;
+}
+.modal-body-height{
+    max-height: 50vh;
+    overflow:auto;
+}
+#commentList .author-face{
+    min-height: 40px;
+    max-height: 40px;
+    min-width: 40px;
+    max-width: 40px;
+}
+#commentModal .modal-body{
+    background-color: #eae4e4a6;
+}
+
+#commentList .comment-time{
+    display: inline-block;
+    margin-top: 6px;
+}
+#commentList .comment-content{
+    margin-left: -30px;
+}
+#commentList .comment-author-header{
+    margin-right: -10px;
+}
+#commentList a{
+    cursor: pointer;
+}
+#commentList .comment-tools{
+    margin-right: -40px;
+}

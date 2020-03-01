@@ -39,6 +39,15 @@ var userCollectWeiBoUrl = serviceUrlBase + "weibo/collect/list";
 var likesWeiBoUrl = serviceUrlBase + "weibo/likes/";
 var cancelLikesUrl = serviceUrlBase + "weibo/likes/cancel/";
 
+// 评论列表
+var commentListUrl = serviceUrlBase + "comment/list";
+// 添加评论
+var addCommentUrl = serviceUrlBase + "comment/add";
+// 评论点赞
+var likeCommentUrl = serviceUrlBase + "comment/likes/";
+// 取消点赞
+var cancelLikeCommentUrl = serviceUrlBase + "comment/cancelLikes/";
+
 var userTokenHeaderKey = "ACCESS_TOKEN";
 var userTokenStorageKey = "MINIWeiBo_token";
 var userIdStorageKey = "MINIWeiBo_userId";
@@ -100,13 +109,14 @@ function handleLocalStorage(method, key, value) {
 function loginExpeirFilter(response) {
     if (response && response.code && "301" === response.code) {
         var message = response.message ? response.message : "登录信息已过期，请重新登录";
-        setTimeout(function () {
-            window.location.href = 'login.html'
-        }, 1500);
         //跳转登录页
-        swal(message, {
-            buttons: false,
-            timer: 2000,
+        Swal.fire({
+            icon: 'error',
+            title: message,
+            showConfirmButton: false,
+            timer: 1000
+        }).then(function () {
+            window.location.href = 'login.html'
         });
         return false;
     }
@@ -290,13 +300,16 @@ function toUserIndex(userId){
 }
 // 删除微博
 function toDeleteWeiBoById(weiBoId){
-    swal({
+    Swal.fire({
+        icon:'warning',
         title:"警告",
         text:"删除后将无法恢复，请谨慎操作！",
-        dangerMode: true,
-        buttons: true,
-    }).then(function(isConfirm) {
-        if(isConfirm){
+        confirmButtonText: '确认删除',
+        showCloseButton: true,
+        showCancelButton: true,
+        cancelButtonText:'取消',
+    }).then((result)=> {
+        if(result.value){
             deleteWeiBoById(weiBoId
                 ,function () {
 
@@ -316,30 +329,252 @@ function deleteWeiBoById(weiBoId,before,after,error) {
     getWithToken(deleteWeiBoUrl+weiBoId,before,after,error)
 }
 
-//打开转发界面
-function openWeiboRePost(ele,weiBoId) {
-    swal({
-        text: '转发理由',
-        content: "input",
-        button: {
-            text: "转发",
-            closeModal: true,
+// 评论模态框 打开监听 加载数据
+$('#commentModal').on('show.bs.modal',function (event) {
+    var a = $(event.relatedTarget);
+    var weiBoId = a.data('weiboid');
+    $('#commentBtn').attr('onclick','addComment('+weiBoId+')');
+    loadOnePageCommentToModal(weiBoId,1);
+});
+// 评论模态框 关闭监听 重置模态框
+$('#commentModal').on('hidden.bs.modal',function (event) {
+    $('#commentBtn').removeAttr('onclick');
+    $('#commentList').empty();
+    $('#commentContent').val('');
+    $('#commentPageBox .totalCount').html('0');
+    $('#commentPageBox .pageIndex').html('0');
+    $('#commentPageBox .totalPage').html('0');
+    $('#commentPageBox .prePage').attr('disabled','disabled');
+    $('#commentPageBox .nextPage').attr('disabled','disabled');
+    $('#commentPageBox .prePage').removeAttr('onclick');
+    $('#commentPageBox .nextPage').removeAttr('onclick');
+    modalMessage('')
+});
+$('#commentModal').on('hide.bs.modal',function (event) {
+    refreshWeiBoList();
+});
+
+function loadOnePageCommentToModal(weiBoId,pageIndex) {
+    commentList(
+        weiBoId,
+        pageIndex,
+        function () {
+            modalMessage('warring','加载中...')
         },
-    }).then(value => {
-        weiBoRePost(weiBoId,
-            value,
-            function () {},
-            function (result) {
-                if(result){
-                    toastr.info("转发成功");
-                    refreshUserInfo(true);
+        function (response) {
+            if(response.list.length > 0){
+                $('#commentList').empty();
+                for (var comment of response.list) {
+                    addOneCommentToModal(comment);
+                }
+                modalMessage('success','加载成功');
+            }else {
+                modalMessage('');
+                $('#commentList').append('<p class="col-xs-12 text-center" style="color: red">暂无评论，来发表你的意见吧！</p>');
+            }
+            $('#commentPageBox .totalCount').html(response.totalCount);
+            $('#commentPageBox .pageIndex').html(response.pageIndex);
+            $('#commentPageBox .totalPage').html(response.totalPage);
+
+            if(response.pageIndex <= 1){
+                $('#commentPageBox .prePage').attr('disabled','disabled');
+                $('#commentPageBox .prePage').removeAttr('onclick');
+            }else {
+                $('#commentPageBox .prePage').removeAttr('disabled');
+                $('#commentPageBox .prePage').attr('onclick','loadOnePageCommentToModal('+weiBoId+','+(response.pageIndex-1)+')');
+            }
+            if(response.pageIndex >= response.totalPage){
+                $('#commentPageBox .nextPage').attr('disabled','disabled');
+                $('#commentPageBox .nextPage').removeAttr('onclick');
+            }else {
+                $('#commentPageBox .nextPage').removeAttr('disabled');
+                $('#commentPageBox .nextPage').attr('onclick','loadOnePageCommentToModal('+weiBoId+','+(response.pageIndex+1)+')');
+            }
+        },function (errorMessage) {
+            modalMessage('error',errorMessage);
+        });
+}
+
+function commentList(weiBoId,pageIndex,before, after, error) {
+    var obj = {};
+    obj["pageIndex"] = pageIndex;
+    // 一次加载10条
+    obj["pageSize"] = 10;
+    obj["weiBoId"] = weiBoId;
+
+    postWithToken(commentListUrl, JSON.stringify(obj), before, after, error)
+}
+
+function addComment(weiBoId) {
+    var content =  $("#commentContent").val();
+    if(content){
+        var obj = {};
+        obj["weiBoId"] = weiBoId;
+        obj["content"] = content;
+        postWithToken(addCommentUrl,JSON.stringify(obj),
+            function () {
+                modalMessage('warring','正在回复...');
+            },
+            function (response) {
+                if(response){
+                    modalMessage('success','评论成功');
+                    $('#commentContent').val('');
+                    addOneCommentToModal(response,'prepend');
                 }else {
-                    toastr.error(errorMessage);
+                    modalMessage('error','评论失败！请稍后再试');
                 }
             },
             function (errorMessage) {
-                toastr.error(errorMessage);
+                $('#commentPageBox .errorMessage').html(errorMessage);
             });
+    }else {
+        modalMessage('error','请输入评论内容！');
+    }
+}
+
+function addOneCommentToModal(comment,position) {
+    var faceUrl = "img/icon.png";
+    if (comment.author && comment.author.face && comment.author.face.length > 0) {
+        faceUrl = "upload/" + comment.author.face;
+    }
+    var div = '<div class="col-xs-12 comment-item">' +
+            '<div class="col-xs-2 comment-author-header">' +
+                '<img src="'+faceUrl+'" alt="头像" class="img-responsive img-circle author-face">' +
+            '</div>' +
+            '<div class="col-xs-10 comment-content">' +
+                '<div>' +
+                    '<a onclick="toUserIndex('+comment.author.userId+')"><strong><span>'+comment.author.nickname+'</span></strong></a>:&nbsp;<span>'+comment.commentContent+'</span>' +
+                '</div>' +
+                '<div class="clearfix comment-tools" >' +
+                    '<div class="pull-right">' +
+                        '<a ' +
+                            ' data-commentid="'+comment.commentId+'" ' +
+                            'onclick="commentLikes(this)"' +
+                            '>赞('+comment.likesCount+')</a>' +
+                    '</div>' +
+                    '<div class="pull-left">' +
+                        '<p class="text-muted"><small class="comment-time">'+comment.createTime+'</small></p>'+
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    if(position && position === 'prepend'){
+        $('#commentList').prepend(div);
+    }else {
+        $('#commentList').append(div);
+    }
+    $('#commentCollapse'+comment.commentId).on('show.bs.collapse',function (event) {
+        var a = $(event.relatedTarget);
+        var nickname = a.data('nickname');
+        var commentId = a.data('commentid');
+        var commentUserId = a.data('commentuserid');
+        console.log(nickname+" "+commentId+" "+" "+commentUserId);
+    });
+}
+
+function commentLikes(ele) {
+    var a = $(ele);
+    var commentId = a.data('commentid');
+    getWithToken(likeCommentUrl+commentId,
+        function () {
+            a.attr('disabled','disabled');
+            modalMessage('warring','点赞中...')
+        },
+        function (result) {
+            if(result){
+               a.html('取消赞('+result+')');
+               a.attr('onclick','cancelCommentLikes(this)');
+               a.removeAttr('disabled');
+                modalMessage('success','点赞成功')
+            }
+        },function (errorMessage) {
+            modalMessage('error',errorMessage)
+        });
+}
+function cancelCommentLikes(ele) {
+    var a = $(ele);
+    var commentId = a.data('commentid');
+    getWithToken(cancelLikeCommentUrl+commentId,
+        function () {
+            a.attr('disabled','disabled');
+            modalMessage('warring','取消中...');
+        },
+        function (result) {
+            a.html('赞('+(result?result:0)+')');
+            a.attr('onclick','commentLikes(this)');
+            a.removeAttr('disabled');
+            modalMessage('success','取消成功')
+        },function (errorMessage) {
+            modalMessage('error',errorMessage)
+        });
+}
+
+function getCommentBtn(name) {
+    return '<div class="row">' +
+        '<div class="col-xs-12">' +
+        '<div class="input-group">' +
+        '<input class="form-control commentContent" placeholder="回复@'+name+'" type="text" >' +
+        '<span class="input-group-btn">' +
+        '<button class="btn btn-warning commentBtn" type="button">回复</button>' +
+        '</span>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
+}
+
+function modalMessage(type,message) {
+    switch (type) {
+        case 'success':
+            $('#commentPageBox .errorMessage').html('');
+            $('#commentPageBox .successMessage').html(message);
+            $('#commentPageBox .warringMessage').html('');
+            break;
+        case 'warring':
+            $('#commentPageBox .errorMessage').html('');
+            $('#commentPageBox .successMessage').html('');
+            $('#commentPageBox .warringMessage').html(message);
+            break;
+        case 'error':
+            $('#commentPageBox .errorMessage').html(message);
+            $('#commentPageBox .successMessage').html('');
+            $('#commentPageBox .warringMessage').html('');
+            break;
+        default:
+            $('#commentPageBox .errorMessage').html(message);
+            $('#commentPageBox .successMessage').html('');
+            $('#commentPageBox .warringMessage').html('');
+
+    }
+}
+
+//打开转发界面
+function openWeiboRePost(ele,weiBoId) {
+    Swal.fire({
+        title: '转发理由',
+        input: "textarea",
+        inputPlaceholder:"转发了",
+        showCancelButton: true,
+        cancelButtonText:'取消',
+        confirmButtonText: '转发',
+        showCloseButton: true,
+    }).then((result) => {
+        if(!result.dismiss){
+            weiBoRePost(weiBoId,
+                result.value,
+                function () {},
+                function (response) {
+                    if(response){
+                        toastr.info("转发成功");
+                        refreshUserInfo(true);
+                    }else {
+                        toastr.error(errorMessage);
+                    }
+                },
+                function (errorMessage) {
+                    toastr.error(errorMessage);
+                });
+        }
+
     })
 }
 function weiBoRePost(weiBoId,content,before,after,error) {
@@ -402,7 +637,7 @@ function weiboLikes(ele,weiBoId) {
             toastr.error(errorMessage);
         });
 }
-//取消收藏
+//取消点赞
 function cancelLikes(ele,weiBoId,refreshList) {
     var jqEle = $(ele);
     getWithToken(cancelLikesUrl+weiBoId,
@@ -532,44 +767,58 @@ function goLogin(message) {
     handleLocalStorage("remove", userTokenStorageKey);
     //跳转登录页
     if (message) {
-        swal(message, {
-            buttons: false,
-            timer: 3000,
+        Swal.fire({
+            icon: 'success',
+            title: message,
+            showConfirmButton: false,
+            timer: 1500
+        }).then(function () {
+            window.location.href = 'login.html'
         });
-    }
-
-    setTimeout(function () {
+    }else {
         window.location.href = 'login.html'
-    }, 2000);
+    }
 }
 
 
 // 去主页
 function goWeiBoIndex(message, timeOut) {
-    //跳转登录页
+    // 去主页
     if (message) {
-        swal(message, {
-            buttons: false,
-            timer: timeOut,
+        Swal.fire({
+            icon: 'success',
+            title: message,
+            showConfirmButton: false,
+            timer: timeOut
+        }).then(function () {
+            window.location.href = 'index.html'
         });
+    }else {
+        delayOrimmediatelyOp(function () {
+            window.location.href = 'index.html'
+        }, timeOut);
     }
 
-    delayOrimmediatelyOp(function () {
-        window.location.href = 'index.html'
-    }, timeOut);
+
 }
 
 // 页面跳转
 function toPage(url, message, timeOut) {
     if (message) {
-        swal(message, {
-            buttons: false,
-            timer: timeOut,
+        Swal.fire({
+            icon:"info",
+            title: message,
+            showConfirmButton: false,
+            timer: timeOut
+        }).then(function () {
+            window.location.href = url
         });
+    }else {
+        delayOrimmediatelyOp(function () {
+            window.location.href = url
+        }, timeOut);
     }
-    delayOrimmediatelyOp(function () {
-        window.location.href = url
-    }, timeOut);
+
 }
 
 //添加一条微博
@@ -666,7 +915,7 @@ function addOneWeiBo(data,type) {
                         '<div class="pull-right repost_weiBo_tools">\n' +
                             '<small class="date" style="color:#999"><a onclick="weiboCollect(this,'+data.repostWeiBo.weiboId+')" class="first_item"><span class="glyphicon glyphicon-star-empty"></span><em>收藏</em>(<span class="countNumber">'+data.repostWeiBo.collectCount+'</span>)</a></small>' +
                             '<small class="date" style="color:#999"><a onclick="openWeiboRePost(this,'+data.repostWeiBo.weiboId+')"><span class="glyphicon glyphicon-share-alt"></span><em>转发</em>(<span class="countNumber">'+data.repostWeiBo.repostCount+'</span>)</a></small>\n' +
-                            '<small class="date" style="color:#999"><a onclick="openWeiboComment(this,'+data.repostWeiBo.weiboId+')"><span class="glyphicon glyphicon-comment"></span><em>评论</em>(<span class="countNumber">'+data.repostWeiBo.commentCount+'</span>)</a></small>\n' +
+                            '<small class="date" style="color:#999"><a data-toggle="modal" data-target="#commentModal" data-weiboid="'+data.repostWeiBo.weiboId+'" data-backdrop="static" data-keyboard="false"><span class="glyphicon glyphicon-comment"></span><em>评论</em>(<span class="countNumber">'+data.repostWeiBo.commentCount+'</span>)</a></small>\n' +
                             '<small class="date" style="color:#999"><a onclick="weiboLikes(this,'+data.repostWeiBo.weiboId+')"><span class="glyphicon glyphicon-thumbs-up"></span><em>点赞</em>(<span class="countNumber">'+data.repostWeiBo.likesCount+'</span>)</a></small>\n' +
                         '</div>';
                     }else {
@@ -686,7 +935,7 @@ function addOneWeiBo(data,type) {
         '                                            class="glyphicon glyphicon-star-empty"></span><em>收藏</em>(<span class="countNumber">'+data.collectCount+'</span>)</a></li>\n' +
         '                                    <li class=""><a onclick="openWeiboRePost(this,'+data.weiboId+')"><span\n' +
         '                                            class="glyphicon glyphicon-share-alt"></span><em>转发</em>(<span class="countNumber">'+data.repostCount+'</span>)</a></li>\n' +
-        '                                    <li class=""><a onclick="openWeiboComment(this,'+data.weiboId+')"><span\n' +
+        '                                    <li class=""><a data-toggle="modal" data-target="#commentModal" data-weiboid="'+data.weiboId+'" data-backdrop="static" data-keyboard="false"><span\n' +
         '                                            class="glyphicon glyphicon-comment"></span><em>评论</em>(<span class="countNumber">'+data.commentCount+'</span>)</a></li>\n' +
         '                                    <li class=""><a onclick="weiboLikes(this,'+data.weiboId+')"><span\n' +
         '                                            class="glyphicon glyphicon-thumbs-up"></span><em>点赞</em>(<span class="countNumber">'+data.likesCount+'</span>)</a></li>\n' +

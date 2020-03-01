@@ -21,6 +21,25 @@
     from comment
     where comment_id = #{commentId,jdbcType=INTEGER}
   </select>
+  <select id="query" parameterType="com.fy.real.min.weibo.model.entity.Comment" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from comment
+    <where>
+      <if test="commentId != null">
+        comment_id = #{commentId}
+      </if>
+      <if test="userId != null">
+        and  user_id = #{userId}
+      </if>
+      <if test="weiboId != null">
+        and weibo_id = #{weiboId}
+      </if>
+      <if test="useful != null">
+        and useful = #{useful}
+      </if>
+    </where>
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from comment
     where comment_id = #{commentId,jdbcType=INTEGER}
@@ -118,6 +137,23 @@
       useful = #{useful,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where comment_id = #{commentId,jdbcType=INTEGER}
+  </update>
+  <update id="updateCountColumn" parameterType="com.fy.real.min.weibo.model.entity.Comment">
+    update comment set
+    <if test="likesCount != null and likesCount != 0">
+      likes_count =
+      <choose>
+        <when test="likesCount > 0">
+          likes_count + #{likesCount,jdbcType=INTEGER}
+        </when>
+        <otherwise>
+          likes_count #{likesCount,jdbcType=INTEGER}
+        </otherwise>
+      </choose>
+      ,
+    </if>
+    update_time = now()
     where comment_id = #{commentId,jdbcType=INTEGER}
   </update>
 </mapper>

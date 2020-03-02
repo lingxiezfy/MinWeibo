@@ -1,0 +1,4 @@
+.discussion .dialogs{
+    max-height: 48vh;
+    overflow: auto;
+}

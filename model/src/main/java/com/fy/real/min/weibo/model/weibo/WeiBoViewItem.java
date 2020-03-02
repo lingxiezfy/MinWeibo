@@ -78,6 +78,9 @@ public class WeiBoViewItem implements Serializable {
 
     private Boolean delete;
 
+    private Integer discussionId = 0;
+    private Boolean discussionAlive = false;
+
     /**
      * 转发的微博单项
      */

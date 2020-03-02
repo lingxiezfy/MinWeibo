@@ -368,9 +368,10 @@
                         $("#content").empty();
                         $(".tips").text("");
                         sendDisabled();
-
-                        refreshWeiBoList();
-                        refreshUserInfo();
+                        refreshUserInfo(true);
+                        if(data.result && data.result.discussionId){
+                            toDiscussion(this,data.result.discussionId);
+                        }
 
                     }else {
                         toastr.error(data.message);

@@ -95,6 +95,52 @@
         </div>
     </div>
 </div>
+<!-- Comment 评论模态框 -->
+<div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="commentModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="commentModalTitle">发表意见</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="input-group">
+                            <input class="form-control" placeholder="回复博主" type="text" id="commentContent">
+                            <span class="input-group-btn">
+                                <button class="btn btn-warning" type="button" id="commentBtn">回复</button>
+                            </span>
+                        </div><!-- /input-group -->
+                    </div>
+                </div><!-- /.row -->
+                <hr/>
+                <div class="row comment-top modal-body-height" id="commentList">
+
+                </div>
+                <hr/>
+                <div class="row comment-top clearfix" id="commentPageBox">
+                    <div class="col-xs-12">
+                        <div class="pull-right">
+                            共<span class="totalCount">0</span>条评论 &nbsp;
+                            当前第<span class="pageIndex">0</span>/<span class="totalPage">0</span>页&nbsp;
+                            <div class="btn-group btn-group-xs" role="group" aria-label="...">
+                                <button type="button" class="btn btn-default prePage">上一页</button>
+                                <button type="button" class="btn btn-default nextPage">下一页</button>
+                            </div>
+                        </div>
+                        <div class="pull-left">
+                            <span class="warringMessage" style="color: #f1a417"></span>
+                            <span class="successMessage" style="color: green"></span>
+                            <span class="errorMessage" style="color: red"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="js/jquery-3.1.0.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/viewer-jquery.min.js"></script>

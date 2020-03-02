@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta charset="utf-8"/>
+	<title>MINI微社区-趣味讨论</title>
+
+    <meta name="description" content="overview &amp; stats"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+
+    <!-- bootstrap & fontawesome -->
+    <link rel="stylesheet" href="ace/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="ace/font-awesome/4.5.0/css/font-awesome.min.css"/>
+
+    <!-- page specific plugin styles -->
+	<link href="css/toastr.min.css" rel="stylesheet">
+
+    <!-- text fonts -->
+    <link rel="stylesheet" href="ace/css/fonts.googleapis.com.css"/>
+
+    <!-- ace styles -->
+    <link rel="stylesheet" href="ace/css/ace.min.css" class="ace-main-stylesheet" id="main-ace-style"/>
+
+    <!--[if lte IE 9]>
+    <link rel="stylesheet" href="ace/css/ace-part2.min.css" class="ace-main-stylesheet"/>
+    <![endif]-->
+    <link rel="stylesheet" href="ace/css/ace-skins.min.css"/>
+    <link rel="stylesheet" href="ace/css/ace-rtl.min.css"/>
+
+    <!--[if lte IE 9]>
+    <link rel="stylesheet" href="ace/css/ace-ie.min.css"/>
+    <![endif]-->
+
+    <!-- inline styles related to this page -->
+	<link rel="stylesheet" href="css/chat.css">
+    <!-- ace settings handler -->
+    <script src="ace/js/ace-extra.min.js"></script>
+
+    <!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
+
+    <!--[if lte IE 8]>
+    <script src="ace/js/html5shiv.min.js"></script>
+    <script src="ace/js/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body class="skin-1">
+<div class="main-container ace-save-state" id="main-container">
+    <div class="main-content">
+        <div class="main-content-inner">
+
+            <div class="page-content">
+                <div class="page-header">
+                    <h1>
+                        热门讨论
+                        <small>
+                            <i class="ace-icon fa fa-angle-double-right"></i>
+                            <span class="content">content</span>
+                        </small>
+						<small>
+							<i class="ace-icon fa fa-angle-double-right"></i>有效期：
+							<span class="aliveTime">0分0秒</span>
+						</small>
+                    </h1>
+                </div><!-- /.page-header -->
+
+                <!-- PAGE CONTENT BEGINS -->
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="widget-box">
+                            <div class="widget-header">
+                                <h4 class="widget-title lighter smaller">
+                                    <i class="ace-icon fa fa-comment blue"></i>
+                                    实时讨论
+                                </h4>
+                            </div>
+
+                            <div class="widget-body discussion">
+                                <div class="widget-main no-padding">
+                                    <div class="dialogs">
+
+
+                                    </div>
+
+
+                                    <div class="form-actions">
+                                        <div class="input-group">
+                                            <input placeholder="输入消息" id="dialogsMessage" type="text" class="form-control" name="message"/>
+                                            <span class="input-group-btn">
+												<button class="btn btn-sm btn-info no-radius" type="button" id="sendMessageBtn">
+													<i class="ace-icon fa fa-share"></i>
+													发送
+												</button>
+											</span>
+                                        </div>
+                                    </div>
+                                </div><!-- /.widget-main -->
+                            </div><!-- /.widget-body -->
+                        </div><!-- /.widget-box -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+
+                <!-- PAGE CONTENT ENDS -->
+            </div><!-- /.page-content -->
+        </div>
+    </div><!-- /.main-content -->
+
+    <div class="footer">
+        <div class="footer-inner">
+            <div class="footer-content">
+						<span class="bigger-120">
+							<span class="blue bolder">MINI微社区</span>-版权所有。 &copy; 2020-2030
+						</span>
+            </div>
+        </div>
+    </div>
+</div><!-- /.main-container -->
+
+<!-- basic scripts -->
+
+<!--[if !IE]> -->
+<script src="ace/js/jquery-2.1.4.min.js"></script>
+
+<!-- <![endif]-->
+
+<!--[if IE]>
+<script src="ace/js/jquery-1.11.3.min.js"></script>
+<![endif]-->
+<script type="text/javascript">
+    if ('ontouchstart' in document.documentElement) document.write("<script src='ace/js/jquery.mobile.custom.min.js'>" + "<" + "/script>");
+</script>
+<script src="ace/js/bootstrap.min.js"></script>
+
+<!-- page specific plugin scripts -->
+<script src="js/toastr.min.js"></script>
+<script src="js/sweetalert2.all.min.js"></script>
+
+<!--[if lte IE 8]>
+<script src="ace/js/excanvas.min.js"></script>
+<![endif]-->
+<script src="ace/js/jquery-ui.custom.min.js"></script>
+
+<!-- ace scripts -->
+<script src="ace/js/ace-elements.min.js"></script>
+<script src="ace/js/ace.min.js"></script>
+
+<!-- inline scripts related to this page -->
+<script src="js/common.js"></script>
+<script src="js/discussion.js"></script>
+
+<script type="text/javascript">
+	window.onbeforeunload = function(event) {
+		return null;
+	};
+
+	function queryDiscussionInfo(){
+		var discussionId = parseInt(getQueryVariable('discussionId'));
+		if(discussionId){
+			getWithToken(discussionInfoUrl+discussionId
+					, function () {}
+					, function (result) {
+						$('.page-header .content').html(result.content);
+						$('.page-header .aliveTime').html(''+result.aliveTime+'');
+						$('#sendMessageBtn').attr('onclick','sendDiscussionMessage('+discussionId+')');
+						registerToServer(discussionId,result.userId);
+						$('.discussion .dialogs').append('<div class="itemdiv dialogdiv">\n' +
+								'<div class="user">\n' +
+								'<img alt="Alexa\'s Avatar" src="ace/images/avatars/avatar1.png"/>\n' +
+								'</div>\n' +
+								'<div class="body">\n' +
+								'<div class="time">\n' +
+								'<i class="ace-icon fa fa-clock-o"></i>\n' +
+								'<span class="green">刚刚</span>\n' +
+								'</div>\n' +
+								'<div class="name">\n' +
+								'<a style="color: red">管理员</a>\n' +
+								'</div>\n' +
+								'<div class="text">欢迎<span style="color: red">'+result.nickname+'</span>加入</div>\n' +
+								'</div>\n' +
+								'</div>');
+					}
+					, function (errorMessage) {
+						toastr.error(errorMessage);
+					})
+		}else {
+			Swal.fire({
+				icon: 'error',
+				title: '非正常进入!',
+				showConfirmButton: false,
+				timer: 1500
+			}).then(function () {
+				window.location='home.html?userId=';
+			});
+		}
+	}
+
+	function sendDiscussionMessage(discussionId,message) {
+		var message = $('#dialogsMessage').val();
+		if(!message){
+			toastr.error("消息不能为空");
+			return;
+		}
+		sendMessage(discussionId,message);
+		$('#dialogsMessage').val('');
+	}
+
+	function addOneMessage(message){
+		var faceUrl= 'ace/images/avatars/avatar1.png';
+		if(message.author && message.author.face){
+			faceUrl = 'upload/'+message.author.face;
+		}
+		var div = '<div class="itemdiv dialogdiv">\n' +
+				'<div class="user">\n' +
+				'<img alt="头像" src="'+faceUrl+'"/>\n' +
+				'</div>\n' +
+				'<div class="body">\n' +
+				'<div class="time">\n' +
+				'<i class="ace-icon fa fa-clock-o"></i>\n' +
+				'<span class="green">'+message.sendTime+'</span>\n' +
+				'</div>\n' +
+				'<div class="name">\n' +
+				'<a style="color: red">'+message.author.nickname+'</a>\n' +
+				'</div>\n' +
+				'<div class="text">'+message.content+'</div>\n' +
+				'</div>\n' +
+				'</div>';
+		$('.discussion .dialogs').append(div);
+	}
+
+    jQuery(function ($) {
+    	queryDiscussionInfo();
+    })
+</script>
+</body>
+</html>

@@ -152,7 +152,19 @@ CREATE TABLE `collect` (
     PRIMARY KEY (`collect_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
+-- ----------------------------
+-- Table structure for discussion 讨论
+-- ----------------------------
+DROP TABLE IF EXISTS `discussion`;
+CREATE TABLE `discussion` (
+                           `discussion_id` int(11) NOT NULL AUTO_INCREMENT comment '讨论组Id',
+                           `user_id` int(11) DEFAULT 0 not null comment '群主id',
+                           `weibo_id` int(11) DEFAULT 0 not null comment '关联的微博id',
+                           alive_time datetime default '0001-01-01 00:00:00' not null comment '存活时间',
+                           create_time datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+                           update_time datetime default CURRENT_TIMESTAMP not null comment '更新时间',
+                           PRIMARY KEY (`discussion_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 

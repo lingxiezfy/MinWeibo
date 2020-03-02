@@ -41,11 +41,11 @@ public class WeiboController extends BaseApiController {
      */
     @UserLoginToken
     @PostMapping("post")
-    public BaseResponse post(HttpServletRequest request, @CurrentUser User user){
+    public BaseResponse<PostWeiboResponse> post(HttpServletRequest request, @CurrentUser User user){
         MultipartHttpServletRequest params=((MultipartHttpServletRequest) request);
         String content = params.getParameter("content");
         if(StringUtils.isBlank(content)){
-            BaseResponse response = new BaseResponse(ResponseCodeEnum.Response_600);
+            BaseResponse<PostWeiboResponse> response = new BaseResponse(ResponseCodeEnum.Response_600);
             response.setSuccess(false);
             response.setMessage("微博消息不能为空");
             return response;

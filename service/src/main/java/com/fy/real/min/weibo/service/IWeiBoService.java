@@ -19,9 +19,9 @@ public interface IWeiBoService {
      * <br/>
      * @param request 发送微博请求
      */
-    Boolean post(PostWeiboRequest request);
+    PostWeiboResponse post(PostWeiboRequest request);
 
-    Boolean rePost(RePostWeiboRequest request);
+    PostWeiboResponse rePost(RePostWeiboRequest request);
 
     /**
      * [Create]

@@ -48,6 +48,9 @@ var likeCommentUrl = serviceUrlBase + "comment/likes/";
 // 取消点赞
 var cancelLikeCommentUrl = serviceUrlBase + "comment/cancelLikes/";
 
+//讨论组信息
+var discussionInfoUrl = serviceUrlBase + "discussion/info/";
+
 var userTokenHeaderKey = "ACCESS_TOKEN";
 var userTokenStorageKey = "MINIWeiBo_token";
 var userIdStorageKey = "MINIWeiBo_userId";
@@ -151,6 +154,18 @@ function loadUserInfo(targetUserId,afterLoad, ifError, timeOut) {
                 ifError("访问远程服务器失败！");
             }, timeOut);
         }
+    });
+}
+
+function toDiscussion(ele,discussionId){
+    Swal.fire({
+        icon: 'success',
+        title: '即将进入趣味讨论!',
+        showConfirmButton: false,
+        timer: 1500
+    }).then(function () {
+        window.open('chat.html?discussionId='+discussionId
+            ,'discussion'+discussionId);
     });
 }
 
@@ -849,6 +864,10 @@ function addOneWeiBo(data,type) {
             if(type === 'collect'){
                 div +=  '<button type="button" onclick="cancelCollect(this,'+data.weiboId+',true)" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="移除收藏夹">\n' +
                     '<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>&nbsp;移除</button>';
+            }
+            if(data.discussionId){
+                div +=  '<button type="button" onclick="toDiscussion(this,'+data.discussionId+')" class="btn btn-warring btn-xs" data-toggle="tooltip" data-placement="bottom" title="进入讨论">\n' +
+                    '<span class="glyphicon glyphicon-fire" aria-hidden="true"></span>&nbsp;</button>';
             }
             div += '</div>'+
                 '</div>'+

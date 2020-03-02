@@ -1,14 +1,8 @@
 package com.fy.real.min.weibo.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.fy.real.min.weibo.dao.dao.CollectDao;
-import com.fy.real.min.weibo.dao.dao.LikesDao;
-import com.fy.real.min.weibo.dao.dao.UserDao;
-import com.fy.real.min.weibo.dao.dao.WeiboDao;
-import com.fy.real.min.weibo.model.entity.Collect;
-import com.fy.real.min.weibo.model.entity.Likes;
-import com.fy.real.min.weibo.model.entity.User;
-import com.fy.real.min.weibo.model.entity.Weibo;
+import com.fy.real.min.weibo.dao.dao.*;
+import com.fy.real.min.weibo.model.entity.*;
 import com.fy.real.min.weibo.model.exception.WeiBoException;
 import com.fy.real.min.weibo.model.user.UserView;
 import com.fy.real.min.weibo.model.weibo.*;
@@ -17,10 +11,12 @@ import com.fy.real.min.weibo.util.utils.ValidatorUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -47,7 +43,7 @@ public class WeiBoServiceImpl implements IWeiBoService {
     //region 发布微博
     private static final Pattern HOT_PATTERN = Pattern.compile("#(\\S+)# ");
     @Override
-    public Boolean post(PostWeiboRequest request) {
+    public PostWeiboResponse post(PostWeiboRequest request) {
         Weibo newWeiBo = new Weibo();
         newWeiBo.setUserId(request.getUser().getUserId());
         newWeiBo.setContent(request.getContent());
@@ -56,8 +52,13 @@ public class WeiBoServiceImpl implements IWeiBoService {
         }
         Matcher hotMatcher = WeiBoServiceImpl.HOT_PATTERN.matcher(request.getContent());
         StringBuilder topicBuild = new StringBuilder();
+        boolean discussionAble = false;
         while (hotMatcher.find()){
-            topicBuild.append(hotMatcher.group(1)).append(";");
+            String topic = hotMatcher.group(1);
+            topicBuild.append(topic).append(";");
+            if("趣味讨论".equals(topic)){
+                discussionAble = true;
+            }
         }
         newWeiBo.setTopic(topicBuild.toString());
         weiboDao.insertSelective(newWeiBo);
@@ -65,13 +66,22 @@ public class WeiBoServiceImpl implements IWeiBoService {
         countUser.setUserId(request.getUser().getUserId());
         countUser.setWeiboCount(1);
         userDao.updateCountColumn(countUser);
-        return Boolean.TRUE;
+
+        if(discussionAble){
+            Discussion discussion = new Discussion();
+            discussion.setWeiboId(newWeiBo.getWeiboId());
+            discussion.setUserId(request.getUser().getUserId());
+            discussion.setAliveTime(DateUtils.addHours(new Date(),2));
+            discussionDao.insertSelective(discussion);
+            return new PostWeiboResponse(newWeiBo.getWeiboId(),discussion.getDiscussionId());
+        }
+        return new PostWeiboResponse(newWeiBo.getWeiboId(),0);
     }
     //endregion 发布微博
 
 
     @Override
-    public Boolean rePost(RePostWeiboRequest request) {
+    public PostWeiboResponse rePost(RePostWeiboRequest request) {
         ValidatorUtil.validate(request);
         Weibo originWeiBo = weiboDao.selectByPrimaryKey(request.getWeiBoId());
         if(originWeiBo == null){
@@ -79,13 +89,19 @@ public class WeiBoServiceImpl implements IWeiBoService {
         }
         Weibo weibo = new Weibo();
         weibo.setUserId(request.getCurrentUser().getUserId());
+        boolean discussionAble = false;
         if(StringUtils.isBlank(request.getContent())){
             request.setContent("转发了");
         }else {
             Matcher hotMatcher = WeiBoServiceImpl.HOT_PATTERN.matcher(request.getContent());
             StringBuilder topicBuild = new StringBuilder();
+
             while (hotMatcher.find()){
-                topicBuild.append(hotMatcher.group(1)).append(";");
+                String topic = hotMatcher.group(1);
+                topicBuild.append(topic).append(";");
+                if("趣味讨论".equals(topic)){
+                    discussionAble = true;
+                }
             }
             if(topicBuild.length() > 0){
                 weibo.setTopic(topicBuild.toString());
@@ -105,7 +121,16 @@ public class WeiBoServiceImpl implements IWeiBoService {
         userCount.setUserId(request.getCurrentUser().getUserId());
         userCount.setWeiboCount(1);
         userDao.updateCountColumn(userCount);
-        return  true;
+
+        if(discussionAble){
+            Discussion discussion = new Discussion();
+            discussion.setWeiboId(weibo.getWeiboId());
+            discussion.setUserId(request.getCurrentUser().getUserId());
+            discussion.setAliveTime(DateUtils.addHours(new Date(),2));
+            discussionDao.insertSelective(discussion);
+            return new PostWeiboResponse(weibo.getWeiboId(),discussion.getDiscussionId());
+        }
+        return new PostWeiboResponse(weibo.getWeiboId(), 0);
     }
 
     //region 获取微博列表
@@ -149,6 +174,9 @@ public class WeiBoServiceImpl implements IWeiBoService {
         return response;
     }
 
+    @Autowired
+    DiscussionDao discussionDao;
+
     private List<WeiBoViewItem> covertWeiList(List<Weibo> weiBoList){
         List<WeiBoViewItem> list = new ArrayList<>();
         if(weiBoList == null || weiBoList.size() == 0){
@@ -163,6 +191,11 @@ public class WeiBoServiceImpl implements IWeiBoService {
         }else {
             rePostWeiBoList = new ArrayList<>();
         }
+        // 找出含有热门讨论的微博
+        List<Integer> weiBoIdList = weiBoList.stream().map(Weibo::getWeiboId).collect(Collectors.toList());
+        weiBoIdList.addAll(rePostIdList);
+        List<Discussion> discussionList = weiBoIdList.size()>0?discussionDao.queryByWeiBoIdList(weiBoIdList):new ArrayList<>();
+
         List<User> authorList = userDao.selectByUserIdList(userIdList);
 
         weiBoList.forEach(weiBo -> {
@@ -170,6 +203,13 @@ public class WeiBoServiceImpl implements IWeiBoService {
             User author = authorList.stream().filter(u->u.getUserId().equals(weiBo.getUserId())).findFirst().orElse(null);
             if(author == null) return;
             viewItem.setAuthor(UserView.convertFromUser(author));
+
+            Discussion discussion = discussionList.stream().filter(d->d.getWeiboId().equals(weiBo.getWeiboId())).findFirst().orElse(null);
+            if(discussion != null){
+                viewItem.setDiscussionId(discussion.getDiscussionId());
+                Date now = new Date();
+                viewItem.setDiscussionAlive(discussion.getAliveTime().getTime() > now.getTime());
+            }
             if(viewItem.getRepostId() > 0){
                 Optional<Weibo> optional = rePostWeiBoList.stream().filter(w->w.getWeiboId().equals(viewItem.getRepostId()) && w.getUseful() == 1).findFirst();
                 Weibo originWeiBo = optional.orElse(null);
@@ -178,6 +218,13 @@ public class WeiBoServiceImpl implements IWeiBoService {
                     viewItem.getRepostWeiBo().setAuthor(UserView.convertFromUser(
                             authorList.stream().filter(u->u.getUserId().equals(viewItem.getRepostWeiBo().getUserId())).findFirst().orElse(null)
                     ));
+
+                    Discussion discussionRe = discussionList.stream().filter(d->d.getWeiboId().equals(originWeiBo.getWeiboId())).findFirst().orElse(null);
+                    if(discussionRe != null){
+                        viewItem.getRepostWeiBo().setDiscussionId(discussionRe.getDiscussionId());
+                        Date now = new Date();
+                        viewItem.getRepostWeiBo().setDiscussionAlive(discussionRe.getAliveTime().getTime() > now.getTime());
+                    }
                 }
             }
             list.add(viewItem);

@@ -7,7 +7,6 @@ import java.util.Date;
 
 /**
  * reply
- * @author 
  */
 public class Reply implements Serializable {
     /**

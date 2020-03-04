@@ -25,9 +25,6 @@ import java.lang.reflect.Method;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/22 19:51 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 @Component

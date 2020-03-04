@@ -8,7 +8,6 @@ import java.util.Date;
 
 /**
  * discussion
- * @author 
  */
 @Data
 public class Discussion implements Serializable {

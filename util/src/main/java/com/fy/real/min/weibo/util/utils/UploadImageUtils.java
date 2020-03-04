@@ -13,10 +13,6 @@ import java.util.*;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/23 19:57 - Create
- *
- * @author fengyu.zhang
- * @version 1.0
  */
 public class UploadImageUtils {
     private static final Logger logger = LoggerFactory.getLogger(UploadImageUtils.class);

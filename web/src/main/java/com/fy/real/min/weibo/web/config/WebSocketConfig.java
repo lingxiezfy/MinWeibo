@@ -7,9 +7,6 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/3/2 11:12 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 @Configuration

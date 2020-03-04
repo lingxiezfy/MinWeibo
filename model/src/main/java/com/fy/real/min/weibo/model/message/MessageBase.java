@@ -9,9 +9,6 @@ import java.util.Date;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/3/2 20:11 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 @Data

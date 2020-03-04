@@ -9,9 +9,6 @@ import java.io.Serializable;
 /**
  * [Create]
  * Description: 基础异常
- * <br/>Date: 2020/2/23 0:01 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 @Data

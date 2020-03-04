@@ -10,10 +10,6 @@ import java.io.Serializable;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/3/1 20:56 - Create
- *
- * @author fengyu.zhang
- * @version 1.0
  */
 @Data
 public class CommentViewItem implements Serializable {

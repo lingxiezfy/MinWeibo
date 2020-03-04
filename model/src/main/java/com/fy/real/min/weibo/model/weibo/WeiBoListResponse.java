@@ -8,10 +8,6 @@ import java.util.List;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/24 13:42 - Create
- *
- * @author fengyu.zhang
- * @version 1.0
  */
 @Data
 public class WeiBoListResponse implements Serializable {

@@ -5,7 +5,6 @@ import java.util.Date;
 
 /**
  * admin
- * @author 
  */
 public class Admin implements Serializable {
     private Integer adminId;

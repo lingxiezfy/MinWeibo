@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
  * Description:
  * <br/>Date: 2020/3/2 17:02 - Create
  *
- * @author fengyu.zhang
  * @version 1.0
  */
 @RestController

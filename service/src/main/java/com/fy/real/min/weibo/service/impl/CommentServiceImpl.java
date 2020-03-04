@@ -23,10 +23,6 @@ import java.util.stream.Collectors;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/3/1 21:37 - Create
- *
- * @author fengyu.zhang
- * @version 1.0
  */
 @Service
 public class CommentServiceImpl implements ICommentService {

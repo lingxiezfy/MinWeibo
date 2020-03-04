@@ -5,7 +5,6 @@ import java.util.Date;
 
 /**
  * relation
- * @author 
  */
 public class Relation implements Serializable {
     /**

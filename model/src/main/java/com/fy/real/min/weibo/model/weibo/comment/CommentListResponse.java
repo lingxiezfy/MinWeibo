@@ -8,10 +8,6 @@ import java.util.List;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/3/1 21:29 - Create
- *
- * @author fengyu.zhang
- * @version 1.0
  */
 @Data
 public class CommentListResponse implements Serializable {

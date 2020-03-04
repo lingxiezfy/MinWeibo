@@ -7,9 +7,6 @@ import java.io.Serializable;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/23 20:10 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 @Data

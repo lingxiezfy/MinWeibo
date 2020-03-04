@@ -13,7 +13,6 @@ import java.util.function.Function;
  * Description:
  * <br/>Date: 2020/2/23 0:33 - Create
  *
- * @author fengyu.zhang
  * @version 1.0
  */
 public class BaseApiController {

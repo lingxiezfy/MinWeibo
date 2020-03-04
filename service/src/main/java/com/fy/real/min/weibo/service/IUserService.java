@@ -6,9 +6,6 @@ import com.fy.real.min.weibo.model.user.*;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/22 20:12 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 public interface IUserService {

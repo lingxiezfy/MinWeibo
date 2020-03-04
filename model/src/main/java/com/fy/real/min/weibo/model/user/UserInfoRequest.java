@@ -7,9 +7,6 @@ import lombok.EqualsAndHashCode;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/28 14:53 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 @EqualsAndHashCode(callSuper = true)

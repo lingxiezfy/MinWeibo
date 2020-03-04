@@ -3,9 +3,6 @@ package com.fy.real.min.weibo.model.enums;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/28 14:48 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 public enum RelationStateEnum {

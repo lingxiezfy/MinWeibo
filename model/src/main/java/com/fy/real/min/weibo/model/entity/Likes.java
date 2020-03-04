@@ -5,7 +5,6 @@ import java.util.Date;
 
 /**
  * likes
- * @author 
  */
 public class Likes implements Serializable {
     /**

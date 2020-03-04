@@ -14,9 +14,6 @@ import java.util.Date;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/22 20:30 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 @Data

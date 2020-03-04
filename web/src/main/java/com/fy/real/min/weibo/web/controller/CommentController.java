@@ -13,10 +13,6 @@ import org.springframework.web.bind.annotation.*;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/3/1 20:38 - Create
- *
- * @author fengyu.zhang
- * @version 1.0
  */
 @RestController
 @RequestMapping("comment")

@@ -7,9 +7,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/20 13:12 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 @Configuration

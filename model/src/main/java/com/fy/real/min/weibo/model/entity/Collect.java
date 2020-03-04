@@ -5,7 +5,6 @@ import java.util.Date;
 
 /**
  * collect
- * @author 
  */
 public class Collect implements Serializable {
     /**

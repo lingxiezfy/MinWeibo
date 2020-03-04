@@ -17,9 +17,6 @@ import java.util.Properties;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/22 20:53 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 @Configuration

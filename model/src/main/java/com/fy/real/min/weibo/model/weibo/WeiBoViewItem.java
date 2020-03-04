@@ -12,9 +12,6 @@ import java.util.List;
 /**
  * [Create]
  * Description: 微博展示元素 单项
- * <br/>Date: 2020/2/21 0:16 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 @Data

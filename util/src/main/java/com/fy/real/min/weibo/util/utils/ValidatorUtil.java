@@ -12,7 +12,6 @@ import java.util.Set;
 /**
  * Description: 使用 javax.validation.Validator 对字段进行校验
  *
- * @author fengyu.zhang
  * Create Date Time: 2019/7/23 20:08
  */
 public class ValidatorUtil {

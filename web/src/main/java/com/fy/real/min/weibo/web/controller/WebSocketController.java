@@ -17,9 +17,6 @@ import java.io.IOException;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/3/2 11:22 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 @RestController

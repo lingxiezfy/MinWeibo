@@ -16,9 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/22 20:19 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 @RestController

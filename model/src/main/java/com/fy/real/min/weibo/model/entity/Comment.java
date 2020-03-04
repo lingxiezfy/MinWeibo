@@ -7,7 +7,6 @@ import java.util.Date;
 
 /**
  * comment
- * @author 
  */
 public class Comment implements Serializable {
     /**

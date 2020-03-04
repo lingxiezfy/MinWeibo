@@ -854,9 +854,7 @@ function addOneWeiBo(data,type) {
                     '<div class="pull-right">';
             if(data.author.userId === parseInt(handleLocalStorage("get",userIdStorageKey))){
                 div +=  '<button type="button" onclick="toDeleteWeiBoById('+data.weiboId+')" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="删除">\n' +
-                                '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>'+
-                        '<button type="button" onclick="toEditWeiBoById('+data.weiboId+')" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="编辑">\n' +
-                                '<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>';
+                                '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>';
             }else if(handleLocalStorage("get",adminStorageKey)){
                 div +=  '<button type="button" onclick="toDeleteWeiBoById('+data.weiboId+')" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="封禁此微博">\n' +
                                 '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>封禁</button>';

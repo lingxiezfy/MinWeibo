@@ -40,6 +40,9 @@ CREATE TABLE `user`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
+INSERT INTO miniweibo.user (username, password, nickname, sex, admin_able)
+VALUES ('admin', 'admin', '管理员',0, 1);
+
 -- ----------------------------
 -- Table structure for relation 用户关系
 -- ----------------------------

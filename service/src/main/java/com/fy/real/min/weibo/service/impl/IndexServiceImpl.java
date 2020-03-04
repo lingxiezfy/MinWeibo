@@ -12,10 +12,6 @@ import java.util.List;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/18 17:35 - Create
- *
- * @author fengyu.zhang
- * @version 1.0
  */
 @Service
 public class IndexServiceImpl implements IIndexService {

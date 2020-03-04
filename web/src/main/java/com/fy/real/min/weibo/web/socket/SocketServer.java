@@ -23,9 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/3/2 11:13 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 @ServerEndpoint(value = "/ws/server")

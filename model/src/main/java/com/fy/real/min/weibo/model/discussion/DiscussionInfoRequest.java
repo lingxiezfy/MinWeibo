@@ -6,9 +6,6 @@ import lombok.Data;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/3/2 17:06 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 @Data

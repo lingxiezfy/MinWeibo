@@ -13,9 +13,6 @@ import java.util.List;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/22 19:47 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 @Configuration

@@ -5,10 +5,6 @@ import com.fy.real.min.weibo.model.weibo.*;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/23 20:23 - Create
- *
- * @author fengyu.zhang
- * @version 1.0
  */
 public interface IWeiBoService {
 

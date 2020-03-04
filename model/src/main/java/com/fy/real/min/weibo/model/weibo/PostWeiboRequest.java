@@ -9,10 +9,6 @@ import java.util.List;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/23 20:10 - Create
- *
- * @author fengyu.zhang
- * @version 1.0
  */
 @Data
 public class PostWeiboRequest implements Serializable {

@@ -8,9 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/17 16:33 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 @RestController

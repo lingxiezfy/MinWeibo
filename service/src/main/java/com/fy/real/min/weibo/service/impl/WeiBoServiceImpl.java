@@ -26,10 +26,6 @@ import java.util.stream.Collectors;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/23 20:28 - Create
- *
- * @author fengyu.zhang
- * @version 1.0
  */
 @Service
 public class WeiBoServiceImpl implements IWeiBoService {

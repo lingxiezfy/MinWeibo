@@ -5,9 +5,6 @@ import com.fy.real.min.weibo.model.entity.User;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/23 1:39 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 public interface IAuthAble {

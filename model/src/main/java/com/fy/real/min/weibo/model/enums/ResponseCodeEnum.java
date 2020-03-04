@@ -3,9 +3,6 @@ package com.fy.real.min.weibo.model.enums;
 /**
  * [Create]
  * Description: 响应码
- * <br/>Date: 2020/2/22 20:42 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 public enum ResponseCodeEnum {

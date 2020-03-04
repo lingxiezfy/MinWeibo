@@ -11,10 +11,6 @@ import java.util.List;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/3/1 21:06 - Create
- *
- * @author fengyu.zhang
- * @version 1.0
  */
 @Data
 public class ReplyViewItem implements Serializable {

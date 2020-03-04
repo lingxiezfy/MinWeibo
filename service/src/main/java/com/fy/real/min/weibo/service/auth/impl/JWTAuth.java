@@ -16,10 +16,6 @@ import java.util.Date;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/23 1:07 - Create
- *
- * @author fengyu.zhang
- * @version 1.0
  */
 @Component("JWTAuth")
 public class JWTAuth implements IAuthAble {

@@ -7,7 +7,6 @@ import java.util.Date;
 
 /**
  * weibo
- * @author 
  */
 public class Weibo implements Serializable {
     /**

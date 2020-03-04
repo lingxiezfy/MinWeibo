@@ -14,9 +14,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 /**
  * [Create]
  * Description:
- * <br/>Date: 2020/2/22 20:49 - Create
- *
- * @author fengyu.zhang
  * @version 1.0
  */
 @Component

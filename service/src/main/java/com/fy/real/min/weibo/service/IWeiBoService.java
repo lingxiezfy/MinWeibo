@@ -17,6 +17,12 @@ public interface IWeiBoService {
      */
     PostWeiboResponse post(PostWeiboRequest request);
 
+    /**
+     * [Create]
+     * Description: 转发
+     * <br/> Date: 2020/3/5 23:44
+     * <br/>
+     */
     PostWeiboResponse rePost(RePostWeiboRequest request);
 
     /**
@@ -28,6 +34,9 @@ public interface IWeiBoService {
      */
     WeiBoListResponse list(WeiBoListRequest request);
 
+    /**
+     * 查找微博
+     */
     WeiBoListResponse search(WeiBoSearchRequest request);
 
     /**
@@ -35,14 +44,29 @@ public interface IWeiBoService {
      */
     WeiBoListResponse userCollect(WeiBoSearchRequest request);
 
+    /**
+     * 删除
+     */
     Boolean delete(WeiBoActionRequest request);
 
+    /**
+     * 收藏
+     */
     Integer collect(WeiBoActionRequest request);
 
+    /**
+     * 取消收藏
+     */
     Integer cancelCollect(WeiBoActionRequest request);
 
+    /**
+     * 点赞
+     */
     Integer likes(WeiBoActionRequest request);
 
+    /**
+     * 取消点赞
+     */
     Integer cancelLikes(WeiBoActionRequest request);
 
 }

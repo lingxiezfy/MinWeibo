@@ -22,5 +22,8 @@ public interface RelationDao {
 
     Relation queryUserRelationSingle(@Param("userId") Integer userId,@Param("followUserId") Integer followUserId);
 
+    // 获取主动关系列表
     List<Relation> queryUserRelationList(@Param("userId") Integer userId, @Param("relationState") Integer relationState);
+    // 获取被动关系列表
+    List<Relation> queryPassiveRelationList(@Param("userId") Integer userId, @Param("relationState") Integer relationState);
 }

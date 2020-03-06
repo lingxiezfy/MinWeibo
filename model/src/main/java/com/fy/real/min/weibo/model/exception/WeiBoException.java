@@ -31,4 +31,9 @@ public class WeiBoException extends RuntimeException implements Serializable {
     public WeiBoException(ResponseCodeEnum responseCode){
         this(responseCode.getCode(),responseCode.getMessage());
     }
+
+    public WeiBoException(ResponseCodeEnum responseCode, String message) {
+        this(responseCode.getCode(), message);
+    }
+
 }

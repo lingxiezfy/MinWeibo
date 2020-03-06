@@ -200,7 +200,21 @@
             pageAbleQuery(
                 'searchRelationList'
                 ,query
-                ,searchType
+                ,getQueryVariable('targetUserId')
+                ,function () {}
+                ,function (response) {
+                    for (var user of response.list) {
+                        addOneUser(user);
+                    }
+                }
+                ,function () {}
+            );
+        }
+        else if(searchType === '7'){ //粉丝
+            pageAbleQuery(
+                'searchPassiveRelationList'
+                ,query
+                ,getQueryVariable('targetUserId')
                 ,function () {}
                 ,function (response) {
                     for (var user of response.list) {
@@ -300,6 +314,7 @@
                 case 4:$(".nonWeiBo .message-text").html("暂无讨论话题，快去发起一个热门话题吧...");break;
                 case 5:$(".nonWeiBo .message-text").html("还没有收藏任何微博，快去主页看看吧...");break;
                 case 6:$(".nonWeiBo .message-text").html("还没有关注其他人，来看看有什么新鲜事吧...");break;
+                case 7:$(".nonWeiBo .message-text").html("还没有粉丝，来看看有什么新鲜事吧...");break;
             }
         }
 

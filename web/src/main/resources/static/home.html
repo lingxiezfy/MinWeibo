@@ -78,19 +78,19 @@
                     </div>
                 </div>
                 <div class="col-sm-12 my_inform">
-                    <div class="col-sm-4 col-xs-4 user-Count-btn">
+                    <div class="col-sm-4 col-xs-4 user-Count-btn follow" >
                         <div>
                             <div><strong><span class="userInfo followCount">0</span></strong></div>
                             <div class="sort">关注</div>
                         </div>
                     </div>
-                    <div class="col-sm-4 col-xs-4 user-Count-btn">
+                    <div class="col-sm-4 col-xs-4 user-Count-btn fens">
                         <div>
                             <div><strong><span class="userInfo fansCount">0</span></strong></div>
                             <div class="sort">粉丝</div>
                         </div>
                     </div>
-                    <div class="col-sm-4 col-xs-4 user-Count-btn">
+                    <div class="col-sm-4 col-xs-4 user-Count-btn weibo">
                         <div>
                             <div><strong><span class="userInfo weiboCount">0</span></strong></div>
                             <div class="sort">微博</div>
@@ -179,10 +179,6 @@
     toastr.options.positionClass = 'toast-bottom-right';
     toastr.options.timeOut = 1200;
 
-    // 发私信
-    function toMessageUser(userId){
-
-    }
     // 编辑微博
     function toEditWeiBoById(weiBoId){
 
@@ -200,6 +196,9 @@
                 $(".userInfo.weiboCount").html(userInfo.weiboCount);
                 $(".userInfo.followCount").html(userInfo.followCount);
                 $(".userInfo.fansCount").html(userInfo.fansCount);
+                $('.user-Count-btn.weibo').attr('onclick',"toUserIndex("+userInfo.userId+")");
+                $('.user-Count-btn.follow').attr('onclick',"toMyRelationLike("+userInfo.userId+")");
+                $('.user-Count-btn.fens').attr('onclick',"toMyRelationFens("+userInfo.userId+")");
                 if (userInfo.face && userInfo.face.length > 0) {
                     $(".userInfo.face").attr("src", "upload/" + userInfo.face);
                 } else {
@@ -217,7 +216,6 @@
                     var cancelConcernBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",2,function() {refreshUserInfo(false)})\" class=\"btn btn-warning btn-xs\"><span class=\"glyphicon glyphicon-heart-empty\" aria-hidden=\"true\">取消关注</span></button>\n";
                     var blackListBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",3,function() {refreshUserInfo(false)})\" class=\"btn btn-default btn-xs\"><span class=\"glyphicon glyphicon-plus\" aria-hidden=\"true\">加入黑名单</span></button>\n";
                     var cancelBlackBtn = "<button type=\"button\" onclick=\"toRelationUser("+userInfo.userId+",4,function() {refreshUserInfo(false)})\" class=\"btn btn-warning btn-xs\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\">移除黑名单</span></button>\n";
-                    var messageBtn = "<button type=\"button\" onclick=\"toMessageUser("+userInfo.userId+")\" class=\"btn btn-success btn-xs\"><span class=\"glyphicon glyphicon-comment\" aria-hidden=\"true\">私信</span></button>\n";
                     var div = "";
                     $("#userInfo").empty();
                     if(userInfo.currentToThisRelation === 0){
@@ -226,10 +224,6 @@
                         $("#userInfo").append(cancelConcernBtn+blackListBtn);
                     }else if(userInfo.currentToThisRelation === 2){
                         $("#userInfo").append(cancelBlackBtn);
-                    }
-                    // 被拉黑
-                    if(!(userInfo.thisToCurrentRelation === 2)){
-                        $("#userInfo").append(messageBtn);
                     }
                 }
             }

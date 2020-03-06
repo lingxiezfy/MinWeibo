@@ -52,7 +52,7 @@ public interface IUserService {
      * <br/>
      * @param updateUser 更新用户
      */
-    String update(User updateUser);
+    String update(UserUpdateRequestDto updateUser);
 
     /**
      * [Create]
@@ -63,11 +63,25 @@ public interface IUserService {
     UserView info(UserInfoRequest request);
 
     /**
+     * 转换 User -> UserView 并携带二者的关系
+     * @param user 转换的用户
+     * @param currentUser 当前登录的用户
+     * @return
+     */
+    UserView convertUserWithRelation(User user, User currentUser);
+
+    /**
      * 查找用户
      */
     UserListResponse search(UserSearchRequest request);
 
     Boolean relation(RelationUserRequest request);
 
+    /**
+     * 用户关系列表（关注，拉黑，粉丝）
+     * @param request
+     * @return
+     */
     UserListResponse relationList(UserRelationListRequest request);
+
 }

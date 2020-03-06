@@ -12,6 +12,7 @@ import com.fy.real.min.weibo.service.auth.IAuthAble;
 import com.fy.real.min.weibo.util.utils.ValidatorUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -82,11 +83,19 @@ public class UserServiceImpl implements IUserService {
         newUser.setFansCount(0);
         newUser.setFollowCount(0);
         newUser.setWeiboCount(0);
+        newUser.setUseful(1);
+        newUser.setAdminAble(0);
+        newUser.setUpdateTime(new Date());
+        newUser.setCreateTime(new Date());
         return UserLoginView.convertFromUser(newUser,authAble.auth(newUser));
     }
 
     @Override
-    public String update(User updateUser) {
+    public String update(UserUpdateRequestDto updateUser) {
+        //验证旧密码
+        if(StringUtils.isNotBlank(updateUser.getPassword()) && !updateUser.getCurrentUser().getPassword().equals(updateUser.getOldPassword())){
+            throw new WeiBoException("旧密码错误,修改密码失败");
+        }
         updateUser.setUpdateTime(new Date());
         return userDao.updateByPrimaryKeySelective(updateUser) > 0?updateUser.getFace():null;
     }
@@ -100,7 +109,8 @@ public class UserServiceImpl implements IUserService {
         return convertUserWithRelation(user,request.getCurrentUser());
     }
 
-    private UserView convertUserWithRelation(User user,User currentUser){
+    @Override
+    public UserView convertUserWithRelation(User user,User currentUser){
         UserView userView = UserView.convertFromUser(user);
         if(user.getUserId().equals(currentUser.getUserId())){
             return userView;
@@ -199,27 +209,56 @@ public class UserServiceImpl implements IUserService {
         return true;
     }
 
+    @Autowired
+    IUserService userService;
+
     @Override
     public UserListResponse relationList(UserRelationListRequest request) {
         ValidatorUtil.validate(request);
         User currentUser = request.getCurrentUser();
         UserListResponse response = new UserListResponse();
+        Integer targetUserId = request.getTargetUserId();
+        boolean self = false;
+        if(targetUserId <= 0 || targetUserId.equals(currentUser.getUserId())){
+            targetUserId = currentUser.getUserId();
+            self = true;
+        }
+        User targetUser;
+        if(self){
+            targetUser = currentUser;
+        }else {
+            targetUser = userDao.selectByPrimaryKey(targetUserId);
+        }
+        if(targetUser == null){
+            throw new WeiBoException("用户不存在！");
+        }
+        boolean follow = request.getByFollow() == 1;
+        List<Relation> relationList;
         Page page = PageHelper.startPage(request.getPageIndex(),request.getPageSize());
-        List<Relation> relationList = relationDao.queryUserRelationList(currentUser.getUserId(),request.getRelationState());
+        if(follow){
+            relationList = relationDao.queryPassiveRelationList(targetUserId,request.getRelationState());
+        }else {
+            relationList = relationDao.queryUserRelationList(targetUserId,request.getRelationState());
+        }
         if(relationList.size() >0){
             response.setPageIndex(page.getPageNum());
             response.setTotalCount(page.getTotal());
             response.setTotalPage(page.getPages());
-            List<User> userList = userDao.selectByUserIdList(relationList.stream().map(Relation::getFollowUserId).collect(Collectors.toList()));
+            List<User> userList;
+            if(follow){
+                userList = userDao.selectByUserIdList(relationList.stream().map(Relation::getUserId).collect(Collectors.toList()));
+            }else {
+                userList = userDao.selectByUserIdList(relationList.stream().map(Relation::getFollowUserId).collect(Collectors.toList()));
+            }
             response.setList(new ArrayList<>());
+            // 得到目标用户的关系列表，并解析每个用户与当前登录用户的关系
             userList.forEach(user -> {
-                UserView userView = UserView.convertFromUser(user);
-                userView.setCurrentToThisRelation(request.getRelationState());
-                response.getList().add(userView);
+                response.getList().add(userService.convertUserWithRelation(user,currentUser));
             });
         }else {
             response.setList(new ArrayList<>());
         }
+        response.setTargetUser(userService.convertUserWithRelation(targetUser,currentUser));
         return response;
     }
 }

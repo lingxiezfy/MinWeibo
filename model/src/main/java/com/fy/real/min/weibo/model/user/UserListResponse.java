@@ -16,6 +16,8 @@ public class UserListResponse implements Serializable {
 
     private List<UserView> list;
 
+    private UserView targetUser;
+
     private long totalCount;
 
     private int totalPage;

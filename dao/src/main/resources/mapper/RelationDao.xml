@@ -37,6 +37,12 @@
         from relation
         where user_id = #{userId} and `state` = #{relationState}
     </select>
+    <select id="queryPassiveRelationList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from relation
+        where follow_user_id = #{userId} and `state` = #{relationState}
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete
         from relation

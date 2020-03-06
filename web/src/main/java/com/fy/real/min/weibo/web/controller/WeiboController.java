@@ -87,7 +87,9 @@ public class WeiboController extends BaseApiController {
      * @param request 列表请求
      */
     @PostMapping("listAll")
-    public BaseResponse<WeiBoListResponse> listAll(@RequestBody WeiBoListRequest request){
+    @UserLoginToken
+    public BaseResponse<WeiBoListResponse> listAll(@RequestBody WeiBoListRequest request, @CurrentUser User user){
+        request.setCurrentUser(user);
         return this.exec(request,(r)->weiBoService.list(r));
     }
 

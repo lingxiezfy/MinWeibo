@@ -65,12 +65,16 @@ public class UserController extends BaseApiController {
             String realPath = "web/src/main/resources/static/upload";
             face = UploadImageUtils.upload(request.getFaceBase64(),tempPath,realPath);
         }
-        User updateUser = new User();
-        updateUser.setUserId(user.getUserId());
-        updateUser.setBir(request.getBir());
-        updateUser.setNickname(request.getNickname());
-        updateUser.setFace(face);
-        return this.exec(updateUser,(u)->userService.update(u));
+        UserUpdateRequestDto requestDto = new UserUpdateRequestDto();
+
+        requestDto.setUserId(user.getUserId());
+        requestDto.setBir(request.getBir());
+        requestDto.setNickname(request.getNickname());
+        requestDto.setFace(face);
+        requestDto.setPassword(request.getPassword());
+        requestDto.setOldPassword(request.getOldPassword());
+        requestDto.setCurrentUser(user);
+        return this.exec(requestDto,(u)->userService.update(u));
     }
 
     /**
@@ -111,6 +115,5 @@ public class UserController extends BaseApiController {
         request.setCurrentUser(user);
         return this.exec(request,(r)->userService.relationList(r));
     }
-
 
 }

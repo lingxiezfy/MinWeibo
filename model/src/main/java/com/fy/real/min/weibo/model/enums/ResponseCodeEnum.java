@@ -11,6 +11,7 @@ public enum ResponseCodeEnum {
     ,Response_301("301","未登录或登录已过期")
     ,Response_500("500","服务器错误")
     ,Response_600("600","操作不允许")
+    ,Response_601("601","操作不允许，返回个人主页")
     ;
     private String code;
     private String message;

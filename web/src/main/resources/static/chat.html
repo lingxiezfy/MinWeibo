@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-cn">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta charset="utf-8"/>
@@ -54,13 +54,21 @@
                     <h1>
                         热门讨论
                         <small>
-                            <i class="ace-icon fa fa-angle-double-right"></i>
+                            <i class="ace-icon fa fa-angle-double-right"></i>&nbsp;
                             <span class="content">content</span>
                         </small>
+                        <small>
+                            <i class="ace-icon fa fa-angle-double-right"></i>&nbsp;房主：
+                            <span class="owner" style="color: red">owner</span>
+                        </small>
 						<small>
-							<i class="ace-icon fa fa-angle-double-right"></i>有效期：
+							<i class="ace-icon fa fa-angle-double-right"></i>&nbsp;房间有效期至：
 							<span class="aliveTime">0分0秒</span>
 						</small>
+                        <small>
+                            <i class="ace-icon fa fa-angle-double-right"></i>&nbsp;倒计时：
+                            <span class="timeCountDown" style="color: red">0分0秒</span>
+                        </small>
                     </h1>
                 </div><!-- /.page-header -->
 
@@ -83,8 +91,9 @@
 
                                     </div>
 
-
                                     <div class="form-actions">
+                                        <label><span class="current-nickname" style="color: red">current-nickname</span>&nbsp;(当前用户):</label>
+
                                         <div class="input-group">
                                             <input placeholder="输入消息" id="dialogsMessage" type="text" class="form-control" name="message"/>
                                             <span class="input-group-btn">
@@ -148,11 +157,9 @@
 <!-- inline scripts related to this page -->
 <script src="js/common.js"></script>
 <script src="js/discussion.js"></script>
+<script src="js/countdown.js"></script>
 
 <script type="text/javascript">
-	window.onbeforeunload = function(event) {
-		return null;
-	};
 
 	function queryDiscussionInfo(){
 		var discussionId = parseInt(getQueryVariable('discussionId'));
@@ -161,9 +168,11 @@
 					, function () {}
 					, function (result) {
 						$('.page-header .content').html(result.content);
-						$('.page-header .aliveTime').html(''+result.aliveTime+'');
+						$('.page-header .aliveTime').html(result.aliveTime);
+						$('.page-header .owner').html(result.author.nickname);
+                        $('.discussion .current-nickname').html(result.current.nickname);
 						$('#sendMessageBtn').attr('onclick','sendDiscussionMessage('+discussionId+')');
-						registerToServer(discussionId,result.userId);
+						registerToServer(discussionId,handleLocalStorage("get",userIdStorageKey));
 						$('.discussion .dialogs').append('<div class="itemdiv dialogdiv">\n' +
 								'<div class="user">\n' +
 								'<img alt="Alexa\'s Avatar" src="ace/images/avatars/avatar1.png"/>\n' +
@@ -176,12 +185,36 @@
 								'<div class="name">\n' +
 								'<a style="color: red">管理员</a>\n' +
 								'</div>\n' +
-								'<div class="text">欢迎<span style="color: red">'+result.nickname+'</span>加入</div>\n' +
+								'<div class="text">欢迎<span style="color: red">'+result.current.nickname+'</span>加入</div>\n' +
 								'</div>\n' +
 								'</div>');
+                        $(".page-header .timeCountDown").attr('data',result.aliveMinutes);
+                        $(".page-header .timeCountDown").each(function() {
+                            if($(this).attr('data')){
+                                $(this).countdownsync({
+                                    dayTag: "",
+                                    hourTag: "<label class='tt hh dib vam'>00</label><span>时</span>",
+                                    minTag: "<label class='tt mm dib vam'>00</label><span>分</span>",
+                                    secTag: "<label class='tt ss dib vam'>00</label><span>秒</span>",
+                                    dayClass: ".dd",
+                                    hourClass: ".hh",
+                                    minClass: ".mm",
+                                    secClass: ".ss",
+                                    isDefault: false,
+                                    showTemp: 1
+
+                                }, function() {
+                                    toastr.info("完成");
+                                });
+                            }
+                        });
 					}
-					, function (errorMessage) {
-						toastr.error(errorMessage);
+					, function (errorMessage,errorCode) {
+						if(errorCode === '601'){
+                            toPage('home.html?userId=',errorMessage,1000,"error");
+                        }else {
+						    toastr.error(errorMessage);
+                        }
 					})
 		}else {
 			Swal.fire({
@@ -230,6 +263,7 @@
 
     jQuery(function ($) {
     	queryDiscussionInfo();
+
     })
 </script>
 </body>

@@ -56,22 +56,29 @@
         from weibo
         <where>
             <if test="userId != null">
-                user_id = #{userId} and
+                user_id = #{userId}
             </if>
             <if test="content != null">
-                content like "%"#{content}"%" and
+                and content like "%"#{content}"%"
             </if>
             <if test="topic != null">
-                topic like "%"#{topic}"%" and
+                <choose>
+                    <when test="topic == '二手交易'">
+                        and (topic like '%二手交易%' or topic like '%失物招领%')
+                    </when>
+                    <otherwise>
+                        and topic like "%"#{topic}"%"
+                    </otherwise>
+                </choose>
             </if>
             <if test="original != null">
-                original = #{original} and
+                and original = #{original}
             </if>
             <if test="repostId != null">
-                repost_id = #{repostId} and
+                and repost_id = #{repostId}
             </if>
             <if test="useful != null">
-                useful = #{useful}
+                and useful = #{useful}
             </if>
         </where>
     </select>

@@ -1,11 +1,14 @@
 package com.fy.real.min.weibo.service.impl;
 
 import com.fy.real.min.weibo.dao.dao.CommentDao;
+import com.fy.real.min.weibo.dao.dao.RelationDao;
 import com.fy.real.min.weibo.dao.dao.UserDao;
 import com.fy.real.min.weibo.dao.dao.WeiboDao;
 import com.fy.real.min.weibo.model.entity.Comment;
+import com.fy.real.min.weibo.model.entity.Relation;
 import com.fy.real.min.weibo.model.entity.User;
 import com.fy.real.min.weibo.model.entity.Weibo;
+import com.fy.real.min.weibo.model.enums.RelationStateEnum;
 import com.fy.real.min.weibo.model.exception.WeiBoException;
 import com.fy.real.min.weibo.model.weibo.comment.*;
 import com.fy.real.min.weibo.service.ICommentService;
@@ -32,10 +35,25 @@ public class CommentServiceImpl implements ICommentService {
     UserDao  userDao;
     @Autowired
     WeiboDao weiboDao;
+    @Autowired
+    RelationDao relationDao;
 
     @Override
     public CommentViewItem add(CommentRequest request) {
         ValidatorUtil.validate(request);
+        Weibo weibo = weiboDao.selectByPrimaryKey(request.getWeiBoId());
+        if(weibo == null){
+            throw new WeiBoException("微博不存在!");
+        }
+        if(weibo.getUseful() == 0){
+            throw new WeiBoException("微博已被封禁，暂时无法评论!");
+        }
+        Relation relation = relationDao.queryUserRelationSingle(weibo.getUserId(),request.getCurrentUser().getUserId());
+        if(relation != null && RelationStateEnum.Black.getCode().equals(relation.getState())){
+            // 博主把当前用户拉黑，不允许评论
+            throw new WeiBoException("博主关闭了评论通道!您暂时无法评论");
+        }
+
         Comment addComment = new Comment();
         addComment.setWeiboId(request.getWeiBoId());
         addComment.setCommentContent(request.getContent());

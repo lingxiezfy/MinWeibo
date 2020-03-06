@@ -18,4 +18,6 @@ public class UserUpdateRequest extends BaseRequest {
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date bir;
     private String faceBase64;
+    private String password;
+    private String oldPassword;
 }

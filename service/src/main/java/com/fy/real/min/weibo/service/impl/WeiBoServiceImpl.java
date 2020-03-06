@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.fy.real.min.weibo.dao.dao.*;
 import com.fy.real.min.weibo.model.entity.*;
 import com.fy.real.min.weibo.model.exception.WeiBoException;
-import com.fy.real.min.weibo.model.user.UserView;
 import com.fy.real.min.weibo.model.weibo.*;
+import com.fy.real.min.weibo.service.IUserService;
 import com.fy.real.min.weibo.service.IWeiBoService;
 import com.fy.real.min.weibo.util.utils.ValidatorUtil;
 import com.github.pagehelper.Page;
@@ -132,32 +132,32 @@ public class WeiBoServiceImpl implements IWeiBoService {
     //region 获取微博列表
     @Override
     public WeiBoListResponse list(WeiBoListRequest request) {
-        if(request.getCurrentUser() == null){
-            return listAll(request.getPageIndex(),request.getPageSize());
-        } else if (request.getTargetUserId() > 0 && !request.getTargetUserId().equals(request.getCurrentUser().getUserId())) {
-            User targetUser = userDao.selectByPrimaryKey(request.getTargetUserId());
-            if(targetUser == null){
-                throw new WeiBoException("用户不存在");
-            }
-            return listForUser(targetUser,request.getPageIndex(),request.getPageSize());
+        if(request.getTargetUserId() == -1){
+            return listAll(request.getCurrentUser(),request.getPageIndex(),request.getPageSize());
+        } else if (request.getTargetUserId() == 0 || request.getTargetUserId().equals(request.getCurrentUser().getUserId())) {
+            return listForUser(request.getCurrentUser(),request.getCurrentUser(),request.getPageIndex(),request.getPageSize());
         }
-        return listForUser(request.getCurrentUser(),request.getPageIndex(),request.getPageSize());
+        User targetUser = userDao.selectByPrimaryKey(request.getTargetUserId());
+        if(targetUser == null){
+            throw new WeiBoException("用户不存在");
+        }
+        return listForUser(targetUser,request.getCurrentUser(),request.getPageIndex(),request.getPageSize());
     }
 
-    private WeiBoListResponse listForUser(User user, int pageIndex,int pageSize){
+    private WeiBoListResponse listForUser(User targetUser, User currentUser, int pageIndex, int pageSize) {
         WeiBoListResponse response = new WeiBoListResponse();
         response.setList(new ArrayList<>());
-        Page page = PageHelper.startPage(pageIndex,pageSize);
+        Page page = PageHelper.startPage(pageIndex, pageSize);
         PageHelper.orderBy("weibo_id desc");
-        List<Weibo> weiBoList = weiboDao.selectUsefulByUserId(user.getUserId());
+        List<Weibo> weiBoList = weiboDao.selectUsefulByUserId(targetUser.getUserId());
         response.setPageIndex(page.getPageNum());
         response.setTotalCount(page.getTotal());
         response.setTotalPage(page.getPages());
-        response.setList(covertWeiList(weiBoList));
+        response.setList(covertWeiList(weiBoList,currentUser));
         return response;
     }
 
-    private WeiBoListResponse listAll(int pageIndex,int pageSize){
+    private WeiBoListResponse listAll(User currentUser,int pageIndex,int pageSize){
         WeiBoListResponse response = new WeiBoListResponse();
         response.setList(new ArrayList<>());
         Page page = PageHelper.startPage(pageIndex,pageSize);
@@ -166,14 +166,16 @@ public class WeiBoServiceImpl implements IWeiBoService {
         response.setPageIndex(page.getPageNum());
         response.setTotalCount(page.getTotal());
         response.setTotalPage(page.getPages());
-        response.setList(covertWeiList(weiBoList));
+        response.setList(covertWeiList(weiBoList,currentUser));
         return response;
     }
 
     @Autowired
     DiscussionDao discussionDao;
+    @Autowired
+    IUserService userService;
 
-    private List<WeiBoViewItem> covertWeiList(List<Weibo> weiBoList){
+    private List<WeiBoViewItem> covertWeiList(List<Weibo> weiBoList, User currentUser){
         List<WeiBoViewItem> list = new ArrayList<>();
         if(weiBoList == null || weiBoList.size() == 0){
             return list;
@@ -198,7 +200,7 @@ public class WeiBoServiceImpl implements IWeiBoService {
             WeiBoViewItem viewItem = WeiBoViewItem.covertFromWeiBo(weiBo);
             User author = authorList.stream().filter(u->u.getUserId().equals(weiBo.getUserId())).findFirst().orElse(null);
             if(author == null) return;
-            viewItem.setAuthor(UserView.convertFromUser(author));
+            viewItem.setAuthor(userService.convertUserWithRelation(author,currentUser));
 
             Discussion discussion = discussionList.stream().filter(d->d.getWeiboId().equals(weiBo.getWeiboId())).findFirst().orElse(null);
             if(discussion != null){
@@ -211,8 +213,9 @@ public class WeiBoServiceImpl implements IWeiBoService {
                 Weibo originWeiBo = optional.orElse(null);
                 if(originWeiBo != null){
                     viewItem.setRepostWeiBo(WeiBoViewItem.covertFromWeiBo(originWeiBo));
-                    viewItem.getRepostWeiBo().setAuthor(UserView.convertFromUser(
+                    viewItem.getRepostWeiBo().setAuthor(userService.convertUserWithRelation(
                             authorList.stream().filter(u->u.getUserId().equals(viewItem.getRepostWeiBo().getUserId())).findFirst().orElse(null)
+                            ,currentUser
                     ));
 
                     Discussion discussionRe = discussionList.stream().filter(d->d.getWeiboId().equals(originWeiBo.getWeiboId())).findFirst().orElse(null);
@@ -249,7 +252,7 @@ public class WeiBoServiceImpl implements IWeiBoService {
             response.setPageIndex(page.getPageNum());
             response.setTotalCount(page.getTotal());
             response.setTotalPage(page.getPages());
-            response.setList(covertWeiList(weiBoList));
+            response.setList(covertWeiList(weiBoList,request.getCurrentUser()));
         }else {
             response.setList(new ArrayList<>());
         }
@@ -314,7 +317,7 @@ public class WeiBoServiceImpl implements IWeiBoService {
             response.setPageIndex(page.getPageNum());
             response.setTotalCount(page.getTotal());
             response.setTotalPage(page.getPages());
-            response.setList(covertWeiList(weiBoList));
+            response.setList(covertWeiList(weiBoList,request.getCurrentUser()));
         }else{
             response.setList(new ArrayList<>());
         }

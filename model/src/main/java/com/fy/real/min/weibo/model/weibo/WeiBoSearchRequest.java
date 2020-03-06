@@ -19,4 +19,5 @@ public class WeiBoSearchRequest extends BaseRequest implements Serializable {
     private Integer pageSize = 10;
     private String query;
     private String topic;
+    private Integer weiBoId;
 }

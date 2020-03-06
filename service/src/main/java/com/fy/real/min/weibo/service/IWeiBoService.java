@@ -18,6 +18,11 @@ public interface IWeiBoService {
     PostWeiboResponse post(PostWeiboRequest request);
 
     /**
+     * 编辑微博
+     */
+    Boolean edit(PostWeiboRequest request);
+
+    /**
      * [Create]
      * Description: 转发
      * <br/> Date: 2020/3/5 23:44

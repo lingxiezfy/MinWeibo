@@ -17,5 +17,5 @@ public class PostWeiboRequest implements Serializable {
     private List<String> picList;
     private User user;
     private String content;
-
+    private Integer weiBoId;
 }

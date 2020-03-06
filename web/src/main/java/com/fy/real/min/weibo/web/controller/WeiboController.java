@@ -42,7 +42,7 @@ public class WeiboController extends BaseApiController {
         MultipartHttpServletRequest params=((MultipartHttpServletRequest) request);
         String content = params.getParameter("content");
         if(StringUtils.isBlank(content)){
-            BaseResponse<PostWeiboResponse> response = new BaseResponse(ResponseCodeEnum.Response_600);
+            BaseResponse<PostWeiboResponse> response = new BaseResponse<>(ResponseCodeEnum.Response_600);
             response.setSuccess(false);
             response.setMessage("微博消息不能为空");
             return response;
@@ -57,6 +57,42 @@ public class WeiboController extends BaseApiController {
         }
         postWeiboRequest.setUser(user);
         return this.exec(postWeiboRequest,(r)->weiBoService.post(r));
+    }
+
+    /**
+     * [Create]
+     * Description: 编辑微博
+     * <br/> Date: 2020/2/23 20:24
+     * <br/>
+     */
+    @UserLoginToken
+    @PostMapping("edit")
+    public BaseResponse<Boolean> edit(HttpServletRequest request, @CurrentUser User user){
+        MultipartHttpServletRequest params=((MultipartHttpServletRequest) request);
+        String content = params.getParameter("content");
+        int weiBoId = 0;
+        try{
+            weiBoId = Integer.parseInt(params.getParameter("weiBoId"));
+        }catch (Exception e){
+            weiBoId = 0;
+        }
+        if(StringUtils.isBlank(content) || weiBoId <= 0){
+            BaseResponse<Boolean> response = new BaseResponse<>(ResponseCodeEnum.Response_600);
+            response.setSuccess(false);
+            response.setMessage("微博不能为空");
+            return response;
+        }
+        PostWeiboRequest postWeiboRequest = new PostWeiboRequest();
+        postWeiboRequest.setContent(content);
+        List<MultipartFile> pics = params.getFiles("pic");
+        if (pics != null && pics.size() > 0) {
+            String tempPath = request.getSession().getServletContext().getRealPath("") + "upload";
+            String realPath = "web/src/main/resources/static/upload";
+            postWeiboRequest.setPicList(UploadImageUtils.upload(pics,tempPath,realPath));
+        }
+        postWeiboRequest.setWeiBoId(weiBoId);
+        postWeiboRequest.setUser(user);
+        return this.exec(postWeiboRequest,(r)->weiBoService.edit(r));
     }
 
     @UserLoginToken

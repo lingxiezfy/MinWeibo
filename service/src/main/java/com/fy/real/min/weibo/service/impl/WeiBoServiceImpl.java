@@ -77,6 +77,26 @@ public class WeiBoServiceImpl implements IWeiBoService {
 
 
     @Override
+    public Boolean edit(PostWeiboRequest request) {
+        Weibo updateWeiBo = new Weibo();
+        updateWeiBo.setWeiboId(request.getWeiBoId());
+        updateWeiBo.setContent(request.getContent());
+        if (request.getPicList() != null && request.getPicList().size() > 0) {
+            updateWeiBo.setPic(JSON.toJSONString(request.getPicList()));
+        }
+        Matcher hotMatcher = WeiBoServiceImpl.HOT_PATTERN.matcher(request.getContent());
+        StringBuilder topicBuild = new StringBuilder();
+        while (hotMatcher.find()){
+            String topic = hotMatcher.group(1);
+            topicBuild.append(topic).append(";");
+        }
+        if(topicBuild.length() > 0){
+            updateWeiBo.setTopic(topicBuild.toString());
+        }
+        return weiboDao.updateByPrimaryKeySelective(updateWeiBo) > 0;
+    }
+
+    @Override
     public PostWeiboResponse rePost(RePostWeiboRequest request) {
         ValidatorUtil.validate(request);
         Weibo originWeiBo = weiboDao.selectByPrimaryKey(request.getWeiBoId());
@@ -245,6 +265,9 @@ public class WeiBoServiceImpl implements IWeiBoService {
         }
         if(StringUtils.isNotBlank(request.getTopic())){
             searchWeiBo.setTopic(request.getTopic());
+        }
+        if (request.getWeiBoId() != null && request.getWeiBoId() > 0) {
+            searchWeiBo.setWeiboId(request.getWeiBoId());
         }
         searchWeiBo.setUseful(1);
         List<Weibo> weiBoList = weiboDao.query(searchWeiBo);

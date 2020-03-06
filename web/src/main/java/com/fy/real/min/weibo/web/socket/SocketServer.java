@@ -9,11 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.websocket.*;
-import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,8 +23,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Description:
  * @version 1.0
  */
-@ServerEndpoint(value = "/ws/server")
-@Component
+//@ServerEndpoint(value = "/ws/server")
+//@Component
 public class SocketServer {
 
     private static UserDao userDao;

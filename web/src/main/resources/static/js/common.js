@@ -18,14 +18,14 @@ var relationListUrl = serviceUrlBase +"user/relation/list";
 
 //发表微博 post form-data
 var postWeiboUrl = serviceUrlBase + "weibo/post";
+//发表微博 post form-data
+var editWeiboUrl = serviceUrlBase + "weibo/edit";
 // 转发微博 post ACCESS_TOKEN
 var rePostWeiboUrl = serviceUrlBase + "weibo/rePost";
 // 用户的微博列表 post ACCESS_TOKEN
 var selfWeiboListUrl = serviceUrlBase + "weibo/list";
 // 所有微博列表 post
 var weiboListUrl = serviceUrlBase + "weibo/listAll";
-// 根据id加载一条微博 get ACCESS_TOKEN
-// var weiBoInfoUrl = serviceUrlBase + "weibo/";
 // 根据id删除一条微博 get ACCESS_TOKEN
 var deleteWeiBoUrl = serviceUrlBase + "weibo/delete/";
 var searchWeiBoUrl = serviceUrlBase + "weibo/search";
@@ -245,14 +245,27 @@ function loadAllWeiBoList(pageIndex, beforeLoad, afterLoad, ifError, timeOut) {
     postWithToken(weiboListUrl, JSON.stringify(obj), beforeLoad, afterLoad, ifError, timeOut)
 }
 function searchWeiBoList(query,searchType,pageIndex, beforeLoad, afterLoad, ifError, timeOut) {
+    //searchType:1,按Id查， 2 找微博， 3 二手交易， 4 热门话题
     var obj = {};
     obj["pageIndex"] = pageIndex;
     // 一次加载5条
     obj["pageSize"] = 5;
-    if(query && searchType && searchType === '2'){
-        obj["query"] = query;
-    }else if(searchType){
-        obj["topic"] = query;
+    if(searchType){
+        var type = parseInt(searchType);
+        switch (type) {
+            case 1:
+                obj["weiBoId"] = query && parseInt(query) ? parseInt(query) : 0;break;
+            case 2:
+                obj["query"] = query ? query : "";break;
+            case 3:
+                obj["topic"] = '二手交易';break;
+            case 4:
+                obj["topic"] = '趣味讨论';break;
+            default:
+                return;
+        }
+    }else {
+        return;
     }
 
     postWithToken(searchWeiBoUrl, JSON.stringify(obj), beforeLoad, afterLoad, ifError, timeOut)
@@ -332,15 +345,21 @@ function toMyCollect(){
 }
 
 function toSecondhand(){
-    toPage("search.html?query="+encodeURIComponent("二手交易")+"&searchType=3")
+    toPage("search.html?query=&searchType=3")
 }
 function toFunnyChat(){
-    toPage("search.html?query="+encodeURIComponent("趣味讨论")+"&searchType=4")
+    toPage("search.html?query=&searchType=4")
 }
 // 去用户主页
 function toUserIndex(userId){
     toPage('home.html?userId='+userId);
 }
+
+// 编辑微博
+function toEditWeiBoById(weiBoId){
+    toPage('edit.html?weiBoId='+weiBoId);
+}
+
 // 删除微博
 function toDeleteWeiBoById(weiBoId){
     Swal.fire({
@@ -919,25 +938,30 @@ function addOneWeiBo(data,type) {
                 '</div>\n' +
             '</div>\n' +
         '<div class="row">\n' +
-        '<div class="col-sm-12 col-xs-12">\n' +
-        '<div class="msg_content">'+data.content+'</div>';
-    if (data.pic && data.pic.length > 0) {
-        div += "<div class=\"msg_pic pic_view\"><table><tbody>";
-        var rowCount = 0;
-        for (var i = 1; i <= data.pic.length; i++) {
-            if (rowCount === 0) {
-                div += "<tr>";
+        '<div class="col-sm-12 col-xs-12">\n';
+            if(data.delete){
+                div+='<div class="msg_content" style="color: red;">抱歉，此微博已被作者删除。</div>';
+            }else {
+                div+='<div class="msg_content">'+data.content+'</div>';
+                if (data.pic && data.pic.length > 0) {
+                    div += "<div class=\"msg_pic pic_view\"><table><tbody>";
+                    var rowCount = 0;
+                    for (var i = 1; i <= data.pic.length; i++) {
+                        if (rowCount === 0) {
+                            div += "<tr>";
+                        }
+                        div += "<td><img class=\"mypic\" src=\"upload/" + data.pic[i - 1] + "\"></td>\n";
+                        rowCount++;
+                        if (rowCount === 3) {
+                            div += "</tr>"
+                            rowCount = 0;
+                        }
+                    }
+                    div += "</tbody></table></div>";
+                }
             }
-            div += "<td><img class=\"mypic\" src=\"upload/" + data.pic[i - 1] + "\"></td>\n";
-            rowCount++;
-            if (rowCount === 3) {
-                div += "</tr>"
-                rowCount = 0;
-            }
-        }
-        div += "</tbody></table></div>";
-    }
-    div += '</div>\n' +
+
+        div += '</div>\n' +
         '</div>\n' +
         '</div>' +
         '</div>';

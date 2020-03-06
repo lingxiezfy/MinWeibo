@@ -55,8 +55,11 @@
         <include refid="Base_Column_List"/>
         from weibo
         <where>
+            <if test="weiboId != null">
+                weibo_id = #{weiboId}
+            </if>
             <if test="userId != null">
-                user_id = #{userId}
+                and user_id = #{userId}
             </if>
             <if test="content != null">
                 and content like "%"#{content}"%"

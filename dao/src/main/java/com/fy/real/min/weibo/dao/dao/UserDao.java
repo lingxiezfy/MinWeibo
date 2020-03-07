@@ -35,4 +35,5 @@ public interface UserDao {
      */
     List<User> queryByName(@Param("name") String name);
 
+    List<User> queryAllUsefulWithoutSelf(Integer userId);
 }

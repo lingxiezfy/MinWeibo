@@ -84,4 +84,7 @@ public interface IUserService {
      */
     UserListResponse relationList(UserRelationListRequest request);
 
+    Boolean edit(UserEditRequest request);
+
+    UserListResponse list(UserListRequest request);
 }

@@ -43,7 +43,7 @@
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         设置 <b class="caret"></b>
                     </a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu user-menu">
                         <li><a href="javascript:toPage('profile.html')">个人空间</a></li>
                         <li><a href="javascript:logout()">退出登录</a></li>
                     </ul>
@@ -246,6 +246,7 @@
                 } else {
                     $(".userInfo.face").attr("src", "img/icon.png");
                 }
+                initNavMenu(userInfo);
             }
             , function (errorMessage) {
                 toastr.error(errorMessage);

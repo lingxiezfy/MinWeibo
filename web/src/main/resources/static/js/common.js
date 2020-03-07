@@ -16,6 +16,9 @@ var relationUserUrl = serviceUrlBase + "user/relation";
 var searchUserUrl = serviceUrlBase + "user/search";
 var relationListUrl = serviceUrlBase +"user/relation/list";
 
+var userListUrl = serviceUrlBase + "user/list";
+var userEditUrl = serviceUrlBase + "user/edit";
+
 //发表微博 post form-data
 var postWeiboUrl = serviceUrlBase + "weibo/post";
 //发表微博 post form-data
@@ -55,6 +58,25 @@ var userTokenHeaderKey = "ACCESS_TOKEN";
 var userTokenStorageKey = "MINIWeiBo_token";
 var userIdStorageKey = "MINIWeiBo_userId";
 var adminStorageKey = "MINIWeiBo_admin";
+
+var user_menu_zone = '<li><a href="javascript:toPage(\'profile.html\')">个人空间</a></li>';
+var user_menu_logOut = '<li><a href="javascript:logout()">退出登录</a></li>';
+var admin_menu_manage = '<li><a onclick="toUserManage()">用户管理</a></li>';
+var admin_menu_notice = '<li><a>发布公告</a></li>';
+
+function toUserManage() {
+    toPage("manage.html","进入用户管理",1200,'info');
+}
+
+function initNavMenu(userInfo){
+    $('#my-navbar-collapse .user-menu').empty();
+    if(userInfo.admin){
+        $('#my-navbar-collapse .user-menu').append(admin_menu_notice);
+        $('#my-navbar-collapse .user-menu').append(admin_menu_manage);
+    }
+    $('#my-navbar-collapse .user-menu').append(user_menu_zone);
+    $('#my-navbar-collapse .user-menu').append(user_menu_logOut);
+}
 
 // 表单转json对象（如果需要json字符串，需要使用JSON.stringify()在转一次）
 $.fn.serializeObject = function () {

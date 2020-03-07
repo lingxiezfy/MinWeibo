@@ -1,6 +1,7 @@
 var socketServerUrl = "ws://localhost:8081/ws/server";
 
 var sendAllUrl = serviceUrlBase +"ws/sendAll";
+
 var sendOneUrl = serviceUrlBase +"ws/sendOne";
 var sendGroupUrl = serviceUrlBase +"ws/sendGroup";
 

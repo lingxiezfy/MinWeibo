@@ -48,6 +48,11 @@
       from user
       where username like "%"#{name}"%" or nickname like "%"#{name}"%"
     </select>
+    <select id="queryAllUsefulWithoutSelf" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user where useful = 1 and user_id != #{userId}
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete
         from user
@@ -185,7 +190,7 @@
             <if test="useful != null">
                 useful = #{useful,jdbcType=INTEGER},
             </if>
-            <if test="useful != null">
+            <if test="adminAble != null">
                 admin_able = #{adminAble,jdbcType=INTEGER},
             </if>
             <if test="createTime != null">

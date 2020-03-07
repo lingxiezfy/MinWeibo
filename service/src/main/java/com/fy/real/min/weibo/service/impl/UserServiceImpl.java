@@ -7,6 +7,9 @@ import com.fy.real.min.weibo.model.entity.User;
 import com.fy.real.min.weibo.model.enums.RelationStateEnum;
 import com.fy.real.min.weibo.model.exception.WeiBoException;
 import com.fy.real.min.weibo.model.user.*;
+import com.fy.real.min.weibo.model.user.groups.AddUserValidateGroup;
+import com.fy.real.min.weibo.model.user.groups.DeleteUserValidateGroup;
+import com.fy.real.min.weibo.model.user.groups.EditUserValidateGroup;
 import com.fy.real.min.weibo.service.IUserService;
 import com.fy.real.min.weibo.service.auth.IAuthAble;
 import com.fy.real.min.weibo.util.utils.ValidatorUtil;
@@ -16,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -259,6 +263,108 @@ public class UserServiceImpl implements IUserService {
             response.setList(new ArrayList<>());
         }
         response.setTargetUser(userService.convertUserWithRelation(targetUser,currentUser));
+        return response;
+    }
+
+    @Override
+    public Boolean edit(UserEditRequest request) {
+        if(StringUtils.isBlank(request.getOper())){
+            throw new WeiBoException("未知操作");
+        }
+        if(request.getCurrentUser().getAdminAble() == 0){
+            throw new WeiBoException("无权操作");
+        }
+        if("add".equals(request.getOper())){
+            ValidatorUtil.validate(request, AddUserValidateGroup.class);
+            User user = findUserByUsername(request.getUsername());
+            if(user != null){
+                throw new WeiBoException("用户名已注册，请更换用户名");
+            }
+
+            User newUser = new User();
+            newUser.setUsername(request.getUsername().trim());
+            newUser.setNickname(request.getNickname().trim());
+            try{
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                newUser.setBir(format.parse(request.getBir()));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            newUser.setSex(request.getSex());
+            if(request.getAdmin() != null && request.getAdmin()){
+                newUser.setAdminAble(1);
+            }
+            newUser.setPassword(request.getPassword().trim());
+            return userDao.insertSelective(newUser) > 0;
+        }else if("edit".equals(request.getOper())){
+            ValidatorUtil.validate(request, EditUserValidateGroup.class);
+            if(request.getUserId().equals(request.getCurrentUser().getUserId())){
+                throw new WeiBoException("无法修改管理员本人信息！");
+            }
+            User updateUser = new User();
+            updateUser.setUserId(request.getUserId());
+            updateUser.setNickname(StringUtils.isBlank(request.getNickname())?null:request.getNickname().trim());
+            updateUser.setPassword(StringUtils.isBlank(request.getPassword())?null:request.getPassword().trim());
+            try{
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                updateUser.setBir(format.parse(request.getBir()));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            updateUser.setSex(request.getSex());
+            updateUser.setAdminAble((request.getAdmin() != null && request.getAdmin())?1:0);
+
+            return userDao.updateByPrimaryKeySelective(updateUser) > 0;
+        }else if("del".equals(request.getOper())){
+            ValidatorUtil.validate(request, DeleteUserValidateGroup.class);
+            if(request.getUserId().equals(request.getCurrentUser().getUserId())){
+                throw new WeiBoException("无法修改管理员本人信息！");
+            }
+            User updateUser = new User();
+            updateUser.setUserId(request.getUserId());
+            updateUser.setUseful(0);
+            return userDao.updateByPrimaryKeySelective(updateUser) > 0;
+        }
+        throw new WeiBoException("未实现操作");
+    }
+
+    @Override
+    public UserListResponse list(UserListRequest request) {
+        UserListResponse response = new UserListResponse();
+        Page page = PageHelper.startPage(request.getPageIndex(),request.getPageSize());
+        if(StringUtils.isNotBlank(request.getSortField())){
+            String orderStr = "";
+            switch (request.getSortField()){
+                case "userId":
+                     orderStr = "user_id";
+                    break;
+                case "sex":
+                    orderStr = "sex";
+                    break;
+                case "admin":
+                    orderStr = "admin_able";
+                    break;
+            }
+            if(StringUtils.isNotBlank(orderStr)){
+                if(StringUtils.isBlank(request.getSortType())){
+                    orderStr += " asc";
+                }else {
+                    orderStr += (" "+request.getSortType());
+                }
+                page.setOrderBy(orderStr);
+            }
+        }
+        List<User> userList = userDao.queryAllUsefulWithoutSelf(request.getCurrentUser().getUserId());
+
+        if(userList.size() >0){
+            response.setPageIndex(page.getPageNum());
+            response.setTotalCount(page.getTotal());
+            response.setTotalPage(page.getPages());
+            response.setList(userList.stream().map(u->convertUserWithRelation(u,request.getCurrentUser())).collect(Collectors.toList()));
+        }else {
+            response.setList(new ArrayList<>());
+        }
         return response;
     }
 }

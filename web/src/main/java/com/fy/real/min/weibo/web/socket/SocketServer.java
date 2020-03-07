@@ -9,9 +9,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.websocket.*;
+import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,8 +25,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Description:
  * @version 1.0
  */
-//@ServerEndpoint(value = "/ws/server")
-//@Component
+@ServerEndpoint(value = "/ws/server")
+@Component
 public class SocketServer {
 
     private static UserDao userDao;
@@ -60,7 +62,6 @@ public class SocketServer {
         SessionSet.add(session);
         int cnt = OnlineCount.incrementAndGet(); // 在线数加1
         log.info("有连接加入，当前连接数为：{}", cnt);
-        SendMessage(session, "连接成功");
     }
 
     /**
@@ -68,15 +69,18 @@ public class SocketServer {
      */
     @OnClose
     public void onClose(Session session) {
-        Integer groupId = sessionGroupMap.get(session);
+        Integer groupId = sessionGroupMap.remove(session);
+        UserView userView = sessionUserMap.remove(session);;
         if(groupId != null){
             CopyOnWriteArraySet<Session> set = groupSessionMap.get(groupId);
             if(set != null){
                 set.remove(session);
             }
+            if(userView != null){
+                adminMessageToGroup(groupId,"用户:<span style='color:green;'>"+userView.getNickname()+"</span> 退出了讨论");
+            }
         }
-        sessionGroupMap.remove(session);
-        sessionUserMap.remove(session);
+
         SessionSet.remove(session);
         int cnt = OnlineCount.decrementAndGet();
         log.info("有连接关闭，当前连接数为：{}", cnt);
@@ -106,6 +110,7 @@ public class SocketServer {
                                     sessionGroupMap.computeIfAbsent(session,k->groupId);
                                     groupSessionMap.computeIfAbsent(groupId,k->new CopyOnWriteArraySet<>()).add(session);
                                     sessionUserMap.computeIfAbsent(session,k->view);
+                                    adminMessageToGroup(groupId,"欢迎<span style='color:red;'>"+user.getNickname()+"</span>加入讨论");
                                     log.info("用户{}:{}注册加入组{}",view.getNickname(),view.getUserId(),groupId);
                                 }else {
                                     log.error("用户注册失败，没找到该用户");
@@ -132,6 +137,15 @@ public class SocketServer {
         }
     }
 
+    private void adminMessageToGroup(Integer groupId, String content ){
+        UserView adminView = new UserView();
+        adminView.setAdmin(true);
+        adminView.setUsername("System");
+        adminView.setNickname("系统");
+        adminView.setUserId(-1);
+        sendToGroup(adminView,groupId,content);
+    }
+
     private void sendToGroup(UserView userView,Integer groupId, String content) {
         CopyOnWriteArraySet<Session> groupSessions = groupSessionMap.get(groupId);
         if(groupSessions != null && groupSessions.size() > 0 && StringUtils.isNotBlank(content)){
@@ -152,20 +166,16 @@ public class SocketServer {
     @OnError
     public void onError(Session session, Throwable error) {
         log.error("发生错误：{}，Session ID： {}",error.getMessage(),session.getId());
-        error.printStackTrace();
     }
 
     /**
      * 发送消息，实践表明，每次浏览器刷新，session会发生变化。
-     * @param session
-     * @param message
      */
     public static void SendMessage(Session session, String message) {
         try {
             session.getBasicRemote().sendText(message);
         } catch (IOException e) {
-            log.error("发送消息出错：{}", e.getMessage());
-            e.printStackTrace();
+            log.error("发送消息出错", e);
         }
     }
 

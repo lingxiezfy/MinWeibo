@@ -19,7 +19,6 @@ if (typeof (WebSocket) == "undefined") {
     //连接打开事件
     socket.onopen = function() {
         console.log("Socket 已打开");
-        socket.send("消息发送测试(From Client)");
     };
     //收到消息事件
     socket.onmessage = function(msg) {
@@ -59,6 +58,7 @@ function sendToServer(message) {
         socket.send(message);
     }
 }
+
 
 function sendAll(message) {
     if(message){

@@ -173,21 +173,6 @@
                         $('.discussion .current-nickname').html(result.current.nickname);
 						$('#sendMessageBtn').attr('onclick','sendDiscussionMessage('+discussionId+')');
 						registerToServer(discussionId,handleLocalStorage("get",userIdStorageKey));
-						$('.discussion .dialogs').append('<div class="itemdiv dialogdiv">\n' +
-								'<div class="user">\n' +
-								'<img alt="Alexa\'s Avatar" src="ace/images/avatars/avatar1.png"/>\n' +
-								'</div>\n' +
-								'<div class="body">\n' +
-								'<div class="time">\n' +
-								'<i class="ace-icon fa fa-clock-o"></i>\n' +
-								'<span class="green">刚刚</span>\n' +
-								'</div>\n' +
-								'<div class="name">\n' +
-								'<a style="color: red">管理员</a>\n' +
-								'</div>\n' +
-								'<div class="text">欢迎<span style="color: red">'+result.current.nickname+'</span>加入</div>\n' +
-								'</div>\n' +
-								'</div>');
                         $(".page-header .timeCountDown").attr('data',result.aliveMinutes);
                         $(".page-header .timeCountDown").each(function() {
                             if($(this).attr('data')){
@@ -244,7 +229,7 @@
 			faceUrl = 'upload/'+message.author.face;
 		}
 		var div = '<div class="itemdiv dialogdiv">\n' +
-				'<div class="user">\n' +
+				'<div class="user" onclick="openUserIndex('+message.author.userId+')">\n' +
 				'<img alt="头像" src="'+faceUrl+'"/>\n' +
 				'</div>\n' +
 				'<div class="body">\n' +
@@ -260,6 +245,21 @@
 				'</div>';
 		$('.discussion .dialogs').append(div);
 	}
+
+    function openUserIndex(userId){
+	    if(userId === -1){
+            toastr.error("系统无可展示主页");
+            return;
+        }
+        Swal.fire({
+            icon: 'info',
+            title: '即将为您打开用户主页!',
+            showConfirmButton: false,
+            timer: 1200
+        }).then(function () {
+            window.open('home.html?userId='+userId);
+        });
+    }
 
     jQuery(function ($) {
     	queryDiscussionInfo();

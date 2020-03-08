@@ -4,12 +4,14 @@ import com.fy.real.min.weibo.dao.dao.RelationDao;
 import com.fy.real.min.weibo.dao.dao.UserDao;
 import com.fy.real.min.weibo.model.entity.Relation;
 import com.fy.real.min.weibo.model.entity.User;
+import com.fy.real.min.weibo.model.enums.MessageTypeEnum;
 import com.fy.real.min.weibo.model.enums.RelationStateEnum;
 import com.fy.real.min.weibo.model.exception.WeiBoException;
 import com.fy.real.min.weibo.model.user.*;
 import com.fy.real.min.weibo.model.user.groups.AddUserValidateGroup;
 import com.fy.real.min.weibo.model.user.groups.DeleteUserValidateGroup;
 import com.fy.real.min.weibo.model.user.groups.EditUserValidateGroup;
+import com.fy.real.min.weibo.service.IMessageService;
 import com.fy.real.min.weibo.service.IUserService;
 import com.fy.real.min.weibo.service.auth.IAuthAble;
 import com.fy.real.min.weibo.util.utils.ValidatorUtil;
@@ -158,6 +160,9 @@ public class UserServiceImpl implements IUserService {
         return response;
     }
 
+    @Autowired
+    IMessageService messageService;
+
     @Override
     public Boolean relation(RelationUserRequest request) {
         ValidatorUtil.validate(request);
@@ -190,10 +195,10 @@ public class UserServiceImpl implements IUserService {
                     user.setFollowCount(-1);
                     userDao.updateCountColumn(user);
                     //被关注用户粉丝数-1
-                    user = new User();
-                    user.setUserId(request.getUserId());
-                    user.setFansCount(-1);
-                    userDao.updateCountColumn(user);
+                    User target = new User();
+                    target.setUserId(request.getUserId());
+                    target.setFansCount(-1);
+                    userDao.updateCountColumn(target);
                 }
             }
 
@@ -205,10 +210,19 @@ public class UserServiceImpl implements IUserService {
             user.setFollowCount(1);
             userDao.updateCountColumn(user);
             //被关注用户粉丝数+1
-            user = new User();
-            user.setUserId(request.getUserId());
-            user.setFansCount(1);
-            userDao.updateCountColumn(user);
+            User target = new User();
+            target.setUserId(request.getUserId());
+            target.setFansCount(1);
+            userDao.updateCountColumn(target);
+
+            // 添加关注消息
+            messageService.addMessage(request.getCurrentUser()
+                    ,target
+                    , MessageTypeEnum.RelationLike
+                    ,null
+                    ,relationNew.getRelationId()
+                    ,true
+            );
         }
         return true;
     }

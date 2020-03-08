@@ -46,6 +46,8 @@ var cancelLikesUrl = serviceUrlBase + "weibo/likes/cancel/";
 var commentListUrl = serviceUrlBase + "comment/list";
 // 添加评论
 var addCommentUrl = serviceUrlBase + "comment/add";
+// 删除评论
+var deleteCommentUrl = serviceUrlBase + "comment/delete/";
 // 评论点赞
 var likeCommentUrl = serviceUrlBase + "comment/likes/";
 // 取消点赞
@@ -53,16 +55,23 @@ var cancelLikeCommentUrl = serviceUrlBase + "comment/cancelLikes/";
 
 //讨论组信息
 var discussionInfoUrl = serviceUrlBase + "discussion/info/";
+// 删除消息
+var deleteMessageUrl = serviceUrlBase + "message/delete/";
+
+// 公告地址
+var systemNoticeUrl = serviceUrlBase +"message/systemNotice";
+// 消息列表地址
+var messageListUrl = serviceUrlBase +"message/query";
 
 var userTokenHeaderKey = "ACCESS_TOKEN";
 var userTokenStorageKey = "MINIWeiBo_token";
 var userIdStorageKey = "MINIWeiBo_userId";
 var adminStorageKey = "MINIWeiBo_admin";
 
-var user_menu_zone = '<li><a href="javascript:toPage(\'profile.html\')">个人空间</a></li>';
-var user_menu_logOut = '<li><a href="javascript:logout()">退出登录</a></li>';
+var user_menu_zone = '<li><a onclick="toPage(\'profile.html\')">个人空间</a></li>';
+var user_menu_logOut = '<li><a onclick="logout()">退出登录</a></li>';
 var admin_menu_manage = '<li><a onclick="toUserManage()">用户管理</a></li>';
-var admin_menu_notice = '<li><a>发布公告</a></li>';
+var admin_menu_notice = '<li><a onclick="openNoticeView()">发布公告</a></li>';
 
 function toUserManage() {
     toPage("manage.html","进入用户管理",1200,'info');
@@ -77,6 +86,63 @@ function initNavMenu(userInfo){
     $('#my-navbar-collapse .user-menu').append(user_menu_zone);
     $('#my-navbar-collapse .user-menu').append(user_menu_logOut);
 }
+
+function openNoticeView() {
+    Swal.fire({
+        title: '发布系统公告',
+        input: 'textarea',
+        showCancelButton: true,
+        inputPlaceholder:"公告内容",
+        confirmButtonText: '发布',
+        showLoaderOnConfirm: true,
+        inputValidator: (value) => {
+            if (!value) {
+                return '公告内容不能为空!'
+            }
+        },
+        preConfirm: (message) => {
+            if(message){
+                var obj = {};
+                obj["content"] = message;
+                postWithToken(
+                    systemNoticeUrl
+                    ,JSON.stringify(obj)
+                    ,null
+                    ,function (result) {
+                        return true;
+                    }
+                    ,function (errorMessage) {
+                        Swal.showValidationMessage(errorMessage);
+                    })
+            }else {
+                Swal.showValidationMessage(
+                    `公告内容不能为空！`
+                );
+            }
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+    });
+}
+
+function sendSystemNotice(message) {
+    if(message){
+        var obj = {};
+        obj["content"] = message;
+        postWithToken(
+            systemNoticeUrl
+            ,JSON.stringify(obj)
+            ,null
+            ,function (result) {
+                toastr.info("发布成功");
+            }
+            ,function (errorMessage) {
+                toastr.error(errorMessage);
+            })
+    }else {
+        toastr.error('公告内容不能为空！');
+    }
+}
+
 
 // 表单转json对象（如果需要json字符串，需要使用JSON.stringify()在转一次）
 $.fn.serializeObject = function () {
@@ -275,8 +341,9 @@ function searchWeiBoList(query,searchType,pageIndex, beforeLoad, afterLoad, ifEr
     if(searchType){
         var type = parseInt(searchType);
         switch (type) {
+            case 8:
             case 1:
-                obj["weiBoId"] = query && parseInt(query) ? parseInt(query) : 0;break;
+                obj["weiBoId"] = (query && parseInt(query)) ? parseInt(query) : 0;break;
             case 2:
                 obj["query"] = query ? query : "";break;
             case 3:
@@ -371,6 +438,13 @@ function toSecondhand(){
 }
 function toFunnyChat(){
     toPage("search.html?query=&searchType=4")
+}
+function findWeiBoById(weiBoId) {
+    if(weiBoId){
+        toPage("search.html?query="+weiBoId+"&searchType=8")
+    }else {
+        toastr.error("跳转失败");
+    }
 }
 // 去用户主页
 function toUserIndex(userId){
@@ -487,6 +561,34 @@ function commentList(weiBoId,pageIndex,before, after, error) {
     obj["weiBoId"] = weiBoId;
 
     postWithToken(commentListUrl, JSON.stringify(obj), before, after, error)
+}
+
+function deleteComment(commentId) {
+    if(commentId && parseInt(commentId)){
+        Swal.fire({
+            icon:'warning',
+            title:"警告",
+            text:"删除后将无法恢复，请谨慎操作！",
+            confirmButtonText: '确认删除',
+            showCloseButton: true,
+            showCancelButton: true,
+            cancelButtonText:'取消',
+        }).then((result)=>{
+            if(result.value){
+                getWithToken(deleteCommentUrl+commentId
+                    ,function () {}
+                    ,function (result) {
+                        toastr.success("删除成功");
+                    }
+                    ,function (errorMessage) {
+                        toastr.error(errorMessage);
+                    });
+            }
+        });
+
+    }else {
+        toastr.error("必须指定评论操作")
+    }
 }
 
 function addComment(weiBoId) {
@@ -759,7 +861,9 @@ function postWithToken(url, postData, beforeLoad, afterLoad, ifError, timeOut) {
         beforeSend: function (xhr) {
             xhr.setRequestHeader(userTokenHeaderKey, handleLocalStorage("get", userTokenStorageKey))
             //返回true才会继续往下执行，否则中断请求
-            return beforeLoad();
+            if(beforeLoad){
+                return beforeLoad();
+            }
         },
         success: function (response) {
             if (loginExpeirFilter(response) && response.success) {
@@ -767,19 +871,27 @@ function postWithToken(url, postData, beforeLoad, afterLoad, ifError, timeOut) {
                     if (response.result) {
                         afterLoad(response.result);
                     } else {
-                        afterLoad();
+                        if(afterLoad){
+                            afterLoad();
+                        }
                     }
                 }, timeOut);
             } else {
-                delayOrimmediatelyOp(function () {
-                    ifError(response.message);
-                }, timeOut);
+                if(ifError){
+                    delayOrimmediatelyOp(function () {
+                        ifError(response.message);
+                    }, timeOut);
+                }
+
             }
         },
         error: function (e) {
-            delayOrimmediatelyOp(function () {
-                ifError("访问远程服务器失败！");
-            }, timeOut);
+            console.log(e);
+            if(ifError){
+                delayOrimmediatelyOp(function () {
+                    ifError("访问远程服务器失败！");
+                }, timeOut);
+            }
         }
     });
 }
@@ -898,7 +1010,7 @@ function toPage(url, message, timeOut,type) {
             icon: icon,
             title: message,
             showConfirmButton: false,
-            timer: timeOut
+            timer: timeOut?timeOut:0
         }).then(function () {
             window.location.href = url
         });

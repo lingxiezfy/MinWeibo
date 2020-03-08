@@ -120,12 +120,14 @@
 		<script src="ace/js/ace.min.js"></script>
 
 		<script src="js/common.js"></script>
+		<script src="js/mySocket.js"></script>
 		<!-- inline scripts related to this page -->
 		<script type="text/javascript">
 			loadUserInfo(null,
 					function (userInfo) {
 						if(userInfo.admin){
 							$(".userInfo.nickname").html(userInfo.nickname);
+							registerToServer(-1,handleLocalStorage("get",userIdStorageKey));
 						}else {
 							Swal.fire({
 								icon: 'error',

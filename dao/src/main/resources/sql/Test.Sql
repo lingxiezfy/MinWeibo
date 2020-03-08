@@ -49,6 +49,8 @@ CREATE TABLE `message` (
     `from_id` int(11) DEFAULT 0 not null COMMENT '发送用户id',
     `to_id` int(11) DEFAULT 0 not NULL COMMENT '接收用户id',
     `message_content` varchar(500) default '' NOT NULL COMMENT '消息内容',
+    `message_type` int(11) DEFAULT 0 not null COMMENT '消息类型(1:系统公告,2:点赞,3:转发,4:粉丝,5:评论)',
+    `origin_source` int(11) DEFAULT 0 not NULL COMMENT '来源Id',
     read_state int(11) default 0 not null comment '是否已读（0：未读，1：已读）',
     create_time datetime default CURRENT_TIMESTAMP not null comment '创建时间',
     update_time datetime default CURRENT_TIMESTAMP not null comment '更新时间',

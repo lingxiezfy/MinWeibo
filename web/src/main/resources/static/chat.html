@@ -156,7 +156,7 @@
 
 <!-- inline scripts related to this page -->
 <script src="js/common.js"></script>
-<script src="js/discussion.js"></script>
+<script src="js/mySocket.js"></script>
 <script src="js/countdown.js"></script>
 
 <script type="text/javascript">
@@ -224,6 +224,9 @@
 	}
 
 	function addOneMessage(message){
+	    if(message.messageType !== 'ChatMessage'){
+	        return;
+        }
 		var faceUrl= 'ace/images/avatars/avatar1.png';
 		if(message.author && message.author.face){
 			faceUrl = 'upload/'+message.author.face;

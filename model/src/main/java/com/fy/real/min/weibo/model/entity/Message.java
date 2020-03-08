@@ -1,10 +1,14 @@
 package com.fy.real.min.weibo.model.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
 import java.util.Date;
 
 /**
  * message
+ * @author 
  */
 public class Message implements Serializable {
     /**
@@ -28,6 +32,16 @@ public class Message implements Serializable {
     private String messageContent;
 
     /**
+     * 消息类型(1:系统公告,2:点赞,3:转发,4:粉丝（关注）,5:评论)
+     */
+    private Integer messageType;
+
+    /**
+     * 来源Id
+     */
+    private Integer originSource;
+
+    /**
      * 是否已读（0：未读，1：已读）
      */
     private Integer readState;
@@ -35,11 +49,15 @@ public class Message implements Serializable {
     /**
      * 创建时间
      */
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createTime;
 
     /**
      * 更新时间
      */
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date updateTime;
 
     private static final long serialVersionUID = 1L;
@@ -74,6 +92,22 @@ public class Message implements Serializable {
 
     public void setMessageContent(String messageContent) {
         this.messageContent = messageContent;
+    }
+
+    public Integer getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(Integer messageType) {
+        this.messageType = messageType;
+    }
+
+    public Integer getOriginSource() {
+        return originSource;
+    }
+
+    public void setOriginSource(Integer originSource) {
+        this.originSource = originSource;
     }
 
     public Integer getReadState() {

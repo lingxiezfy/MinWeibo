@@ -8,10 +8,12 @@ import com.fy.real.min.weibo.model.entity.Comment;
 import com.fy.real.min.weibo.model.entity.Relation;
 import com.fy.real.min.weibo.model.entity.User;
 import com.fy.real.min.weibo.model.entity.Weibo;
+import com.fy.real.min.weibo.model.enums.MessageTypeEnum;
 import com.fy.real.min.weibo.model.enums.RelationStateEnum;
 import com.fy.real.min.weibo.model.exception.WeiBoException;
 import com.fy.real.min.weibo.model.weibo.comment.*;
 import com.fy.real.min.weibo.service.ICommentService;
+import com.fy.real.min.weibo.service.IMessageService;
 import com.fy.real.min.weibo.util.utils.ValidatorUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -37,6 +39,8 @@ public class CommentServiceImpl implements ICommentService {
     WeiboDao weiboDao;
     @Autowired
     RelationDao relationDao;
+    @Autowired
+    IMessageService messageService;
 
     @Override
     public CommentViewItem add(CommentRequest request) {
@@ -67,6 +71,16 @@ public class CommentServiceImpl implements ICommentService {
         addComment.setCreateTime(new Date());
         addComment.setLikesCount(0);
         addComment.setUseful(1);
+
+        //添加点赞消息
+        messageService.addMessage(request.getCurrentUser()
+                , new User(weibo.getUserId())
+                , MessageTypeEnum.CommentWeiBo
+                , String.format("%s: %s",MessageTypeEnum.CommentWeiBo.getDesc(),addComment.getCommentContent())
+                , addComment.getCommentId()
+                , true
+        );
+
         return CommentViewItem.convertFromComment(addComment,request.getCurrentUser());
     }
 
@@ -78,9 +92,7 @@ public class CommentServiceImpl implements ICommentService {
         PageHelper.orderBy("create_time desc");
         Comment commentQuery = new Comment();
         commentQuery.setWeiboId(request.getWeiBoId());
-        if(request.getCurrentUser().getAdminAble() == 0){
-            commentQuery.setUseful(1);
-        }
+        commentQuery.setUseful(1);
         List<Comment> commentList = commentDao.query(commentQuery);
         if(commentList.size() > 0){
             List<Integer> userIds = commentList.stream().map(Comment::getUserId).collect(Collectors.toList());
@@ -98,6 +110,28 @@ public class CommentServiceImpl implements ICommentService {
             response.setList(new ArrayList<>());
         }
         return response;
+    }
+
+    @Override
+    public Boolean delete(CommentActionRequest request) {
+        ValidatorUtil.validate(request);
+        Comment comment = commentDao.selectByPrimaryKey(request.getCommentId());
+        if(comment == null){
+            throw new WeiBoException("评论不存在");
+        }
+        if(comment.getUseful() == 0){
+            throw new WeiBoException("评论已删除，无需重复删除！");
+        }
+        Comment countComment = new Comment();
+        countComment.setCommentId(comment.getCommentId());
+        countComment.setUseful(0);
+        commentDao.updateByPrimaryKeySelective(countComment);
+
+        Weibo weiBoCount = new Weibo();
+        weiBoCount.setWeiboId(comment.getWeiboId());
+        weiBoCount.setCommentCount(-1);
+        weiboDao.updateCountColumn(weiBoCount);
+        return true;
     }
 
     @Override
@@ -128,6 +162,6 @@ public class CommentServiceImpl implements ICommentService {
         countComment.setCommentId(comment.getCommentId());
         countComment.setLikesCount(-1);
         commentDao.updateCountColumn(countComment);
-        return comment.getLikesCount()-1;
+        return comment.getLikesCount()>0?(comment.getLikesCount()-1):0;
     }
 }

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta charset="utf-8" />
+		<title>Mini微社区 - 我的通知</title>
+
+		<meta name="description" content="3 styles with inline editable feature" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
+		<!-- bootstrap & fontawesome -->
+		<link rel="stylesheet" href="ace/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="ace/font-awesome/4.5.0/css/font-awesome.min.css" />
+
+		<!-- page specific plugin styles -->
+		<link rel="stylesheet" href="ace/css/jquery-ui.custom.min.css" />
+		<link rel="stylesheet" href="ace/css/jquery.gritter.min.css" />
+		<link rel="stylesheet" href="ace/css/select2.min.css" />
+		<link rel="stylesheet" href="ace/css/bootstrap-datepicker3.min.css" />
+		<link rel="stylesheet" href="ace/css/bootstrap-editable.min.css" />
+		<link href="css/toastr.min.css" rel="stylesheet">
+
+		<!-- text fonts -->
+		<link rel="stylesheet" href="ace/css/fonts.googleapis.com.css" />
+
+		<!-- ace styles -->
+		<link rel="stylesheet" href="ace/css/ace.min.css" class="ace-main-stylesheet" id="main-ace-style" />
+
+		<!--[if lte IE 9]>
+			<link rel="stylesheet" href="ace/css/ace-part2.min.css" class="ace-main-stylesheet" />
+		<![endif]-->
+		<link rel="stylesheet" href="ace/css/ace-skins.min.css" />
+		<link rel="stylesheet" href="ace/css/ace-rtl.min.css" />
+
+		<!--[if lte IE 9]>
+		  <link rel="stylesheet" href="ace/css/ace-ie.min.css" />
+		<![endif]-->
+
+		<!-- inline styles related to this page -->
+
+		<!-- ace settings handler -->
+		<script src="ace/js/ace-extra.min.js"></script>
+
+		<!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
+
+		<!--[if lte IE 8]>
+		<script src="ace/js/html5shiv.min.js"></script>
+		<script src="ace/js/respond.min.js"></script>
+		<![endif]-->
+	</head>
+
+	<body class="no-skin">
+		<div class="main-container" id="main-container">
+
+			<div class="main-content">
+				<div class="main-content-inner">
+
+					<div class="page-content">
+						<div class="page-header">
+							<h1>
+								用户通知
+							</h1>
+							<div class="pull-right">
+								<a href="javascript:goWeiBoIndex('返回微博',1500)" class="btn btn-sm btn-block btn-warning">
+									<span class="bigger-110">返回微博</span>
+								</a>
+							</div>
+						</div><!-- /.page-header -->
+
+						<div class="row">
+							<div class="col-xs-12">
+								<!-- PAGE CONTENT BEGINS -->
+
+								<div class="row">
+									<div class="col-xs-12">
+										<div class="widget-box transparent">
+											<div class="widget-header widget-header-small">
+												<h4 class="widget-title blue smaller">
+													<i class="ace-icon fa fa-rss orange"></i>
+													通知列表&nbsp;&nbsp;&nbsp;用户：<span class="userInfo nickname" style="color: red;">未登录</span>
+
+												</h4>
+
+												<div class="widget-toolbar action-buttons messagePager">
+													<a onclick="findMessageType()">全部消息</a>
+													&nbsp;
+													<a onclick="findMessageType(1)">系统公告</a>
+													&nbsp;
+													<a onclick="findMessageType(2)">微博点赞</a>
+													&nbsp;
+													<a onclick="findMessageType(3)">微博转发</a>
+													&nbsp;
+													<a onclick="findMessageType(4)">粉丝关注</a>
+													&nbsp;
+													<a onclick="findMessageType(5)">微博评论</a>
+													&nbsp;
+													<a class="previous disabled" onclick="prePage()">&larr; 上一页</a>
+													&nbsp;
+													<a class="next" onclick="nextPage()">下一页 &rarr;</a>
+
+													&nbsp;
+													<span class="pageIndex">0</span>/<span class="totalPage">0</span>
+													&nbsp;
+													<span class="totalCount">0</span>
+												</div>
+											</div>
+
+											<div class="widget-body">
+												<div class="widget-main padding-8">
+													<div id="profile-feed-1" class="profile-feed">
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<div class="space-6"></div>
+
+									</div>
+								</div>
+
+								<!-- PAGE CONTENT ENDS -->
+							</div><!-- /.col -->
+						</div><!-- /.row -->
+					</div><!-- /.page-content -->
+				</div>
+			</div><!-- /.main-content -->
+
+			<div class="footer">
+				<div class="footer-inner">
+					<div class="footer-content">
+						<span class="bigger-120">
+							<span class="blue bolder">MINI微社区</span>-版权所有。 &copy; 2020-2030
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+				<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+			</a>
+		</div><!-- /.main-container -->
+
+		<!-- basic scripts -->
+
+		<!--[if !IE]> -->
+		<script src="ace/js/jquery-2.1.4.min.js"></script>
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+		<script src="ace/js/jquery-1.11.3.min.js"></script>
+		<![endif]-->
+		<script type="text/javascript">
+			if('ontouchstart' in document.documentElement) document.write("<script src='ace/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
+		</script>
+		<script src="ace/js/bootstrap.min.js"></script>
+
+		<!-- page specific plugin scripts -->
+
+		<!--[if lte IE 8]>
+		  <script src="ace/js/excanvas.min.js"></script>
+		<![endif]-->
+		<script src="ace/js/jquery-ui.custom.min.js"></script>
+		<script src="ace/js/jquery.ui.touch-punch.min.js"></script>
+		<script src="ace/js/jquery.gritter.min.js"></script>
+		<script src="ace/js/bootbox.js"></script>
+		<script src="ace/js/jquery.easypiechart.min.js"></script>
+		<script src="ace/js/bootstrap-datepicker.min.js"></script>
+		<script src="ace/js/jquery.hotkeys.index.min.js"></script>
+		<script src="ace/js/bootstrap-wysiwyg.min.js"></script>
+		<script src="ace/js/select2.min.js"></script>
+		<script src="ace/js/spinbox.min.js"></script>
+		<script src="ace/js/bootstrap-editable.min.js"></script>
+		<script src="ace/js/ace-editable.min.js"></script>
+		<script src="ace/js/jquery.maskedinput.min.js"></script>
+		<script src="js/toastr.min.js"></script>
+		<script src="js/sweetalert2.all.min.js"></script>
+
+		<!-- ace scripts -->
+		<script src="ace/js/ace-elements.min.js"></script>
+		<script src="ace/js/ace.min.js"></script>
+
+		<script src="js/common.js"></script>
+		<script src="js/mySocket.js"></script>
+		<!-- inline scripts related to this page -->
+		<script type="text/javascript">
+			jQuery(function($) {
+				$('#profile-feed-1').ace_scroll();
+				$('#profile-feed-1 .scroll-track').css('min-height','65vh');
+				$('#profile-feed-1 .scroll-content').css('min-height','60vh');
+				$('.widget-box a').css("cursor","pointer");
+				$('#profile-feed-1 img').css("cursor","pointer");
+
+				//页面初始化
+				//加载用户信息
+				loadUserInfo(null,
+						function (userInfo) {
+							$(".userInfo.nickname").html(userInfo.nickname);
+							$(".userInfo.username").html(userInfo.username);
+
+							registerToServer(-1,handleLocalStorage("get",userIdStorageKey));
+							loadNoticePage(1);
+						}
+						, function (errorMessage) {
+							toastr.error(errorMessage);
+						}
+				);
+
+			});
+
+			function findMessageType(messageType) {
+				if(messageType){
+					toPage("notice.html?messageType="+messageType);
+				}else {
+					toPage("notice.html");
+				}
+			}
+
+			function buildMessage(msg) {
+				return "<div class='center'>"+msg+"</div>";
+			}
+
+			function deleteMessage(messageId){
+				if(messageId && parseInt(messageId)){
+					Swal.fire({
+						icon:'warning',
+						title:"警告",
+						text:"删除后将无法恢复，请谨慎操作！",
+						confirmButtonText: '确认删除',
+						showCloseButton: true,
+						showCancelButton: true,
+						cancelButtonText:'取消',
+					}).then((result)=>{
+						if(result.value){
+							getWithToken(deleteMessageUrl+messageId
+									,function () {}
+									,function (result) {
+										toastr.success("删除成功");
+										window.location.reload();
+									}
+									,function (errorMessage) {
+										toastr.error(errorMessage);
+									});
+						}
+					});
+
+				}else {
+					toastr.error("必须指定消息操作");
+				}
+			}
+
+			let nowPage = 1;
+			let isLoading = false;
+
+			function prePage() {
+				if(nowPage<=1){
+					toastr.error("没有前一页了");
+					return;
+				}
+				nowPage = nowPage -1;
+				loadNoticePage(nowPage)
+			}
+			function nextPage() {
+				nowPage = nowPage +1;
+				loadNoticePage(nowPage)
+			}
+
+			function  loadNoticePage(pageIndex) {
+				var obj = {};
+				obj['pageIndex'] = 1;
+				if(pageIndex){
+					obj['pageIndex'] = pageIndex;
+				}
+				obj['pageSize'] = 6;
+
+				// (1,"系统公告")
+				// (2,"赞了你的微博")
+				// (3,"转发了的微博")
+				// (4,"关注了你")
+				// (5,"评论了你的微博")
+				var messageType = getQueryVariable('messageType');
+				if(messageType){
+					obj['messageType'] = messageType;
+				}
+				var messageId = getQueryVariable('messageId');
+				if(messageId){
+					obj['messageId'] = messageId;
+				}
+				postWithToken(
+						messageListUrl
+						,JSON.stringify(obj)
+						, function () {
+							if(isLoading) return false;
+							isLoading = true;
+							$('#profile-feed-1 .scroll-content').empty();
+							$('#profile-feed-1 .scroll-content').append(buildMessage("加载中。。"));
+						}
+						, function (response) {
+							if(response.list && response.list.length > 0){
+								$('#profile-feed-1 .scroll-content').empty();
+								for (var message of response.list) {
+									var faceUrl = "img/icon.png";
+									if (message.fromUser && message.fromUser.face) {
+										faceUrl = "upload/" + message.fromUser.face;
+									}
+									var div = '<div class="profile-activity clearfix messageItem">\n' +
+												'<div>\n' +
+													'<img onclick="toUserIndex('+message.fromId+')" class="pull-left" alt="头像" src="'+faceUrl+'" />\n' +
+													'<a class="user nickname" href="#"> '+message.fromUser.nickname+' </a>\n' +
+													'<span>'+message.messageContent+'.</span>\n';
+													if(message.messageType === 4){ // 关注
+														div+='<span>&nbsp;&nbsp;<a onclick="toUserIndex('+message.fromId+')">>>前往他的主页>></a></span>\n';
+													}
+													if(message.messageType === 3){ //转发
+														div+='<span>&nbsp;&nbsp;<a onclick="findWeiBoById('+message.originSource+')">>>查看微博>></a></span>\n';
+													}
+													div+='<div class="time">\n' +
+														'<i class="ace-icon fa fa-clock-o bigger-110"></i>\n' +
+														'<span>'+message.createTime+'</span>\n' +
+													'</div>\n' +
+												'</div>\n' +
+												'<div class="tools action-buttons">\n';
+													if(message.messageType === 5){ //评论
+														div+='<a onclick="deleteComment('+message.originSource+')" class="red">\n' +
+																'<i class="ace-icon fa fa-times bigger-60">评论</i>\n' +
+																'</a>\n';
+													}
+													if(message.toId === message.toUser.userId || message.fromId === message.toUser.userId){
+														div+='&nbsp;\n' +
+																'<a onclick="deleteMessage('+message.messageId+')" class="red">\n' +
+																'<i class="ace-icon fa fa-times bigger-60">消息</i>\n' +
+																'</a>\n';
+													}
+
+												div+='</div>\n' +
+											'</div>';
+									$('#profile-feed-1 .scroll-content').append(div);
+								}
+							}else{
+								$('#profile-feed-1 .scroll-content').empty();
+								$('#profile-feed-1 .scroll-content').append(buildMessage("暂无消息"));
+							}
+							//没有更多数据了
+							if(!response.totalPage || response.pageIndex >= response.totalPage){
+								$(".messagePager .next").removeAttr("onclick");
+							}else {
+								$(".messagePager .next").attr("onclick","nextPage()");
+							}
+							if(response.pageIndex > 1){
+								$(".messagePager .previous").attr("onclick","prePage()");
+							}else {
+								$(".messagePager .previous").removeAttr("onclick");
+							}
+							$(".messagePager .totalCount").html(response.totalCount);
+							$(".messagePager .totalPage").html(response.totalPage);
+							$(".messagePager .pageIndex").html(response.pageIndex);
+							isLoading = false;
+						}, function (errorMessage) {
+							toastr.error(errorMessage);
+							isLoading = false;
+							$('#profile-feed-1 .scroll-content').empty();
+							$('#profile-feed-1 .scroll-content').append(buildMessage("暂无消息"));
+						}
+				);
+			}
+
+
+		</script>
+	</body>
+</html>

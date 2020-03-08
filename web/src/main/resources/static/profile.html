@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta charset="utf-8"/>
-    <title>MINI微社区-个人空间</title>
+    <title>MINI微社区 - 个人空间</title>
 
     <meta name="description" content="3 styles with inline editable feature"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
@@ -81,23 +81,9 @@
                                         </li>
 
                                         <li>
-                                            <a data-toggle="tab" href="#feed">
-                                                <i class="orange ace-icon fa fa-rss bigger-120"></i>
-                                                我的私信
-                                            </a>
-                                        </li>
-
-                                        <li>
                                             <a data-toggle="tab" href="#friends">
                                                 <i class="blue ace-icon fa  fa-eye-slash bigger-120"></i>
                                                 黑名单
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a data-toggle="tab" href="#pictures">
-                                                <i class="pink ace-icon fa  fa-eye-slash bigger-120"></i>
-                                                temp
                                             </a>
                                         </li>
                                     </ul>
@@ -181,76 +167,6 @@
 
 
                                         </div><!-- /#home -->
-
-                                        <div id="feed" class="tab-pane">
-                                            <div class="profile-feed row">
-                                                <div class="col-sm-6">
-                                                    <div class="profile-activity clearfix">
-                                                        <div>
-                                                            <img class="pull-left" alt="Alex Doe's avatar"
-                                                                 src="ace/images/avatars/avatar5.png"/>
-                                                            <a class="user" href="#"> Alex Doe </a>
-                                                            changed his profile photo.
-                                                            <a href="#">Take a look</a>
-
-                                                            <div class="time">
-                                                                <i class="ace-icon fa fa-clock-o bigger-110"></i>
-                                                                an hour ago
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="tools action-buttons">
-                                                            <a href="#" class="blue">
-                                                                <i class="ace-icon fa fa-pencil bigger-125"></i>
-                                                            </a>
-
-                                                            <a href="#" class="red">
-                                                                <i class="ace-icon fa fa-times bigger-125"></i>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div><!-- /.col -->
-
-                                                <div class="col-sm-6">
-                                                    <div class="profile-activity clearfix">
-                                                        <div>
-                                                            <i class="pull-left thumbicon fa fa-pencil-square-o btn-pink no-hover"></i>
-                                                            <a class="user" href="#"> Alex Doe </a>
-                                                            published a new blog post.
-                                                            <a href="#">Read now</a>
-
-                                                            <div class="time">
-                                                                <i class="ace-icon fa fa-clock-o bigger-110"></i>
-                                                                11 hours ago
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="tools action-buttons">
-                                                            <a href="#" class="blue">
-                                                                <i class="ace-icon fa fa-pencil bigger-125"></i>
-                                                            </a>
-
-                                                            <a href="#" class="red">
-                                                                <i class="ace-icon fa fa-times bigger-125"></i>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div><!-- /.col -->
-                                            </div><!-- /.row -->
-
-                                            <div class="space-12"></div>
-
-                                            <div class="center">
-                                                <button type="button"
-                                                        class="btn btn-sm btn-primary btn-white btn-round">
-                                                    <i class="ace-icon fa fa-rss bigger-150 middle orange2"></i>
-                                                    <span class="bigger-110">View more activities</span>
-
-                                                    <i class="icon-on-right ace-icon fa fa-arrow-right"></i>
-                                                </button>
-                                            </div>
-                                        </div><!-- /#feed -->
-
                                         <div id="friends" class="tab-pane">
                                             <div class="profile-users clearfix">
                                                 <!-- 用户列表填充-->
@@ -269,36 +185,6 @@
                                             </ul>
                                         </div><!-- /#friends -->
 
-                                        <div id="pictures" class="tab-pane">
-                                            <ul class="ace-thumbnails">
-                                                <li>
-                                                    <a href="#" data-rel="colorbox">
-                                                        <img alt="150x150" src="ace/images/gallery/thumb-1.jpg"/>
-                                                        <div class="text">
-                                                            <div class="inner">Sample Caption on Hover</div>
-                                                        </div>
-                                                    </a>
-
-                                                    <div class="tools tools-bottom">
-                                                        <a href="#">
-                                                            <i class="ace-icon fa fa-link"></i>
-                                                        </a>
-
-                                                        <a href="#">
-                                                            <i class="ace-icon fa fa-paperclip"></i>
-                                                        </a>
-
-                                                        <a href="#">
-                                                            <i class="ace-icon fa fa-pencil"></i>
-                                                        </a>
-
-                                                        <a href="#">
-                                                            <i class="ace-icon fa fa-times red"></i>
-                                                        </a>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </div><!-- /#pictures -->
                                     </div>
                                 </div>
                             </div>
@@ -366,6 +252,7 @@
 <script src="ace/js/ace.min.js"></script>
 
 <script src="js/common.js"></script>
+<script src="js/mySocket.js"></script>
 <!-- inline scripts related to this page -->
 <script type="text/javascript">
     jQuery(function ($) {
@@ -641,6 +528,7 @@
             }
 
             toastr.info('点击头像可修改您的头像');
+            registerToServer(-1,handleLocalStorage("get",userIdStorageKey));
             loadOneRelationBlackPage(nowPage);
         }
         , function (errorMessage) {
@@ -672,7 +560,7 @@
     function  loadOneRelationBlackPage(pageIndex) {
         searchRelationList(2,null,pageIndex
             , function () {
-                if(isLoading || !haveMoreData) return false;
+                if(isLoading) return false;
                 isLoading = true;
                 $("#friends .profile-users").empty();
                 $("#friends .profile-users").append("加载中。。");
@@ -707,10 +595,8 @@
                 //没有更多数据了
                 if(!response.totalPage || response.pageIndex >= response.totalPage){
                     $("#friends .pager .next").addClass("disabled");
-                    haveMoreData = false;
                 }else {
                     $("#friends .pager .next").removeClass("disabled");
-                    haveMoreData = true;
                 }
                 if(response.pageIndex > 1){
                     $("#friends .pager .previous").removeClass("disabled");

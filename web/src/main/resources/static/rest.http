@@ -2,7 +2,7 @@
 POST http://localhost:8081/user/login HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 
-{"username":"user","password":"user"}
+{"username":"banzhu","password":"banzhu"}
 
 ### 注册
 POST http://localhost:8081/user/register HTTP/1.1
@@ -19,7 +19,7 @@ Content-Type: application/json;charset=UTF-8
 
 ### 登出
 GET http://localhost:8081/user/loginOut HTTP/1.1
-ACCESS_TOKEN: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0IiwiZXhwIjoxNTgyNDA0NjQ0LCJpYXQiOjE1ODI0MDEwNDR9.q55dIMmZoOvxgTM0HG9Tp5mlKj6qmRouxzJ73MELUuI
+ACCESS_TOKEN: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxIiwiZXhwIjoxNTgyNzQwMTY4LCJpYXQiOjE1ODI3MzY1Njh9.yeJzeqqeZIyCuiw9RbsrewUD0S6DwVqz4ezyPeqtU5U
 
 ### 列表
 POST http://localhost:8081/weibo/listAll HTTP/1.1
@@ -30,3 +30,46 @@ Content-Type: application/json;charset=UTF-8
     "pageSize":3
 }
 
+### 查找用户
+POST http://localhost:8081/user/search HTTP/1.1
+ACCESS_TOKEN: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxIiwiZXhwIjoxNTgyNzQwMTY4LCJpYXQiOjE1ODI3MzY1Njh9.yeJzeqqeZIyCuiw9RbsrewUD0S6DwVqz4ezyPeqtU5U
+Content-Type: application/json;charset=UTF-8
+
+{
+    "pageIndex":1,
+    "pageSize":3,
+    "query":"测试"
+}
+
+### 查找微博
+POST http://localhost:8081/weibo/search HTTP/1.1
+ACCESS_TOKEN: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyIiwiZXhwIjoxNTgzNjY1MTQ5LCJpYXQiOjE1ODM2NjE1NDl9.vCY1-80nMIxyf4c-oSWP9uEZYwcVyRKeoGYinAiBIPk
+Content-Type: application/json;charset=UTF-8
+
+{
+    "pageIndex":1,
+    "pageSize":3,
+    "query":"",
+    "topic":"#二手交易# "
+}
+
+### 消息列表
+POST http://localhost:8081/message/query HTTP/1.1
+ACCESS_TOKEN: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzIiwiZXhwIjoxNTgzNjgzNjg0LCJpYXQiOjE1ODM2ODAwODR9.yoACD02eLOe-1NWCIDI04jSF7G2uX06Ddc7S_G1BBWc
+Content-Type: application/json;charset=UTF-8
+
+{
+    "pageIndex":1,
+    "pageSize":3,
+    "messageType":0,
+    "messageId":0
+}
+
+### 系统公告
+POST http://localhost:8081/message/systemNotice HTTP/1.1
+ACCESS_TOKEN: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzIiwiZXhwIjoxNTgzNjgzNjg0LCJpYXQiOjE1ODM2ODAwODR9.yoACD02eLOe-1NWCIDI04jSF7G2uX06Ddc7S_G1BBWc
+Content-Type: application/json;charset=UTF-8
+
+{
+    "content":"45555"
+}

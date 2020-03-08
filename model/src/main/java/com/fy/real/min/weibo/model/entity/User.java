@@ -84,6 +84,13 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public User() {
+    }
+
+    public User(Integer userId) {
+        this.userId = userId;
+    }
+
     public Integer getUserId() {
         return userId;
     }

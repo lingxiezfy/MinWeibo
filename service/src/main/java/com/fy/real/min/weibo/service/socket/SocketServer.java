@@ -1,10 +1,10 @@
-package com.fy.real.min.weibo.web.socket;
+package com.fy.real.min.weibo.service.socket;
 
 import com.alibaba.fastjson.JSON;
 import com.fy.real.min.weibo.dao.dao.UserDao;
 import com.fy.real.min.weibo.model.entity.User;
+import com.fy.real.min.weibo.model.enums.MessageTypeEnum;
 import com.fy.real.min.weibo.model.message.MessageBase;
-import com.fy.real.min.weibo.model.user.UserView;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,13 +44,16 @@ public class SocketServer {
     private static final AtomicInteger OnlineCount = new AtomicInteger(0);
     // concurrent包的线程安全Set，用来存放每个客户端对应的Session对象。
     private static CopyOnWriteArraySet<Session> SessionSet = new CopyOnWriteArraySet<Session>();
-    // 组内在线用户
+    // 组内在线用户 （-1 微博消息组；1-n 讨论组用户）
     private static ConcurrentHashMap<Integer, CopyOnWriteArraySet<Session>> groupSessionMap = new ConcurrentHashMap<>();
 
-    // session 与用户绑定
-    private static ConcurrentHashMap<Session, UserView> sessionUserMap = new ConcurrentHashMap<>();
+    // 用户持有的微博消息Session列表
+    private static ConcurrentHashMap<Integer, CopyOnWriteArraySet<Session>> userWeiBoSessionMap = new ConcurrentHashMap<>();
 
-    // session 与组绑定
+    // session 与用户绑定 （用于快速定位Session指向的用户）
+    private static ConcurrentHashMap<Session, User> sessionUserMap = new ConcurrentHashMap<>();
+
+    // session 与组绑定（用于快速定位Session指向的组）
     private static ConcurrentHashMap<Session, Integer> sessionGroupMap = new ConcurrentHashMap<>();
 
 
@@ -70,14 +73,21 @@ public class SocketServer {
     @OnClose
     public void onClose(Session session) {
         Integer groupId = sessionGroupMap.remove(session);
-        UserView userView = sessionUserMap.remove(session);;
+        User user = sessionUserMap.remove(session);;
         if(groupId != null){
             CopyOnWriteArraySet<Session> set = groupSessionMap.get(groupId);
             if(set != null){
                 set.remove(session);
             }
-            if(userView != null){
-                adminMessageToGroup(groupId,"用户:<span style='color:green;'>"+userView.getNickname()+"</span> 退出了讨论");
+            if(user != null){
+                if(groupId == -1){
+                    CopyOnWriteArraySet<Session> userWeiBoSession =  userWeiBoSessionMap.get(user.getUserId());
+                    if (userWeiBoSession != null) {
+                        userWeiBoSession.remove(session);
+                    }
+                }else if(groupId > 0){
+                    adminMessageToChatGroup(groupId,"用户:<span style='color:green;'>"+user.getNickname()+"</span> 退出了讨论");
+                }
             }
         }
 
@@ -88,6 +98,7 @@ public class SocketServer {
 
     /**
      * 收到客户端消息后调用的方法
+     * group;{-1,groupId};{in,message};{userId,something to say}
      *
      * @param message
      *            客户端发送过来的消息
@@ -102,34 +113,45 @@ public class SocketServer {
                     case "group"://组消息
                         Integer groupId = Integer.parseInt(arr[1]);
                         switch (arr[2]) {
-                            case "in": // 用户绑定
+                            case "in": // 用户绑定 group;{groupId};in;{userId}
                                 Integer userId = Integer.parseInt(arr[3]);
                                 User user = userDao.selectByPrimaryKey(userId);
                                 if(user != null){
-                                    UserView view = UserView.convertFromUser(user);
                                     sessionGroupMap.computeIfAbsent(session,k->groupId);
                                     groupSessionMap.computeIfAbsent(groupId,k->new CopyOnWriteArraySet<>()).add(session);
-                                    sessionUserMap.computeIfAbsent(session,k->view);
-                                    adminMessageToGroup(groupId,"欢迎<span style='color:red;'>"+user.getNickname()+"</span>加入讨论");
-                                    log.info("用户{}:{}注册加入组{}",view.getNickname(),view.getUserId(),groupId);
+                                    sessionUserMap.computeIfAbsent(session,k->user);
+                                    if(groupId > 0){
+                                        adminMessageToChatGroup(groupId,"欢迎<span style='color:red;'>"+user.getNickname()+"</span>加入");
+                                    }else if(groupId == -1){
+                                        userWeiBoSessionMap.computeIfAbsent(userId,k->new CopyOnWriteArraySet<>()).add(session);
+                                    }
+                                    log.info("用户{}:{}注册加入组{}",user.getNickname(),user.getUserId(),groupId);
                                 }else {
                                     log.error("用户注册失败，没找到该用户");
                                 }
                                 break;
-                            case "msg": //组内群发消息
+                            case "msg": //组内群发消息 group;{groupId};msg;{something to say}
                                 String content = arr[3];
-                                UserView userView = sessionUserMap.get(session);
-                                if(userView == null){
+                                User fromUser = sessionUserMap.get(session);
+                                if(fromUser == null){
                                     log.error("发送消息失败，该用户未注册组");
                                 }else {
-                                    sendToGroup(userView,groupId,content);
-                                    log.info("用户{}:{}向组{}群发{}",userView.getNickname(),userView.getUserId(),groupId,content);
+                                    if(groupId > 0){
+                                        sendToChatGroup(fromUser,groupId,content);
+                                    }else {
+                                        // 发送微博通知
+                                        sendWeiBoSystemNotice(fromUser,content,null);
+                                    }
+
+                                    log.info("用户{}:{}向组{}群发{}",fromUser.getNickname(),fromUser.getUserId(),groupId,content);
                                 }
                                 break;
                             default:
                                 log.warn("未解析消息{}",message);
                         }
                         break;
+                    default:
+                        log.warn("未解析消息{}",message);
                 }
             }
         }catch (Exception e){
@@ -137,19 +159,64 @@ public class SocketServer {
         }
     }
 
-    private void adminMessageToGroup(Integer groupId, String content ){
-        UserView adminView = new UserView();
-        adminView.setAdmin(true);
-        adminView.setUsername("System");
-        adminView.setNickname("系统");
-        adminView.setUserId(-1);
-        sendToGroup(adminView,groupId,content);
+    /**
+     * 发布微博通知
+     */
+    private static void sendWeiBoSystemNotice(User fromUser, String content,Integer messageId) {
+        CopyOnWriteArraySet<Session> groupSessions = groupSessionMap.get(-1);
+        if(groupSessions != null && groupSessions.size() > 0 && StringUtils.isNotBlank(content)){
+            String message = JSON.toJSONString(new MessageBase(fromUser, MessageTypeEnum.SystemNotice.name(),content,new Date(),messageId));
+            for(Session session : groupSessions){
+                if(session.isOpen()){
+                    SendMessage(session,message);
+                }
+            }
+        }
     }
 
-    private void sendToGroup(UserView userView,Integer groupId, String content) {
+    public static void sendMessageToUser(User fromUser,Integer toId,MessageTypeEnum messageType,String content,Integer messageId){
+        if (MessageTypeEnum.SystemNotice.equals(messageType)) {
+            SocketServer.sendWeiBoSystemNotice(fromUser,content,messageId);
+        }else {
+            CopyOnWriteArraySet<Session> userSessions = SocketServer.userWeiBoSessionMap.get(toId);
+            if(userSessions != null && userSessions.size() > 0 && StringUtils.isNotBlank(content)){
+                String message = JSON.toJSONString(new MessageBase(fromUser, messageType.name(),content,new Date(),messageId));
+                for(Session session : userSessions){
+                    if(session.isOpen()){
+                        SendMessage(session,message);
+                    }
+                }
+            }else {
+                log.error("发送消息失败,用户:{}不在线,消息:{},发送方:{}",toId,content,fromUser.getNickname());
+            }
+        }
+
+    }
+
+
+    /**
+     * 管理员发布讨论组消息
+     */
+    private void adminMessageToChatGroup(Integer groupId, String content ){
+        User admin = new User();
+        admin.setAdminAble(1);
+        admin.setUsername("System");
+        admin.setNickname("系统");
+        admin.setUserId(-1);
+        sendToChatGroup(admin,groupId,content);
+    }
+
+    /**
+     * 讨论组内群发
+     */
+    private void sendToChatGroup(User user,Integer groupId, String content) {
+        if(groupId <= 0){
+            log.error("发送消息失败，{}不属于讨论组",groupId);
+            return;
+        }
         CopyOnWriteArraySet<Session> groupSessions = groupSessionMap.get(groupId);
         if(groupSessions != null && groupSessions.size() > 0 && StringUtils.isNotBlank(content)){
-            String message = JSON.toJSONString(new MessageBase(userView,content,new Date()));
+            String message = JSON.toJSONString(new MessageBase(user, MessageTypeEnum.ChatMessage.name(),content,new Date()));
             for(Session session : groupSessions){
                 if(session.isOpen()){
                     SendMessage(session,message);

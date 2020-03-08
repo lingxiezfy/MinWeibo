@@ -28,6 +28,15 @@ public class CommentController extends BaseApiController {
         return this.exec(request,(r)->commentService.add(r));
     }
 
+    @GetMapping("delete/{commentId}")
+    @UserLoginToken
+    public BaseResponse<Boolean> add(@PathVariable("commentId") Integer commentId, @CurrentUser User user){
+        CommentActionRequest request = new CommentActionRequest();
+        request.setCommentId(commentId);
+        request.setCurrentUser(user);
+        return this.exec(request,(r)->commentService.delete(r));
+    }
+
     @PostMapping("list")
     @UserLoginToken
     public BaseResponse<CommentListResponse> list(@RequestBody CommentListRequest request, @CurrentUser User user){

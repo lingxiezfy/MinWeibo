@@ -6,12 +6,15 @@
     <result column="from_id" jdbcType="INTEGER" property="fromId" />
     <result column="to_id" jdbcType="INTEGER" property="toId" />
     <result column="message_content" jdbcType="VARCHAR" property="messageContent" />
+    <result column="message_type" jdbcType="INTEGER" property="messageType" />
+    <result column="origin_source" jdbcType="INTEGER" property="originSource" />
     <result column="read_state" jdbcType="INTEGER" property="readState" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    message_id, from_id, to_id, message_content, read_state, create_time, update_time
+    message_id, from_id, to_id, message_content, message_type, origin_source, read_state, 
+    create_time, update_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -19,17 +22,48 @@
     from message
     where message_id = #{messageId,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <select id="queryForUserByMessageType" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List" />
+      from message where (to_id = #{userId} or to_id = 0)
+      <if test="messageType > 0">
+        and message_type = #{messageType}
+      </if>
+
+    </select>
+    <select id="query" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List" />
+      from message
+        <where>
+          <if test="messageId != null">
+            and message_id = #{messageId,jdbcType=INTEGER}
+          </if>
+          <if test="fromId != null">
+            and from_id = #{fromId,jdbcType=INTEGER}
+          </if>
+          <if test="toId != null">
+            and (to_id = #{toId,jdbcType=INTEGER} or to_id = 0)
+          </if>
+          <if test="messageType != null">
+            and message_type = #{messageType,jdbcType=INTEGER}
+          </if>
+          <if test="readState != null">
+            and read_state = #{readState,jdbcType=INTEGER}
+          </if>
+        </where>
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from message
     where message_id = #{messageId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" keyColumn="message_id" keyProperty="messageId" parameterType="com.fy.real.min.weibo.model.entity.Message" useGeneratedKeys="true">
     insert into message (from_id, to_id, message_content, 
-      read_state, create_time, update_time
-      )
+      message_type, origin_source, read_state, 
+      create_time, update_time)
     values (#{fromId,jdbcType=INTEGER}, #{toId,jdbcType=INTEGER}, #{messageContent,jdbcType=VARCHAR}, 
-      #{readState,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
-      )
+      #{messageType,jdbcType=INTEGER}, #{originSource,jdbcType=INTEGER}, #{readState,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="message_id" keyProperty="messageId" parameterType="com.fy.real.min.weibo.model.entity.Message" useGeneratedKeys="true">
     insert into message
@@ -42,6 +76,12 @@
       </if>
       <if test="messageContent != null">
         message_content,
+      </if>
+      <if test="messageType != null">
+        message_type,
+      </if>
+      <if test="originSource != null">
+        origin_source,
       </if>
       <if test="readState != null">
         read_state,
@@ -62,6 +102,12 @@
       </if>
       <if test="messageContent != null">
         #{messageContent,jdbcType=VARCHAR},
+      </if>
+      <if test="messageType != null">
+        #{messageType,jdbcType=INTEGER},
+      </if>
+      <if test="originSource != null">
+        #{originSource,jdbcType=INTEGER},
       </if>
       <if test="readState != null">
         #{readState,jdbcType=INTEGER},
@@ -86,6 +132,12 @@
       <if test="messageContent != null">
         message_content = #{messageContent,jdbcType=VARCHAR},
       </if>
+      <if test="messageType != null">
+        message_type = #{messageType,jdbcType=INTEGER},
+      </if>
+      <if test="originSource != null">
+        origin_source = #{originSource,jdbcType=INTEGER},
+      </if>
       <if test="readState != null">
         read_state = #{readState,jdbcType=INTEGER},
       </if>
@@ -103,6 +155,8 @@
     set from_id = #{fromId,jdbcType=INTEGER},
       to_id = #{toId,jdbcType=INTEGER},
       message_content = #{messageContent,jdbcType=VARCHAR},
+      message_type = #{messageType,jdbcType=INTEGER},
+      origin_source = #{originSource,jdbcType=INTEGER},
       read_state = #{readState,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP}

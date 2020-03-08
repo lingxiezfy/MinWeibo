@@ -11,6 +11,8 @@ public interface ICommentService {
 
     CommentViewItem add(CommentRequest request);
 
+    Boolean delete(CommentActionRequest request);
+
     Integer likes(CommentActionRequest request);
 
     Integer cancelLikes(CommentActionRequest request);

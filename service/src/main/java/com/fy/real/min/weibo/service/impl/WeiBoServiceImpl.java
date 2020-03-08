@@ -3,8 +3,10 @@ package com.fy.real.min.weibo.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.fy.real.min.weibo.dao.dao.*;
 import com.fy.real.min.weibo.model.entity.*;
+import com.fy.real.min.weibo.model.enums.MessageTypeEnum;
 import com.fy.real.min.weibo.model.exception.WeiBoException;
 import com.fy.real.min.weibo.model.weibo.*;
+import com.fy.real.min.weibo.service.IMessageService;
 import com.fy.real.min.weibo.service.IUserService;
 import com.fy.real.min.weibo.service.IWeiBoService;
 import com.fy.real.min.weibo.util.utils.ValidatorUtil;
@@ -96,6 +98,9 @@ public class WeiBoServiceImpl implements IWeiBoService {
         return weiboDao.updateByPrimaryKeySelective(updateWeiBo) > 0;
     }
 
+    @Autowired
+    IMessageService messageService;
+
     @Override
     public PostWeiboResponse rePost(RePostWeiboRequest request) {
         ValidatorUtil.validate(request);
@@ -137,6 +142,15 @@ public class WeiBoServiceImpl implements IWeiBoService {
         userCount.setUserId(request.getCurrentUser().getUserId());
         userCount.setWeiboCount(1);
         userDao.updateCountColumn(userCount);
+
+        //添加转发消息
+        messageService.addMessage(request.getCurrentUser()
+                , new User(originWeiBo.getUserId())
+                , MessageTypeEnum.RePostWeiBo
+                , null
+                , weibo.getWeiboId()
+                , true
+        );
 
         if(discussionAble){
             Discussion discussion = new Discussion();
@@ -392,6 +406,16 @@ public class WeiBoServiceImpl implements IWeiBoService {
         weiBoNew.setWeiboId(weibo.getWeiboId());
         weiBoNew.setLikesCount(1);
         weiboDao.updateCountColumn(weiBoNew);
+
+        //添加点赞消息
+        messageService.addMessage(request.getCurrentUser()
+                , new User(weibo.getUserId())
+                , MessageTypeEnum.LikesWeiBo
+                , null
+                , likesNew.getLikesId()
+                , true
+        );
+
         return weibo.getLikesCount()+1;
     }
 

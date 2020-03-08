@@ -66,12 +66,18 @@ var messageListUrl = serviceUrlBase +"message/query";
 var userTokenHeaderKey = "ACCESS_TOKEN";
 var userTokenStorageKey = "MINIWeiBo_token";
 var userIdStorageKey = "MINIWeiBo_userId";
+var userNameStorageKey = "MINIWeiBo_username";
 var adminStorageKey = "MINIWeiBo_admin";
 
 var user_menu_zone = '<li><a onclick="toPage(\'profile.html\')">个人空间</a></li>';
 var user_menu_logOut = '<li><a onclick="logout()">退出登录</a></li>';
 var admin_menu_manage = '<li><a onclick="toUserManage()">用户管理</a></li>';
 var admin_menu_notice = '<li><a onclick="openNoticeView()">发布公告</a></li>';
+
+var currentUsername = handleLocalStorage("get", userNameStorageKey);
+if(currentUsername){
+    $('.currentUser.username').html(currentUsername);
+}
 
 function toUserManage() {
     toPage("manage.html","进入用户管理",1200,'info');

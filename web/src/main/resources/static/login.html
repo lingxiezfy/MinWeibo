@@ -262,6 +262,8 @@
                 if (response.success && response.code === '200') {
                     handleLocalStorage("set", userTokenStorageKey, response.result.token);
                     handleLocalStorage("set", userIdStorageKey, response.result.userId);
+                    handleLocalStorage("set", userNameStorageKey, response.result.username);
+
                     if(response.result.admin){
                         handleLocalStorage("set", adminStorageKey, response.result.admin);
                     }else {
@@ -303,6 +305,7 @@
                 if (response.success && response.code === '200') {
                     handleLocalStorage("set", userTokenStorageKey, response.result.token);
                     handleLocalStorage("set", userIdStorageKey, response.result.userId);
+                    handleLocalStorage("set", userNameStorageKey, response.result.username);
                     if(response.result.admin){
                         handleLocalStorage("set", adminStorageKey, response.result.admin);
                     }else {
